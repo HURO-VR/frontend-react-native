@@ -1,8 +1,8 @@
-## HURO Frontend
+# HURO Frontend
 
 This is an [Expo](https://expo.dev) project with deployment capabilities to mobile and web.
 
-# Environment Setup:
+## Environment Setup:
 
 1. Install dependencies
 
