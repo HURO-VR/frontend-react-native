@@ -16,10 +16,9 @@ This is an [Expo](https://expo.dev) project with deployment capabilities to mobi
     npx expo start
    ```
 
-3. Open web view
-   ```bash
-      w
-   ```
+3. Open web view:
+   Press `w`
+   
 
 
 - [development build](https://docs.expo.dev/develop/development-builds/introduction/)
