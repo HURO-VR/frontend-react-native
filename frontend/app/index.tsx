@@ -26,8 +26,6 @@ export default function Index() {
       <Button 
         title="Upload File"
         onPress={() => setUploadTrigger(true)}
-        
-        style={DefaultStyles.button}
       />
     </View>
   );
