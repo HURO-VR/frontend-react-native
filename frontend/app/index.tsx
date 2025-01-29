@@ -1,6 +1,12 @@
-import { Text, View } from "react-native";
+import { Button, Text, View } from "react-native";
+import FileUpload from "./components/fileUpload";
+import { useState } from "react";
+import { DefaultStyles } from "./styles/DefaultStyles";
 
 export default function Index() {
+
+  const [uploadTrigger, setUploadTrigger] = useState(false);
+  
   return (
     <View
       style={{
@@ -9,7 +15,20 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-      <Text>Edit app/index.tsx to edit this screen.</Text>
+      <Text>File Upload Test</Text>
+
+      <FileUpload 
+        onUploadComplete={() => console.log('Upload complete')}
+        maxSize={5 * 1024 * 1024} // 5MB
+        uploadTrigger={uploadTrigger}
+      />
+
+      <Button 
+        title="Upload File"
+        onPress={() => setUploadTrigger(true)}
+        
+        style={DefaultStyles.button}
+      />
     </View>
   );
 }
