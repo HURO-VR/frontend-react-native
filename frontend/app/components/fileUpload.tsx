@@ -10,8 +10,7 @@ import {
   Button
 } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
-import * as FileSystem from 'expo-file-system';
-import { DefaultStyles } from '../styles/DefaultStyles';
+import { FBStorage } from '@/firebase/storage';
 
 interface FileUploadProps {
     onUploadComplete?: () => void;
@@ -33,8 +32,26 @@ const FileUpload = ({ onUploadComplete, maxSize = 10 * 1024 * 1024, allowedTypes
 
 
   useEffect(() => {
-    if (uploadTrigger) uploadFile(uri, fileName);
+    if (uploadTrigger) uploadFile(uri);
   }, [uploadTrigger]);
+
+
+  const checkFileSize = (size: number) => {
+    if (size && size > maxSize) {
+      let message = `File size must be less than ${maxSize / 1024 / 1024}MB`;
+      console.log('File too large');
+      if (Platform.OS === 'web') {
+          window.alert(message);
+      } else {
+          Alert.alert(
+              'File Too Large',
+              message
+          );
+      }
+      return false;
+    }
+    return true;
+  }
 
   const pickDocument = async () => {
     try {
@@ -48,76 +65,44 @@ const FileUpload = ({ onUploadComplete, maxSize = 10 * 1024 * 1024, allowedTypes
         const { uri, name, size } = result.assets[0];
         
         // Check file size
-        if (size && size > maxSize) {
-            let message = `File size must be less than ${maxSize / 1024 / 1024}MB`;
-            console.log('File too large');
-            if (Platform.OS === 'web') {
-                window.alert(message);
-            } else {
-                Alert.alert(
-                    'File Too Large',
-                    message
-                );
-            }
-          return;
-        }
+        if (size && !checkFileSize(size)) return;
+
         setFileName(name);
         setUri(uri);
+
         console.log('Selected file:', name, uri);
-        if (uploadTrigger == undefined) uploadFile(uri, fileName);
+        if (uploadTrigger == undefined) uploadFile(uri);
       } else {
-        console.log('Document picker cancelled');
+        window.alert('Document picker cancelled');
       }
     } catch (err) {
       console.error('Error picking document:', err);
-      Alert.alert('Error', 'Failed to pick document');
+      window.alert('Failed to pick document');
     }
   };
 
 
-  const uploadFile = async (uri: string, name: string) => {
+  const uploadFile = async (uri: string) => {
     setUploading(true);
 
     try {
-      // TODO: Replace with API endpoint
-      const apiUrl = 'YOUR_UPLOAD_ENDPOINT';
-
       // Handle upload based on platform
-      if (Platform.OS === 'web') {
-        // Web upload implementation
         const response = await fetch(uri);
         const blob = await response.blob();
-        const formData = new FormData();
-        formData.append('file', blob, name);
 
-        const uploadResponse = await fetch(apiUrl, {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (!uploadResponse.ok) {
-          throw new Error('Upload failed');
-        }
-      } else {
-        // Native upload implementation using Expo FileSystem
-        const uploadResult = await FileSystem.uploadAsync(apiUrl, uri, {
-          uploadType: FileSystem.FileSystemUploadType.MULTIPART,
-          fieldName: 'file',
-          parameters: { fileName: name },
-          httpMethod: 'POST',
-          sessionType: FileSystem.FileSystemSessionType.BACKGROUND,
-        });
-
-        if (uploadResult.status !== 200) {
-          throw new Error('Upload failed');
-        }
-      }
+        FBStorage.uploadFile({
+          file: blob, 
+          name: fileName,
+          type: FBStorage.FileUploadType.algorithm, 
+          OnUploadComplete: onUploadComplete
+        }, 'TEST_ORG');
 
       onUploadComplete && onUploadComplete();
-      Alert.alert('Success', 'File uploaded successfully');
+      window.alert('File uploaded successfully');
+
     } catch (error) {
       console.error('Upload error:', error);
-      Alert.alert('Error', 'Failed to upload file');
+      window.alert('Failed to upload file');
     } finally {
       setUploading(false);
     }
