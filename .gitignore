@@ -68,6 +68,13 @@ crashlytics-build.properties
 # Packed Addressables
 /HURO_VR/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
 
+# Firebase Storage
+# Packed Addressables
+/HURO_VR/[Aa]ssets/[Ff]irebase
+/HURO_VR/[Aa]ssets/[Pp]lugins
+/HURO_VR/[Aa]ssets/[Ee]xternalDependencyManager
+/HURO_VR/[Aa]ssets/Editor Default Resources
+
 # Temporary auto-generated Android Assets
 /HURO_VR/[Aa]ssets/[Ss]treamingAssets/aa.meta
 /HURO_VR/[Aa]ssets/[Ss]treamingAssets/aa/*
