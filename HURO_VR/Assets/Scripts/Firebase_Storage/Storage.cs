@@ -29,22 +29,12 @@ public class Storage : MonoBehaviour
     string org_name = "TEST_ORG";
     static FirebaseStorage storage;
 
+
     private void Awake()
     {
         storage = FirebaseStorage.DefaultInstance;
     }
-    void TestDownload(byte[] data)
-    {
-        Debug.Log(Encoding.UTF8.GetString(data));
-    }
 
-
-    // STANDARDS
-
-    void Start()
-    {
-        DownloadFile("sample.txt", FileType.Algorithm, TestDownload);
-    }
 
 
     // FUNCTIONAL
@@ -86,11 +76,16 @@ public class Storage : MonoBehaviour
             if (!_task.IsFaulted && !_task.IsCanceled)
             {
                 Uri uri = await _task;
-                Debug.Log("Download URL: " + uri);
-                GetRequest(uri, OnDownload);
+                StartCoroutine(GetRequest(uri, OnDownload));
             }
         });
     }
+
+
+    public void SetOrganization(string org)
+    {
+        org_name = org;
+    } 
 
 
 }

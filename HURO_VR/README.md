@@ -13,3 +13,21 @@
 5. Delete `Assets/ExternalDependencyManager/Editor/Google.IOSResolver.dll` and `Assets/ExternalDependencyManager/Editor/Google.IOSResolver.dll.mdb`
 
 6. Locate `Assets/Firebase/Editor/Firebase.Editor.dll.meta` and uncheck `Validate References` in the inspector.
+
+
+## Documentation
+
+#### Downloading from Firebase Storage
+`DownloadFile("filename", FileType, OnDownloaded);`
+
+`filename` - Name of file in database, including extension (ex: .txt or .py)
+`FileType` - Type of file to be retrieved. (ex: algorithm or model)
+`OnDownloaded` - Callback that will be passed the data as a `byte[]`. Function must convert data to desired type.
+Example definition:
+```
+void TestDownload(byte[] data)
+{
+    Debug.Log($"Downloaded Data: {Encoding.UTF8.GetString(data)}");
+}
+
+```
