@@ -37,8 +37,8 @@ export namespace FBStorage {
   // MODELS
 
   export enum FileUploadType {
-    algorithm = 'algorithm',
-    model = 'model',
+    algorithm = 'algorithms',
+    model = 'models',
   }
 
   export interface FileUpload { 
