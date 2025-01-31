@@ -37,6 +37,8 @@ public class Storage : MonoBehaviour
     {
         Debug.Log(Encoding.UTF8.GetString(data));
     }
+
+
     // STANDARDS
 
     void Start()

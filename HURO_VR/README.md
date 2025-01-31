@@ -9,3 +9,7 @@
 3. From the unzipped SDK, select to import the SDK for Firebase Storage.
 
 4. In the Import Unity Package window, click Import.
+
+5. Delete `Assets/ExternalDependencyManager/Editor/Google.IOSResolver.dll` and `Assets/ExternalDependencyManager/Editor/Google.IOSResolver.dll.mdb`
+
+6. Locate `Assets/Firebase/Editor/Firebase.Editor.dll.meta` and uncheck `Validate References` in the inspector.
