@@ -18,7 +18,7 @@
 ## Documentation
 
 #### Downloading from Firebase Storage
-`DownloadFile("filename", FileType, OnDownloaded);`
+`Storage.DownloadFile("filename", FileType, OnDownloaded);`
 
 `filename` - Name of file in database, including extension (ex: .txt or .py)
 
