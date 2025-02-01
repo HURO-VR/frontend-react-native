@@ -21,8 +21,11 @@
 `DownloadFile("filename", FileType, OnDownloaded);`
 
 `filename` - Name of file in database, including extension (ex: .txt or .py)
+
 `FileType` - Type of file to be retrieved. (ex: algorithm or model)
+
 `OnDownloaded` - Callback that will be passed the data as a `byte[]`. Function must convert data to desired type.
+
 Example definition:
 ```
 void TestDownload(byte[] data)
