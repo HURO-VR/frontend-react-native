@@ -26,11 +26,15 @@
 
 `OnDownloaded` - Callback that will be passed the data as a `byte[]`. Function must convert data to desired type.
 
-Example definition:
+Example Usage:
 ```
-void TestDownload(byte[] data)
-{
-    Debug.Log($"Downloaded Data: {Encoding.UTF8.GetString(data)}");
+void Example() {
+    FindAnyObjectByType<Storage>().DownloadFile("sample.txt", FileType.Algorithm, (bytes) =>
+    {
+        Debug.Log(Encoding.UTF8.GetString(bytes));
+    });
 }
 
 ```
+
+**Note**: Ensure `FirebaseStorageInstance` has been added to the scene.
