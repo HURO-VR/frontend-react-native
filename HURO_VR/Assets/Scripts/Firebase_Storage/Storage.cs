@@ -26,21 +26,19 @@ public class FileType
 public class Storage : MonoBehaviour
 {
 
-    static string org_name = "TEST_ORG";
+    string org_name = "TEST_ORG";
     static FirebaseStorage storage;
-    static Storage instance;
 
 
     private void Awake()
     {
         storage = FirebaseStorage.DefaultInstance;
-        instance = this;
     }
 
 
 
     // FUNCTIONAL
-    static IEnumerator GetRequest(Uri uri, Action<byte[]> OnDownload)
+    IEnumerator GetRequest(Uri uri, Action<byte[]> OnDownload)
     {
         using (UnityWebRequest webRequest = UnityWebRequest.Get(uri))
         {
@@ -68,7 +66,7 @@ public class Storage : MonoBehaviour
     }
 
 
-    public static void DownloadFile(string filename, FileType fileType, Action<byte[]> OnDownload)
+    public void DownloadFile(string filename, FileType fileType, Action<byte[]> OnDownload)
     {
         string path = "organizations/" + org_name + "/" + fileType + "/" + filename;
         StorageReference reference = storage.GetReference(path);
@@ -78,13 +76,13 @@ public class Storage : MonoBehaviour
             if (!_task.IsFaulted && !_task.IsCanceled)
             {
                 Uri uri = await _task;
-                instance.StartCoroutine(GetRequest(uri, OnDownload));
+                StartCoroutine(GetRequest(uri, OnDownload));
             }
         });
     }
 
 
-    public static void SetOrganization(string org)
+    public void SetOrganization(string org)
     {
         org_name = org;
     } 
