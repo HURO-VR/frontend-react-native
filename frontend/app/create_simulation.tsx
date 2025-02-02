@@ -12,18 +12,28 @@ export default function SimulationCreation() {
 
   const [uploadTrigger, setUploadTrigger] = useState(false);
   const simulationID = uuid();
-  const [filesUploaded, setFilesUploaded] = useState(0);
+  const [filesUploaded, setFilesUploaded] = useState(false);
   const [simulationName, onChangeText] = useState(simulationID);
   const [algorithmName, setAlgorithmName] = useState("Example");
 
+  const router = useRouter();
 
-  const TOTAL_FILES_UPLOAD = 2;
+  const onUploadComplete = async () => {
+    //window.alert("Uploading simulation metadata...");
+    let done = await FBStorage.uploadSimulationMetaData("TEST_ORG", simulationID, simulationName, algorithmName).then(() => {
+       // window.alert("Simulation created successfully!");
+        return true;
+      }).catch((e) => {
+        window.alert("Error uploading simulation metadata: " + e);
+        return false;
+      });
+
+      if (done) router.push("/view_simulations");
+  };
 
   useEffect(() => {
-    if (filesUploaded === TOTAL_FILES_UPLOAD) {
-      FBStorage.uploadSimulationMetaData("TEST_ORG", simulationID, simulationName, algorithmName).then(() => {
-        useRouter().push("/view_simulations");
-      });
+    if (filesUploaded === true) {
+      onUploadComplete();
     }
   }, [filesUploaded]);
 
@@ -60,7 +70,7 @@ export default function SimulationCreation() {
       />
 
       <FileUpload 
-        onUploadComplete={() => setFilesUploaded(filesUploaded + 1)}
+        onUploadComplete={() => setFilesUploaded(true)}
         maxSize={5 * 1024 * 1024} // 5MB
         uploadTrigger={uploadTrigger}
         title="Algorithm"
@@ -69,11 +79,11 @@ export default function SimulationCreation() {
       />
 
       <FileUpload 
-        onUploadComplete={() => setFilesUploaded(filesUploaded + 1)}
+        onUploadComplete={() => {}}
         maxSize={5 * 1024 * 1024} // 5MB
         uploadTrigger={uploadTrigger}
         title="3D Model"
-        fileType={FBStorage.FileUploadType.algorithm}
+        fileType={FBStorage.FileUploadType.model}
         simulationID={simulationID}
       />
 

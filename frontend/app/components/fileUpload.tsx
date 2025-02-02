@@ -77,7 +77,7 @@ const FileUpload = ({ onUploadComplete, maxSize = 10 * 1024 * 1024, allowedTypes
         console.log('Selected file:', name, uri);
         if (uploadTrigger == undefined) uploadFile(uri);
       } else {
-        window.alert('Document picker cancelled');
+        //window.alert('Document picker cancelled');
       }
     } catch (err) {
       console.error('Error picking document:', err);
@@ -103,7 +103,7 @@ const FileUpload = ({ onUploadComplete, maxSize = 10 * 1024 * 1024, allowedTypes
         }, 'TEST_ORG');
 
       onUploadComplete && onUploadComplete();
-      window.alert('File uploaded successfully');
+      //window.alert('File uploaded successfully');
 
     } catch (error) {
       console.error('Upload error:', error);

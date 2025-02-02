@@ -46,7 +46,7 @@ export namespace FBStorage {
 
   export function uploadSimulationFile(file: FileUpload, organization: string) {
     const storage = getFBStorage();
-    const storageRef = ref(storage, `organizations/${organization}/${file.simulationID}/${file.type}/${file.name}`);
+    const storageRef = ref(storage, `organizations/${organization}/simulations/${file.simulationID}/${file.type}/${file.name}`);
 
     uploadBytes(storageRef, file.file).then((snapshot) => {
         console.log('Uploaded a blob or file!');
@@ -63,9 +63,11 @@ export namespace FBStorage {
         dateCreated: new Date().toISOString(),
         algorithmName: algorithmName,
       }); // Model: SimulationMetaData
+      return true;
 
     } catch (e) {
       console.error("Error adding document: ", e);
+      return false;
     }
   }
 
