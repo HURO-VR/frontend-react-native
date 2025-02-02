@@ -11,12 +11,16 @@ import {
 } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import { FBStorage } from '@/firebase/storage';
+import TextStyles from '../styles/textStyles';
 
 interface FileUploadProps {
     onUploadComplete?: () => void;
     maxSize?: number;
     allowedTypes?: string[];
     uploadTrigger?: boolean;
+    title: string
+    fileType: FBStorage.FileUploadType
+    simulationID: string
 }
 
 
@@ -25,7 +29,7 @@ interface FileUploadProps {
 // Default max size of 10MB.
 // Will upload when uploadTrigger - a stateful boolean - is set to true. Or automatically if uploadTrigger is undefined.
 
-const FileUpload = ({ onUploadComplete, maxSize = 10 * 1024 * 1024, allowedTypes = ['*/*'], uploadTrigger }: FileUploadProps) => {
+const FileUpload = ({ onUploadComplete, maxSize = 10 * 1024 * 1024, allowedTypes = ['*/*'], uploadTrigger, title, fileType, simulationID }: FileUploadProps) => {
   const [uploading, setUploading] = useState(false);
   const [fileName, setFileName] = useState('');
   const [uri, setUri] = useState('');
@@ -90,11 +94,12 @@ const FileUpload = ({ onUploadComplete, maxSize = 10 * 1024 * 1024, allowedTypes
         const response = await fetch(uri);
         const blob = await response.blob();
 
-        FBStorage.uploadFile({
+        FBStorage.uploadSimulationFile({
           file: blob, 
           name: fileName,
-          type: FBStorage.FileUploadType.algorithm, 
-          OnUploadComplete: onUploadComplete
+          type: fileType, 
+          OnUploadComplete: onUploadComplete,
+          simulationID: simulationID
         }, 'TEST_ORG');
 
       onUploadComplete && onUploadComplete();
@@ -110,7 +115,8 @@ const FileUpload = ({ onUploadComplete, maxSize = 10 * 1024 * 1024, allowedTypes
 
   return (
     <View style={styles.container}>
-        <Text style={{paddingVertical: 5}}>{fileName == "" ? "Select a file:" : `Filename: ${fileName}`}</Text>
+        <Text style={{paddingVertical: 5, ...TextStyles.h6}}>{title}</Text>
+      {fileName && <Text>{fileName}</Text>}
       <Button
         onPress={pickDocument}
         disabled={uploading}

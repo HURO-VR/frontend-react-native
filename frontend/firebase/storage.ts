@@ -1,5 +1,8 @@
 import { initializeApp } from "firebase/app";
 import { FirebaseStorage, getStorage, ref, uploadBytes, UploadResult } from "firebase/storage";
+import { addDoc, collection, doc, getDoc, getDocs, getFirestore, query, setDoc } from "firebase/firestore";
+import { SimulationMetaData } from "./models";
+
 
 const firebaseConfig = {
     apiKey: "AIzaSyCbo5BHBJKwhVblw_8RALdzKWnhCxyHGvI",
@@ -23,6 +26,14 @@ export namespace FBStorage {
     return storage;
   }
 
+  export function getFBFirestore() {
+    const app = initializeApp(firebaseConfig);
+
+    // Initialize Cloud Storage and get a reference to the service
+    const firestore = getFirestore(app);
+    return firestore;
+  }
+
   export function uploadFile(file: FileUpload, organization: string) {
     const storage = getFBStorage();
     const storageRef = ref(storage, `organizations/${organization}/${file.type}/${file.name}`);
@@ -31,6 +42,42 @@ export namespace FBStorage {
         console.log('Uploaded a blob or file!');
         if (file.OnUploadComplete) file.OnUploadComplete(snapshot);
     });
+  }
+
+  export function uploadSimulationFile(file: FileUpload, organization: string) {
+    const storage = getFBStorage();
+    const storageRef = ref(storage, `organizations/${organization}/${file.simulationID}/${file.type}/${file.name}`);
+
+    uploadBytes(storageRef, file.file).then((snapshot) => {
+        console.log('Uploaded a blob or file!');
+        if (file.OnUploadComplete) file.OnUploadComplete(snapshot);
+    });
+  }
+
+  export async function uploadSimulationMetaData(organization: string, simulationID: string, simulationName: string, algorithmName: string) {
+    try {
+      let db = getFBFirestore();
+      await setDoc(doc(db, `organizations/${organization}/simulations`, simulationID), {
+        name: simulationName,
+        ID: simulationID,
+        dateCreated: new Date().toISOString(),
+        algorithmName: algorithmName,
+      }); // Model: SimulationMetaData
+
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  }
+
+  export async function getAllSimulationsMetaData(organization: string) {
+    let db = getFBFirestore();
+    let sims: SimulationMetaData[] = []
+    const q = query(collection(db, `organizations/${organization}/simulations`));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      sims.push(doc.data() as SimulationMetaData);
+    });
+    return sims;
   }
 
 
@@ -45,6 +92,7 @@ export namespace FBStorage {
     file: (File | Blob),
     name: string,
     type: FileUploadType,
+    simulationID: string,
     OnUploadComplete?: (result?: UploadResult) => void,
   }
 }
