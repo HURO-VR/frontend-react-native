@@ -11,4 +11,10 @@ export const DefaultStyles = StyleSheet.create({
     paddingHorizontal: 8,
     alignItems: 'center',
   },
+  input: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
+  },
 });
