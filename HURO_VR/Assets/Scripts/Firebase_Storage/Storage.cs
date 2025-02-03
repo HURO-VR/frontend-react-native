@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using Firebase.Extensions;
 using Firebase.Storage;
+using Unity.Barracuda;
 using Unity.VisualScripting;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -66,9 +67,10 @@ public class Storage : MonoBehaviour
     }
 
 
-    public void DownloadFile(string filename, FileType fileType, Action<byte[]> OnDownload)
+    public void DownloadFile(string filename, FileType fileType, string simulationID, Action<byte[]> OnDownload)
     {
-        string path = "organizations/" + org_name + "/" + fileType + "/" + filename;
+        string branch = "simulations";
+        string path = $"organizations/ {org_name}/{branch}/{simulationID}/{fileType}/{filename}";
         StorageReference reference = storage.GetReference(path);
 
         // Fetch the download URL
@@ -80,6 +82,26 @@ public class Storage : MonoBehaviour
             }
         });
     }
+
+    public string SaveBytesToFile(byte[] data, string filename, string pathName = "/")
+    {
+        if (pathName == null || pathName == "")
+        {
+            pathName = "/";
+        } else if (pathName[pathName.Length - 1] != '/') {
+            pathName += "/";
+        }
+        string path = Application.persistentDataPath + $"{pathName}{filename}";
+        System.IO.File.WriteAllBytes(path, data);
+        return path;
+    }
+
+    public Database_Models.SimulationMetaData GetAllSimulationBundles()
+    {
+
+    }
+
+
 
 
     public void SetOrganization(string org)
