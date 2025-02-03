@@ -15,7 +15,6 @@ public class ModelTester : MonoBehaviour
     public NNModel model;
     public int RunsPerModel = 100;
     string modelName;
-    string ORG_NAME = "TEST_ORG";
     Storage db;
     byte[] modelData;
 
@@ -30,7 +29,7 @@ public class ModelTester : MonoBehaviour
 
     private void Update()
     {
-        if (agent.numRuns >= RunsPerModel)
+        if (agent && agent.numRuns >= RunsPerModel)
         {
             agent.PrintStats();
             MLenvironment.SetActive(false);
@@ -38,8 +37,11 @@ public class ModelTester : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
+            Debug.Log("Getting sim bundles");
             var allSimBundles = db.GetAllSimulationBundles().Result;
+            Debug.Log("Returned " + allSimBundles.Length + " bundles");
             if (allSimBundles.Length > 0) LoadSimulationFromMetaData(allSimBundles[0]);
+            Debug.Log("Model tester running");
         }
     }
 
@@ -47,9 +49,11 @@ public class ModelTester : MonoBehaviour
     {
         db.DownloadFile(simMetaData.algorithmName, FileType.Algorithm, simMetaData.ID, (data) =>
         {
+            Debug.Log("Downloaded model data");
             modelData = data;
         });
         NNModel model = OnnxDataToNNModel(modelData);
+        Debug.Log("Loaded model with data");
         SetMLEnvironment(simMetaData.environmentName);
         SetModel(model, simMetaData.algorithmName);
     }
@@ -144,6 +148,7 @@ public class AgentWrapper : Agent
             Debug.LogWarning("Cannot Set Testing in the middle of a run. Ignoring Command.");
             return;
         }
+        Debug.Log("Model set to testing");
         _testing = test;
     }
 
