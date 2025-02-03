@@ -28,6 +28,21 @@ public class ModelTester : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (agent.numRuns >= RunsPerModel)
+        {
+            agent.PrintStats();
+            MLenvironment.SetActive(false);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            var allSimBundles = db.GetAllSimulationBundles().Result;
+            if (allSimBundles.Length > 0) LoadSimulationFromMetaData(allSimBundles[0]);
+        }
+    }
+
     public void LoadSimulationFromMetaData(Database_Models.SimulationMetaData simMetaData)
     {
         db.DownloadFile(simMetaData.algorithmName, FileType.Algorithm, simMetaData.ID, (data) =>
@@ -75,15 +90,6 @@ public class ModelTester : MonoBehaviour
         model = _model;
         modelName = name;
         InitializeAgent();
-    }
-
-    private void Update()
-    {
-        if (agent.numRuns >= RunsPerModel)
-        {
-            agent.PrintStats();
-            MLenvironment.SetActive(false);
-        }
     }
 
     NNModel OnnxDataToNNModel(byte[] data)
