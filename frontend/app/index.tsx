@@ -2,15 +2,12 @@ import { Button, Text, View, Image, StyleSheet } from "react-native";
 import FileUpload from "./components/fileUpload";
 import { useState } from "react";
 import { DefaultStyles } from "./styles/DefaultStyles";
+import { Link } from "expo-router";
+import TextStyles from "./styles/textStyles";
 
 export default function Index() {
-  const [uploadTrigger, setUploadTrigger] = useState(false);
 
-  const handleUploadComplete = () => {
-    console.log("Upload complete");
-    setUploadTrigger(false);
-  };
-
+  
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -22,22 +19,21 @@ export default function Index() {
         {/* <Text style={styles.headerText}>HURO</Text> */}
       </View>
 
-      {/* Main Content */}
-      <Text>Upload your Model</Text>
-      <p>
-        Supported formats: onnx
-      </p>
+       <Link href="/view_simulations"
+      style={{
+        color: 'blue',
+        textDecorationLine: 'underline',
+        ...TextStyles.h4,
+        marginVertical: 10
+       }}>View Simulations</Link>
 
-      <FileUpload 
-        onUploadComplete={handleUploadComplete}
-        maxSize={5 * 1024 * 1024} // 5MB
-        uploadTrigger={uploadTrigger}
-      />
 
-      <Button 
-        title="Upload File"
-        onPress={() => setUploadTrigger(true)}
-      />
+    <Link href="/create_simulation"
+      style={{
+        color: 'blue',
+        textDecorationLine: 'underline',
+        ...TextStyles.h4
+       }}>View Organization</Link>
     </View>
   );
 }
