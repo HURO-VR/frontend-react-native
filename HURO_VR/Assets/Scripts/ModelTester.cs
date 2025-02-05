@@ -17,27 +17,31 @@ public class ModelTester : MonoBehaviour
     public GameObject MLenvironment;
     private NNModel model;
     public int RunsPerModel = 100;
-    string algorithmName;
-    Storage db;
+    Storage storage;
     byte[] modelData;
     public NNModel model_template;
-    Database_Models.SimulationMetaData[] simMetaDatas;
+    Database_Models.SimulationMetaData[] simMetaDatas = new Database_Models.SimulationMetaData[0];
+    Database_Models.SimulationMetaData selectedSimulation;
     bool downloadedModelData = false;
     bool simulationRunning = false;
+    public bool recievedMetaData { private set; get; }
+    bool runSimulation = false;
 
 
     public void Awake()
     {
-        db = FindAnyObjectByType<Storage>();
-        if (db == null )
+        storage = FindAnyObjectByType<Storage>();
+        if (storage == null )
         {
-            db = gameObject.AddComponent<Storage>();
+            storage = gameObject.AddComponent<Storage>();
         }
+        recievedMetaData = false;
     }
 
     private void Start()
     {
         Debug.Log("Running ModelTester.");
+        InitSimulationMetaData();
 
     }
 
@@ -53,28 +57,32 @@ public class ModelTester : MonoBehaviour
         {
             Debug.Log("Pressed esc");
         }
-        if (Input.GetKeyDown(KeyCode.Space))
+
+        if (Input.GetKeyDown(KeyCode.Space) && recievedMetaData)
         {
-           RunSimulation();
+            // TODO: Replace with user selected meta data bundle.
+            SelectSimulation(simMetaDatas[0]);
         }
 
-        if (simMetaDatas != null && simMetaDatas.Length > 0 && downloadedModelData && !simulationRunning)
+        if (selectedSimulation.name != null && downloadedModelData && !simulationRunning && runSimulation)
         {
             simulationRunning = true;
             Debug.Log("Loading sim bundle " + simMetaDatas[0].name);
-            LoadSimulationFromMetaData(simMetaDatas[0]);
+            _RunSimulation();
         }
 
     }
 
-    bool metaDataRecieved = false;
-    async void RunSimulation()
+    // PUBLIC FUNCTIONS
+
+    /// <summary>
+    /// Downloads necessary simulation data from metadata bundle.
+    /// </summary>
+    /// <param name="bundle">Bundle to load.</param>
+    void SelectSimulation(Database_Models.SimulationMetaData bundle)
     {
-        Debug.Log("Getting sim bundles");
-        simMetaDatas = await db.GetAllSimulationBundles();
-        Debug.Log("Returned " + simMetaDatas.Length + " bundles");
-        metaDataRecieved = true;
-        db.DownloadFile(simMetaDatas[0].algorithmName, FileType.Algorithm, simMetaDatas[0].ID, (data) =>
+        selectedSimulation = bundle;
+        storage.DownloadFile(simMetaDatas[0].algorithmName, FileType.Algorithm, simMetaDatas[0].ID, (data) =>
         {
             modelData = data;
             downloadedModelData = true;
@@ -82,15 +90,40 @@ public class ModelTester : MonoBehaviour
         });
     }
 
-    public void LoadSimulationFromMetaData(Database_Models.SimulationMetaData simMetaData)
+    public void RunSimulation()
     {
-        algorithmName = simMetaData.algorithmName;
+        runSimulation = true;
+    }
+
+
+
+    /// <summary>
+    /// Runs the selected meta data bundle.
+    /// </summary>
+    void _RunSimulation()
+    {
         NNModel model = OnnxDataToNNModel(modelData);
         Debug.Log("Loaded model with data");
-        SetMLEnvironment(simMetaData.environmentName);
-        SetModel(model, simMetaData.algorithmName);
+        SetMLEnvironment(selectedSimulation.environmentName);
+        SetModel(model, selectedSimulation.algorithmName);
         downloadedModelData = false;
     }
+
+
+    // PRIVATE FUNCTIONS
+
+    /// <summary>
+    /// Gets all simulation metadata and loads it into the global variable "simMetaDatas".4
+    /// Used to display the list of selectable simulations.
+    /// </summary>
+    async void InitSimulationMetaData()
+    {
+        Debug.Log("Getting sim bundles");
+        simMetaDatas = await storage.GetAllSimulationBundles();
+        Debug.Log("Returned " + simMetaDatas.Length + " bundles");
+        recievedMetaData = true;
+    }
+
 
 
     void InitalizeEnvironment()
@@ -102,17 +135,11 @@ public class ModelTester : MonoBehaviour
 
     void InitializeAgent()
     {
-        agent.SetModel(algorithmName, model);
-        print($"Testing model: {algorithmName}");
+        agent.SetModel(selectedSimulation.algorithmName, model);
+        print($"Testing model: {selectedSimulation.algorithmName}");
         agent.GetComponent<BehaviorParameters>().BehaviorType = BehaviorType.InferenceOnly;
         agent.maxRuns = RunsPerModel;
         agent.SetTesting(true);
-    }
-
-
-    public void SetTimeScale(float timeScale)
-    {
-        Time.timeScale = timeScale;
     }
 
 
@@ -126,7 +153,6 @@ public class ModelTester : MonoBehaviour
     void SetModel(NNModel _model, string name)
     {
         model = _model;
-        algorithmName = name;
         InitializeAgent();
     }
 
@@ -150,10 +176,9 @@ public class ModelTester : MonoBehaviour
     NNModel OnnxDataToNNModel(byte[] data)
     {
         ONNXModelConverter onnx = new ONNXModelConverter(true, false, true);
-        //string path = SaveLoad<byte[]>.Save(data, "", algorithmName);
         Model model = onnx.Convert(data);
         NNModel nnModel = ModelToNNModel(model);
-        nnModel.name = algorithmName;
+        nnModel.name = selectedSimulation.algorithmName;
         return nnModel;
     }
 
