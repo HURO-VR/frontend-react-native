@@ -17,7 +17,9 @@
 
 ## Documentation
 
-#### Firebase Storage
+### Storage Class
+
+_Firebase Storage + Firestore handler_
 ##### Public Functions:
 `DownloadFile("filename", FileType, OnDownloaded);`
 
@@ -41,12 +43,14 @@ void Example() {
 **Note**: Ensure `FirebaseStorageInstance` has been added to the scene.
 
 
-#### ModelTester Class
+### ModelTester Class
 ##### Public Members:
 `Database_Models.SimulationMetaData[] simMetaDatas` - List of type `Database_Models.SimulationMetaData` that stores all simulation bundles for user's organization.
+
 `bool recievedMetaData` - True if simMetaDatas has finished loading.
 
 ##### Public Functions:
 `void RunSimulation()` - Runs the selected simulation bundle. See `SelectSimulation` for selection.
+
 `void SelectSimulation(Database_Models.SimulationMetaData bundle)` - Selects `bundle` as the simulation to run.
 
