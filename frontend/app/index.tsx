@@ -19,21 +19,38 @@ export default function Index() {
         {/* <Text style={styles.headerText}>HURO</Text> */}
       </View>
 
-       <Link href="/view_simulations"
-      style={{
-        color: 'blue',
-        textDecorationLine: 'underline',
-        ...TextStyles.h4,
-        marginVertical: 10
-       }}>View Simulations</Link>
+    <text>
+      <b>Welcome to HURO.</b>
+    </text>
+    
+    <View style={{ marginVertical: 10 }} />
+    <text>
+      Test your human-robot interactive algorithms in a real-time VR simulation environment.
+    </text>
 
+    <View style={{ marginVertical: 10 }} />
+    <text> 
+      Click below to get started:
+    </text>
+
+    <View style={{ marginVertical: 50 }} />
 
     <Link href="/create_simulation"
       style={{
-        color: 'blue',
-        textDecorationLine: 'underline',
+        color: 'black',
+        // textDecorationLine: 'underline',
         ...TextStyles.h4
-       }}>View Organization</Link>
+       }}>Create a Simulation</Link>
+
+    <View style={{ marginVertical: 20 }} />
+    
+    <Link href="/view_simulations"
+      style={{
+        color: 'black',
+        // textDecorationLine: 'underline',
+        ...TextStyles.h4,
+        marginVertical: 10
+       }}>View Simulations</Link>
     </View>
   );
 }
