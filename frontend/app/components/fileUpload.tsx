@@ -36,7 +36,7 @@ const FileUpload = ({ onUploadComplete, maxSize = 10 * 1024 * 1024, allowedTypes
 
 
   useEffect(() => {
-    if (uploadTrigger) uploadFile(uri);
+    if (uploadTrigger && fileName.length > 0) uploadFile(uri);
   }, [uploadTrigger]);
 
 
