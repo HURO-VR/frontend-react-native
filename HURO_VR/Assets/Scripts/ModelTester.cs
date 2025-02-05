@@ -27,6 +27,12 @@ public class ModelTester : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        Debug.Log("Running ModelTester.");
+
+    }
+
     private void Update()
     {
         if (agent && agent.numRuns >= RunsPerModel)
@@ -35,14 +41,28 @@ public class ModelTester : MonoBehaviour
             MLenvironment.SetActive(false);
         }
 
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            Debug.Log("Pressed esc");
+        }
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            Debug.Log("Getting sim bundles");
-            var allSimBundles = db.GetAllSimulationBundles().Result;
-            Debug.Log("Returned " + allSimBundles.Length + " bundles");
-            if (allSimBundles.Length > 0) LoadSimulationFromMetaData(allSimBundles[0]);
-            Debug.Log("Model tester running");
+           RunSimulation();
         }
+    }
+
+    async void RunSimulation()
+    {
+        Debug.Log("Getting sim bundles");
+        var allSimBundles = await db.GetAllSimulationBundles();
+        Debug.Log("Returned " + allSimBundles.Length + " bundles");
+        if (allSimBundles.Length > 0)
+        {
+            Debug.Log("Loading sim bundle " + allSimBundles[0].name);
+            LoadSimulationFromMetaData(allSimBundles[0]);
+        }
+        Debug.Log("Model tester running");
+
     }
 
     public void LoadSimulationFromMetaData(Database_Models.SimulationMetaData simMetaData)
