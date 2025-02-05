@@ -20,7 +20,7 @@ public class ModelTester : MonoBehaviour
     Storage storage;
     byte[] modelData;
     public NNModel model_template;
-    Database_Models.SimulationMetaData[] simMetaDatas = new Database_Models.SimulationMetaData[0];
+    public Database_Models.SimulationMetaData[] simMetaDatas = new Database_Models.SimulationMetaData[0];
     Database_Models.SimulationMetaData selectedSimulation;
     bool downloadedModelData = false;
     bool simulationRunning = false;
