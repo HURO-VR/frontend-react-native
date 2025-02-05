@@ -55,23 +55,27 @@ const FileUpload = ({ onUploadComplete, maxSize = 10 * 1024 * 1024, allowedTypes
         copyToCacheDirectory: true,
         multiple: false,
       });
-
+  
       if (!result.canceled) {
-        const { uri, name, size } = result.assets[0];
-
-        if (size && !checkFileSize(size)) return;
-
-        setFileName(name);
-        setUri(uri);
-
-        console.log('Selected file:', name, uri);
-        if (uploadTrigger == undefined) uploadFile(uri);
+        const file = result.assets[0]; // Extract file object safely
+        const fileName = file?.name ?? ""; // Ensure fileName is a string
+  
+        setFileName(fileName);
+        setUri(file.uri);
+  
+        console.log("Selected file:", fileName, file.uri);
+  
+        if (onUploadComplete && fileName) {
+          onUploadComplete(fileName); // Send the correct file name
+        }
+  
+        if (uploadTrigger === undefined) uploadFile(file.uri);
       }
     } catch (err) {
-      console.error('Error picking document:', err);
-      window.alert('Failed to pick document');
+      console.error("Error picking document:", err);
+      window.alert("Failed to pick document");
     }
-  };
+  };  
 
   const uploadFile = async (uri: string) => {
     setUploading(true);

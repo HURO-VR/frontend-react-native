@@ -12,6 +12,7 @@ export default function SimulationCreation() {
   const simulationID = uuid();
   const [filesUploaded, setFilesUploaded] = useState(false);
   const [algorithmName, setAlgorithmName] = useState("Example");
+  const [algorithmFileName, setAlgorithmFileName] = useState(""); // Store uploaded file name
   const [simulationName, setSimulationName] = useState("");
   const [trialNumber, setTrialNumber] = useState(1);
 
@@ -57,7 +58,7 @@ export default function SimulationCreation() {
       "TEST_ORG",
       simulationID,
       simulationName,
-      algorithmName
+      algorithmFileName // Use the actual uploaded ONNX file name
     )
       .then(() => true)
       .catch((e) => {
@@ -76,15 +77,15 @@ export default function SimulationCreation() {
 
   return (
     <View style={styles.container}>
-      <Text style={TextStyles.h3}>Create a Simulation</Text>
+      <Text style={TextStyles.h3}>Create New Simulation</Text>
       <Text style={TextStyles.subtitle}>
         Upload your custom algorithm and model to generate a new simulation.
       </Text>
 
       <View style={{ marginVertical: 10 }} />
 
-      {/* Algorithm Name Input */}
-      <Text style={TextStyles.h6}>Insert Algorithm Name:</Text>
+      {/* Algorithm Name Input (User-Defined) */}
+      <Text style={TextStyles.h6}>Algorithm Name:</Text>
       <TextInput
         style={{ ...DefaultStyles.input, width: "50%", backgroundColor: "#fff" }}
         onChangeText={setAlgorithmName}
@@ -94,19 +95,39 @@ export default function SimulationCreation() {
 
       <View style={{ marginVertical: 15 }} />
       <Text style={TextStyles.subtitle}>
-        Upload your robot algorithm [Current supported formats: onnx]:
+        1. Upload your robot algorithm [Supported formats: .onnx] (*Required):
       </Text>
-      {/* File Upload Sections */}
+
+      {/* File Upload for Algorithm (Updates algorithmFileName) */}
       <FileUpload
-        onUploadComplete={() => setFilesUploaded(true)}
+        onUploadComplete={(fileName) => {
+          console.log("Uploaded file:", fileName);
+
+          // Ensure fileName is a valid string before updating state
+          if (fileName && typeof fileName === "string" && fileName.toLowerCase().endsWith(".onnx")) {
+              setAlgorithmFileName(fileName); // Store uploaded ONNX file name 
+            console.log("Algorithm file name set to:", fileName);
+          } else {
+            console.warn("Invalid file name received:", fileName);
+          }
+        }}
         maxSize={5 * 1024 * 1024} // 5MB
         uploadTrigger={uploadTrigger}
         fileType={FBStorage.FileUploadType.algorithm}
         simulationID={simulationID}
       />
+
+      {/* Uploaded Algorithm File Name (Read-Only) */}
+      {/* <Text style={TextStyles.h6}>Algorithm File Name:</Text>
+      <TextInput
+        style={{ ...DefaultStyles.input, width: "50%", backgroundColor: "#f0f0f0" }}
+        value={algorithmFileName}
+        editable={false} // Display but not editable
+      /> */}
+
       <View style={{ marginVertical: 10 }} />
       <Text style={TextStyles.subtitle}>
-        Upload your 3D robot model [Optional, default: sphere]:
+        2. Upload your 3D robot model [Default: sphere] (Optional):
       </Text>
       <FileUpload
         onUploadComplete={() => {}}
@@ -122,22 +143,25 @@ export default function SimulationCreation() {
       <TextInput
         style={{ ...DefaultStyles.input, width: "50%", backgroundColor: "#f0f0f0" }}
         value={simulationName}
-        editable={false} // Make it read-only
+        editable={false}
       />
 
-      <View style={{ marginVertical: 20 }} />
+      <View style={{ marginVertical: 15 }} />
 
       {/* Generate Simulation Button */}
       <TouchableOpacity
         onPress={() => {
-          if (algorithmName.length < 5) return;
+          if (algorithmName.length < 3 || algorithmFileName.length < 3) {
+            window.alert("Please enter an Algorithm Name and upload an ONNX file.");
+            return;
+          }
           setUploadTrigger(true);
         }}
-        style={[styles.generateButton, algorithmName.length < 3 && styles.disabledButton]}
-        disabled={algorithmName.length < 3 }
+        style={[styles.generateButton, (algorithmName.length < 3 || algorithmFileName.length < 3) && styles.disabledButton]}
+        disabled={algorithmName.length < 3 || algorithmFileName.length < 3}
         activeOpacity={0.7}
       >
-        <Text style={styles.generateButtonText}>Generate</Text>
+        <Text style={styles.generateButtonText}>Generate Simulation</Text>
       </TouchableOpacity>
     </View>
   );
@@ -151,14 +175,14 @@ const styles = StyleSheet.create({
   },
   generateButton: {
     backgroundColor: "#000000",
-    paddingVertical: 15,
+    paddingVertical: 10,
     paddingHorizontal: 25,
-    borderRadius: 10,
+    borderRadius: 5,
     alignItems: "center",
     justifyContent: "center",
     width: "50%",
-    elevation: 5, // Adds shadow on Android
-    shadowColor: "#000", // Adds shadow on iOS
+    elevation: 5,
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 5,
@@ -171,7 +195,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   disabledButton: {
-    backgroundColor: "#444", // Dark gray when disabled
+    backgroundColor: "#444",
     opacity: 0.5,
   },
 });
