@@ -6,17 +6,25 @@ using System.Threading;
 using Unity.MLAgents.Policies;
 using UnityEditor;
 using Unity.Barracuda;
+using UnityEditor.Experimental.GraphView;
+using Unity.Barracuda.ONNX;
+using System.IO;
 
 
 public class ModelTester : MonoBehaviour
 {
     private AgentWrapper agent;
     public GameObject MLenvironment;
-    public NNModel model;
+    private NNModel model;
     public int RunsPerModel = 100;
-    string modelName;
+    string algorithmName;
     Storage db;
     byte[] modelData;
+    public NNModel model_template;
+    Database_Models.SimulationMetaData[] simMetaDatas;
+    bool downloadedModelData = false;
+    bool simulationRunning = false;
+
 
     public void Awake()
     {
@@ -49,33 +57,39 @@ public class ModelTester : MonoBehaviour
         {
            RunSimulation();
         }
+
+        if (simMetaDatas != null && simMetaDatas.Length > 0 && downloadedModelData && !simulationRunning)
+        {
+            simulationRunning = true;
+            Debug.Log("Loading sim bundle " + simMetaDatas[0].name);
+            LoadSimulationFromMetaData(simMetaDatas[0]);
+        }
+
     }
 
+    bool metaDataRecieved = false;
     async void RunSimulation()
     {
         Debug.Log("Getting sim bundles");
-        var allSimBundles = await db.GetAllSimulationBundles();
-        Debug.Log("Returned " + allSimBundles.Length + " bundles");
-        if (allSimBundles.Length > 0)
+        simMetaDatas = await db.GetAllSimulationBundles();
+        Debug.Log("Returned " + simMetaDatas.Length + " bundles");
+        metaDataRecieved = true;
+        db.DownloadFile(simMetaDatas[0].algorithmName, FileType.Algorithm, simMetaDatas[0].ID, (data) =>
         {
-            Debug.Log("Loading sim bundle " + allSimBundles[0].name);
-            LoadSimulationFromMetaData(allSimBundles[0]);
-        }
-        Debug.Log("Model tester running");
-
+            modelData = data;
+            downloadedModelData = true;
+            Debug.Log("Downloaded model data");
+        });
     }
 
     public void LoadSimulationFromMetaData(Database_Models.SimulationMetaData simMetaData)
     {
-        db.DownloadFile(simMetaData.algorithmName, FileType.Algorithm, simMetaData.ID, (data) =>
-        {
-            Debug.Log("Downloaded model data");
-            modelData = data;
-        });
+        algorithmName = simMetaData.algorithmName;
         NNModel model = OnnxDataToNNModel(modelData);
         Debug.Log("Loaded model with data");
         SetMLEnvironment(simMetaData.environmentName);
         SetModel(model, simMetaData.algorithmName);
+        downloadedModelData = false;
     }
 
 
@@ -88,8 +102,8 @@ public class ModelTester : MonoBehaviour
 
     void InitializeAgent()
     {
-        agent.SetModel(modelName, model);
-        print($"Testing model: {modelName}");
+        agent.SetModel(algorithmName, model);
+        print($"Testing model: {algorithmName}");
         agent.GetComponent<BehaviorParameters>().BehaviorType = BehaviorType.InferenceOnly;
         agent.maxRuns = RunsPerModel;
         agent.SetTesting(true);
@@ -112,14 +126,34 @@ public class ModelTester : MonoBehaviour
     void SetModel(NNModel _model, string name)
     {
         model = _model;
-        modelName = name;
+        algorithmName = name;
         InitializeAgent();
+    }
+
+    NNModel ModelToNNModel(Model model)
+    {
+        NNModelData modelData = ScriptableObject.CreateInstance<NNModelData>();
+        using (var memoryStream = new MemoryStream())
+        using (var writer = new BinaryWriter(memoryStream))
+        {
+            ModelWriter.Save(writer, model);
+            modelData.Value = memoryStream.ToArray();
+        }
+        modelData.name = "Data";
+        modelData.hideFlags = HideFlags.HideInHierarchy;
+
+        NNModel nnModel = ScriptableObject.CreateInstance<NNModel>();
+        nnModel.modelData = modelData;
+        return nnModel;
     }
 
     NNModel OnnxDataToNNModel(byte[] data)
     {
-        NNModel nnModel = ScriptableObject.CreateInstance<NNModel>();
-        nnModel.modelData.Value = data;
+        ONNXModelConverter onnx = new ONNXModelConverter(true, false, true);
+        //string path = SaveLoad<byte[]>.Save(data, "", algorithmName);
+        Model model = onnx.Convert(data);
+        NNModel nnModel = ModelToNNModel(model);
+        nnModel.name = algorithmName;
         return nnModel;
     }
 

@@ -246,8 +246,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MLenvironment: {fileID: 4246590980110224488, guid: 3a225e6888a02084281242dfdd0642fc, type: 3}
-  model: {fileID: 0}
   RunsPerModel: 100
+  model_template: {fileID: 5022602860645237092, guid: d055dc771eb1ece4693d6bd956765ead, type: 3}
 --- !u!4 &1172689031
 Transform:
   m_ObjectHideFlags: 0

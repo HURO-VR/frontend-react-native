@@ -12,6 +12,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System.Drawing;
 using System.Threading.Tasks;
+using System.IO;
 
 public class FileType
 {
@@ -76,7 +77,8 @@ public class Storage : MonoBehaviour
     public void DownloadFile(string filename, FileType fileType, string simulationID, Action<byte[]> OnDownload)
     {
         string branch = "simulations";
-        string path = $"organizations/ {org_name}/{branch}/{simulationID}/{fileType}/{filename}";
+        string path = $"organizations/{org_name}/{branch}/{simulationID}/{fileType}/{filename}";
+        Debug.Log("Downloading from path " + path);
         StorageReference reference = storage.GetReference(path);
 
         // Fetch the download URL
@@ -102,6 +104,8 @@ public class Storage : MonoBehaviour
         return path;
     }
 
+
+
     public async Task<Database_Models.SimulationMetaData[]> GetAllSimulationBundles()
     {
         Database_Models.SimulationMetaData[] simulationMetaDatas = new Database_Models.SimulationMetaData[0];
@@ -109,7 +113,7 @@ public class Storage : MonoBehaviour
         await simulationQuery.GetSnapshotAsync().ContinueWithOnMainThread( (task) => {
             QuerySnapshot snapshot = task.Result;
             simulationMetaDatas = new Database_Models.SimulationMetaData[snapshot.Count];
-            Debug.Log($"Num meta data: {simulationMetaDatas.Length} and {snapshot.Count}");
+            Debug.Log($"Num meta data: {simulationMetaDatas.Length} == {snapshot.Count}");
             int count = 0;
             foreach (DocumentSnapshot documentSnapshot in snapshot.Documents)
             {
