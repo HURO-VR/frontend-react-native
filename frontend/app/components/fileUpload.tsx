@@ -110,7 +110,7 @@ const FileUpload = ({ onUploadComplete, maxSize = 10 * 1024 * 1024, allowedTypes
 
   return (
     <View style={styles.container}>
-        <Text style={{paddingVertical: 5}}>{fileName == "" ? "Select a file:" : `Filename: ${fileName}`}</Text>
+        <Text style={{paddingVertical: 5}}>{fileName == "" ? "Select a File:" : `Filename: ${fileName}`}</Text>
       <Button
         onPress={pickDocument}
         disabled={uploading}
