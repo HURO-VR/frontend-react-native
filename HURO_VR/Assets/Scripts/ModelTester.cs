@@ -62,6 +62,7 @@ public class ModelTester : MonoBehaviour
         {
             // TODO: Replace with user selected meta data bundle.
             SelectSimulation(simMetaDatas[0]);
+            runSimulation = true;
         }
 
         if (selectedSimulation.name != null && downloadedModelData && !simulationRunning && runSimulation)
