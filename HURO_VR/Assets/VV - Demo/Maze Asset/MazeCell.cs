@@ -14,7 +14,7 @@ public class MazeCell : MonoBehaviour
     private GameObject frontWall;
 
     [SerializeField]
-    private GameObject backWall;
+    private GameObject backWall; 
 
     [SerializeField]
     private GameObject unvisitedBlock;
