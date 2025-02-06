@@ -19,6 +19,14 @@ This is an [Expo](https://expo.dev) project with deployment capabilities to mobi
 3. **Open web view:**
 
    Press `w`
+
+
+### Deploy Website
+1. Run `npx expo export -p web`
+
+2. Upload dist folder to Netlify (currently only Nikita can do this because of Netlify free plan.)
+
+3. View deployed website [here](https://hurovr.netlify.app/).
    
 
 
