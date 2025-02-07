@@ -3,7 +3,12 @@ guid: c6fcb260671bf5141b59c42decf798fb
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - leftWall: {instanceID: 0}
+  - rightWall: {instanceID: 0}
+  - frontWall: {instanceID: 0}
+  - backWall: {instanceID: 0}
+  - unvisitedBlock: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
