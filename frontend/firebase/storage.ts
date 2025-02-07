@@ -44,11 +44,11 @@ export namespace FBStorage {
     });
   }
 
-  export function uploadSimulationFile(file: FileUpload, organization: string) {
+  export async function uploadSimulationFile(file: FileUpload, organization: string) {
     const storage = getFBStorage();
     const storageRef = ref(storage, `organizations/${organization}/simulations/${file.simulationID}/${file.type}/${file.name}`);
 
-    uploadBytes(storageRef, file.file).then((snapshot) => {
+    await uploadBytes(storageRef, file.file).then((snapshot) => {
         console.log('Uploaded a blob or file!');
         if (file.OnUploadComplete) file.OnUploadComplete(snapshot);
     });
