@@ -1,11 +1,11 @@
-import { Button, Text, View } from "react-native";
+import { Button, StyleSheet, Text, View } from "react-native";
 import FileUpload from "./components/fileUpload";
 import { useState } from "react";
 import { DefaultStyles } from "./styles/DefaultStyles";
+import { Link } from "expo-router";
+import TextStyles from "./styles/textStyles";
 
 export default function Index() {
-
-  const [uploadTrigger, setUploadTrigger] = useState(false);
   
   return (
     <View
@@ -15,18 +15,30 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-      <Text>File Upload Test</Text>
+      <Text style={{...TextStyles.h1, marginVertical: 10}}>Options:</Text>
+      <Link href="/create_simulation"
+      style={{
+        color: 'blue',
+        textDecorationLine: 'underline',
+        ...TextStyles.h4
+       }}>Create Simulation</Link>
 
-      <FileUpload 
-        onUploadComplete={() => console.log('Upload complete')}
-        maxSize={5 * 1024 * 1024} // 5MB
-        uploadTrigger={uploadTrigger}
-      />
 
-      <Button 
-        title="Upload File"
-        onPress={() => setUploadTrigger(true)}
-      />
+       <Link href="/view_simulations"
+      style={{
+        color: 'blue',
+        textDecorationLine: 'underline',
+        ...TextStyles.h4,
+        marginVertical: 10
+       }}>View Simulations</Link>
+
+
+    <Link href="/create_simulation"
+      style={{
+        color: 'blue',
+        textDecorationLine: 'underline',
+        ...TextStyles.h4
+       }}>View Organization</Link>
     </View>
   );
 }
