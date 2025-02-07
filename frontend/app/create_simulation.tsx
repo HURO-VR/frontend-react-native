@@ -9,7 +9,7 @@ import { useRouter } from "expo-router";
 
 export default function SimulationCreation() {
   const [uploadTrigger, setUploadTrigger] = useState(false);
-  const simulationID = uuid();
+  const [simulationID, setSimulationID] = useState(uuid());
   const [filesUploaded, setFilesUploaded] = useState(false);
   const [algorithmName, setAlgorithmName] = useState("Example");
   const [algorithmFileName, setAlgorithmFileName] = useState(""); // Store uploaded file name
@@ -23,23 +23,23 @@ export default function SimulationCreation() {
     return now.toISOString().replace(/[-:T]/g, "").slice(0, 13); // YYYYMMDD-HHMM
   };
 
-  const fetchAndSetTrialNumber = async (algoName) => {
+  const fetchAndSetTrialNumber = async (algoName: string) => {
     const timestampPrefix = getTimestampPrefix();
     const baseName = `${algoName}-${timestampPrefix}`;
 
     try {
-      const existingSimulations = await FBStorage.getExistingSimulations(baseName);
-      let maxTrial = 0;
-      existingSimulations.forEach((simName) => {
-        const match = simName.match(/-(\d+)$/);
-        if (match) {
-          const num = parseInt(match[1], 10);
-          if (!isNaN(num) && num > maxTrial) {
-            maxTrial = num;
-          }
-        }
-      });
-
+      // const existingSimulations = await FBStorage.getExistingSimulations(baseName);
+      // let maxTrial = 0;
+      // existingSimulations.forEach((simName: string) => {
+      //   const match = simName.match(/-(\d+)$/);
+      //   if (match) {
+      //     const num = parseInt(match[1], 10);
+      //     if (!isNaN(num) && num > maxTrial) {
+      //       maxTrial = num;
+      //     }
+      //   }
+      // });
+      let maxTrial = Math.random() * 100;
       setTrialNumber(maxTrial + 1);
       setSimulationName(`${baseName}-${maxTrial + 1}`);
     } catch (error) {
@@ -53,7 +53,7 @@ export default function SimulationCreation() {
     fetchAndSetTrialNumber(algorithmName);
   }, [algorithmName]);
 
-  const onUploadComplete = async () => {
+  const uploadMetaData = async () => {
     let done = await FBStorage.uploadSimulationMetaData(
       "TEST_ORG",
       simulationID,
@@ -70,10 +70,12 @@ export default function SimulationCreation() {
   };
 
   useEffect(() => {
-    if (filesUploaded) {
-      onUploadComplete();
+    if (filesUploaded && algorithmFileName.length > 0) {
+      uploadMetaData();
+      console.log("Metadata uploaded successfully!");
     }
-  }, [filesUploaded]);
+  }, [filesUploaded, algorithmFileName]);
+
 
   return (
     <View style={styles.container}>
@@ -102,13 +104,16 @@ export default function SimulationCreation() {
       <FileUpload
         onUploadComplete={(fileName) => {
           console.log("Uploaded file:", fileName);
-
-          // Ensure fileName is a valid string before updating state
+          setFilesUploaded(true); // Signal that all files are uploaded
+        }}
+        onFilePicked={(fileName) => {
+            // Ensure fileName is a valid string before updating state
           if (fileName && typeof fileName === "string" && fileName.toLowerCase().endsWith(".onnx")) {
-              setAlgorithmFileName(fileName); // Store uploaded ONNX file name 
+            setAlgorithmFileName(fileName); // Store uploaded ONNX file name 
             console.log("Algorithm file name set to:", fileName);
           } else {
             console.warn("Invalid file name received:", fileName);
+            window.alert("Please upload a valid ONNX file.");
           }
         }}
         maxSize={5 * 1024 * 1024} // 5MB
@@ -126,9 +131,9 @@ export default function SimulationCreation() {
       /> */}
 
       <View style={{ marginVertical: 10 }} />
-      <Text style={TextStyles.subtitle}>
-        2. Upload your 3D robot model [Default: sphere] (Optional):
-      </Text>
+        <Text style={TextStyles.subtitle}>
+          2. Upload your 3D robot model [Default: sphere] (Optional):
+        </Text>
       <FileUpload
         onUploadComplete={() => {}}
         maxSize={5 * 1024 * 1024} // 5MB
@@ -199,5 +204,3 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
 });
-
-export default SimulationCreation;

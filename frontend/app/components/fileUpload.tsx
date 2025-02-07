@@ -13,16 +13,26 @@ import { FBStorage } from '@/firebase/storage';
 import TextStyles from '../styles/textStyles';
 
 interface FileUploadProps {
-    onUploadComplete?: () => void;
+    onUploadComplete?: (filename: string) => void;
+    onFilePicked?: (filename: string) => void;
     maxSize?: number;
     allowedTypes?: string[];
     uploadTrigger?: boolean;
-    title: string
+    title?: string
     fileType: FBStorage.FileUploadType
     simulationID: string
 }
 
-const FileUpload = ({ onUploadComplete, maxSize = 10 * 1024 * 1024, allowedTypes = ['*/*'], uploadTrigger, title, fileType, simulationID }: FileUploadProps) => {
+const FileUpload = ({ 
+  onUploadComplete, 
+  maxSize = 10 * 1024 * 1024, 
+  allowedTypes = ['*/*'], 
+  uploadTrigger, 
+  title, 
+  fileType, 
+  simulationID ,
+  onFilePicked
+}: FileUploadProps) => {
   const [uploading, setUploading] = useState(false);
   const [fileName, setFileName] = useState('');
   const [uri, setUri] = useState('');
@@ -64,12 +74,7 @@ const FileUpload = ({ onUploadComplete, maxSize = 10 * 1024 * 1024, allowedTypes
         setUri(file.uri);
   
         console.log("Selected file:", fileName, file.uri);
-  
-        if (onUploadComplete && fileName) {
-          onUploadComplete(fileName); // Send the correct file name
-        }
-  
-        if (uploadTrigger === undefined) uploadFile(file.uri);
+        onFilePicked && onFilePicked(fileName);
       }
     } catch (err) {
       console.error("Error picking document:", err);
@@ -83,15 +88,14 @@ const FileUpload = ({ onUploadComplete, maxSize = 10 * 1024 * 1024, allowedTypes
       const response = await fetch(uri);
       const blob = await response.blob();
 
-      FBStorage.uploadSimulationFile({
+      await FBStorage.uploadSimulationFile({
         file: blob, 
         name: fileName,
         type: fileType, 
-        OnUploadComplete: onUploadComplete,
         simulationID: simulationID
       }, 'TEST_ORG');
 
-      onUploadComplete && onUploadComplete();
+      onUploadComplete && onUploadComplete(fileName);
     } catch (error) {
       console.error('Upload error:', error);
       window.alert('Failed to upload file');
