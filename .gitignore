@@ -73,7 +73,7 @@ crashlytics-build.properties
 /HURO_VR/[Aa]ssets/[Pp]lugins
 /HURO_VR/[Aa]ssets/[Ee]xternalDependencyManager
 /HURO_VR/[Aa]ssets/Editor\ Default\ Resources
-/HURO_VR/[Aa]ssets/Resources
+#/HURO_VR/[Aa]ssets/Resources
 
 # Temporary auto-generated Android Assets
 /HURO_VR/[Aa]ssets/[Ss]treamingAssets/aa.meta
@@ -247,3 +247,5 @@ HURO_VR/Assets/Plugins/tvOS/Firebase/libFirebaseCppAuth.a
 HURO_VR/Assets/Plugins/tvOS/Firebase/libFirebaseCppAuth.a.meta
 HURO_VR/Assets/Plugins/tvOS/Firebase/libFirebaseCppStorage.a
 HURO_VR/Assets/Plugins/tvOS/Firebase/libFirebaseCppStorage.a.meta
+HURO_VR/Assets/Resources/BillingMode.json
+HURO_VR/Assets/Resources/BillingMode.json.meta
