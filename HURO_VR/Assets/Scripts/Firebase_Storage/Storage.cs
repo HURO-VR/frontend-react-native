@@ -4,10 +4,15 @@ using System.Collections.Generic;
 using System.Text;
 using Firebase.Extensions;
 using Firebase.Storage;
+using Firebase.Firestore;
+using Unity.Barracuda;
 using Unity.VisualScripting;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Networking;
+using System.Drawing;
+using System.Threading.Tasks;
+using System.IO;
 
 public class FileType
 {
@@ -28,11 +33,14 @@ public class Storage : MonoBehaviour
 
     string org_name = "TEST_ORG";
     static FirebaseStorage storage;
+    static FirebaseFirestore firestore;
 
 
     private void Awake()
     {
         storage = FirebaseStorage.DefaultInstance;
+        firestore = FirebaseFirestore.DefaultInstance;
+
     }
 
 
@@ -66,9 +74,11 @@ public class Storage : MonoBehaviour
     }
 
 
-    public void DownloadFile(string filename, FileType fileType, Action<byte[]> OnDownload)
+    public void DownloadFile(string filename, FileType fileType, string simulationID, Action<byte[]> OnDownload)
     {
-        string path = "organizations/" + org_name + "/" + fileType + "/" + filename;
+        string branch = "simulations";
+        string path = $"organizations/{org_name}/{branch}/{simulationID}/{fileType}/{filename}";
+        Debug.Log("Downloading from path " + path);
         StorageReference reference = storage.GetReference(path);
 
         // Fetch the download URL
@@ -80,6 +90,63 @@ public class Storage : MonoBehaviour
             }
         });
     }
+
+    public string SaveBytesToFile(byte[] data, string filename, string pathName = "/")
+    {
+        if (pathName == null || pathName == "")
+        {
+            pathName = "/";
+        } else if (pathName[pathName.Length - 1] != '/') {
+            pathName += "/";
+        }
+        string path = Application.persistentDataPath + $"{pathName}{filename}";
+        System.IO.File.WriteAllBytes(path, data);
+        return path;
+    }
+
+
+
+    public async Task<Database_Models.SimulationMetaData[]> GetAllSimulationBundles()
+    {
+        Database_Models.SimulationMetaData[] simulationMetaDatas = new Database_Models.SimulationMetaData[0];
+        Query simulationQuery = firestore.Collection($"organizations/{org_name}/simulations");
+        await simulationQuery.GetSnapshotAsync().ContinueWithOnMainThread( (task) => {
+            QuerySnapshot snapshot = task.Result;
+            simulationMetaDatas = new Database_Models.SimulationMetaData[snapshot.Count];
+            Debug.Log($"Num meta data: {simulationMetaDatas.Length} == {snapshot.Count}");
+            int count = 0;
+            foreach (DocumentSnapshot documentSnapshot in snapshot.Documents)
+            {
+                
+                Dictionary<string, object> simData = documentSnapshot.ToDictionary();
+                foreach (KeyValuePair<string, object> pair in simData)
+                {
+                    switch (pair.Key)
+                    {
+                        case "algorithmName":
+                            simulationMetaDatas[count].algorithmName = (string)pair.Value;
+                            break;
+                        case "environmentName":
+                            simulationMetaDatas[count].environmentName = (string)pair.Value;
+                            break;
+                        case "name":
+                            simulationMetaDatas[count].name = (string)pair.Value;
+                            break;
+                        case "ID":
+                            simulationMetaDatas[count].ID = (string)pair.Value;
+                            break;
+                        case "dateCreated":
+                            simulationMetaDatas[count].dateCreated = (string)pair.Value;
+                            break;
+                    }  
+                }
+                count++;
+            };
+        });
+        return await Task.FromResult(simulationMetaDatas);
+    }
+
+
 
 
     public void SetOrganization(string org)

@@ -8,7 +8,7 @@ public class DownloadExample : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        FindAnyObjectByType<Storage>().DownloadFile("sample.txt", FileType.Algorithm, (bytes) =>
+        FindAnyObjectByType<Storage>().DownloadFile("sample.txt", FileType.Algorithm, "Sim_ID", (bytes) =>
         {
             Debug.Log(Encoding.UTF8.GetString(bytes));
         });
