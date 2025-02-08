@@ -14,7 +14,7 @@ import TextStyles from '../styles/textStyles';
 
 interface FileUploadProps {
     onUploadComplete?: (filename: string) => void;
-    onFilePicked?: (filename: string) => void;
+    onFilePicked?: (filename: string) => boolean;
     maxSize?: number;
     allowedTypes?: string[];
     uploadTrigger?: boolean;
@@ -69,12 +69,12 @@ const FileUpload = ({
       if (!result.canceled) {
         const file = result.assets[0]; // Extract file object safely
         const fileName = file?.name ?? ""; // Ensure fileName is a string
-  
-        setFileName(fileName);
         setUri(file.uri);
   
         console.log("Selected file:", fileName, file.uri);
-        onFilePicked && onFilePicked(fileName);
+        if (onFilePicked && onFilePicked(fileName)) {
+          setFileName(fileName);
+        }
       }
     } catch (err) {
       console.error("Error picking document:", err);
