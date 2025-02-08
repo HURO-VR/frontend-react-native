@@ -61,7 +61,7 @@ export namespace FBStorage {
         name: metaData.name,
         ID: metaData.ID,
         dateCreated: metaData.dateCreated,
-        algorithmName: metaData.algorithmName,
+        algorithmName: metaData.algorithmFilename,
         environmentName: metaData.environmentName,
       }); // Model: SimulationMetaData
       return true;

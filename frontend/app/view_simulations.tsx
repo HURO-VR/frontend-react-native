@@ -34,7 +34,7 @@ export default function ViewSimulations() {
             renderItem={({item}) => {
                 return (<SimulationListEntry
                     title={item.name}
-                    algorithmName={item.algorithmName}
+                    algorithmName={item.algorithmFilename}
                     dateCreated={item.dateCreated.split("T")[0]}
                 />);
             }}        
