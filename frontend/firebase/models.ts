@@ -12,6 +12,11 @@ export enum EnvironmentTypes {
     // Add more environments here
 }
 
+export const EnvImages: { [key: string]: any } = {
+    [EnvironmentTypes.emptyRoom]: require(`../assets/images/Training_Envs/empty-room.jpg`),
+    // Add more environments here
+};
+
 export enum FileUploadType {
     algorithm = 'algorithms',
     model = 'models',

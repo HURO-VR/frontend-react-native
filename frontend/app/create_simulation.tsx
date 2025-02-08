@@ -7,9 +7,8 @@ import { FBStorage } from "@/firebase/storage";
 import { v4 as uuid } from "uuid";
 import { useRouter } from "expo-router";
 import CustomDropdown from "./components/dropdown";
-import { EnvironmentTypes } from "@/firebase/models";
 import DropdownMenu from "./components/dropdown";
-import { AcceptedFileTypes, FileUploadType } from "@/firebase/models";
+import { AcceptedFileTypes, FileUploadType, EnvImages, EnvironmentTypes } from "@/firebase/models";
 
 export default function SimulationCreation() {
   const [uploadTrigger, setUploadTrigger] = useState(false);
@@ -21,6 +20,7 @@ export default function SimulationCreation() {
   const [environment, setEnvironment] = useState(EnvironmentTypes.emptyRoom);
   const [algorithmError, setAlgorithmError] = useState("");
   const [modelError, setModelError] = useState("");
+  const [envJPG, setEnvJPG] = useState(EnvImages[environment]);
 
   const router = useRouter();
 
@@ -32,6 +32,10 @@ export default function SimulationCreation() {
   useEffect(() => {
     setSimulationName(algorithmName + "--" + getTimestampPrefix());
   }, [algorithmName]);
+
+  useEffect(() => {
+    setEnvJPG(EnvImages[environment]);  
+  }, [environment]);
 
   const uploadMetaData = async () => {
     let done = await FBStorage.uploadSimulationMetaData(
@@ -138,14 +142,14 @@ export default function SimulationCreation() {
         <View style={{flex: 1, marginLeft: 10, alignItems: "flex-start"}}>
             <Text style={TextStyles.h6}>Environment:</Text>
             <DropdownMenu
-              options={Object.keys(EnvironmentTypes)}
-              defaultValue={Object.keys(EnvironmentTypes)[0]}
+              options={Object.values(EnvironmentTypes)}
+              defaultValue={Object.values(EnvironmentTypes)[0]}
               onSelect={(option) => {
                 setEnvironment(option as EnvironmentTypes);
               }}
             />
             <Image 
-              source={require("../assets/images/Training_Envs/empty_room.jpg")} 
+              source={envJPG} 
               style={{ width: "40%", marginTop: 20 }} 
             />
         </View>
