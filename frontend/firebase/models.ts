@@ -6,3 +6,8 @@ export interface SimulationMetaData {
     environmentName: string; // The environment used for the simulation. Stored in "Resources/Training_Environments" in Unity
 }
 
+export enum EnvironmentTypes {
+    emptyRoom = "empty-room",
+    // Add more environments here
+}
+
