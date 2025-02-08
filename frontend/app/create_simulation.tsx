@@ -6,6 +6,7 @@ import TextStyles from "./styles/textStyles";
 import { FBStorage } from "@/firebase/storage";
 import { v4 as uuid } from "uuid";
 import { useRouter } from "expo-router";
+import { AcceptedFileTypes, FileUploadType } from "@/firebase/models";
 
 export default function SimulationCreation() {
   const [uploadTrigger, setUploadTrigger] = useState(false);
@@ -85,8 +86,8 @@ export default function SimulationCreation() {
           setFilesUploaded(true); // Signal that all files are uploaded
         }}
         onFilePicked={(fileName) => {
-            // Ensure fileName is a valid string before updating state
-          if (fileName && typeof fileName === "string" && fileName.toLowerCase().endsWith(".onnx")) {
+          // Ensure fileName is a valid string before updating state
+          if (AcceptedFileTypes.checkFilename(fileName, FileUploadType.algorithm)) {
             setAlgorithmFileName(fileName); // Store uploaded ONNX file name 
             console.log("Algorithm file name set to:", fileName);
             setAlgorithmError(""); // Clear any previous error
@@ -99,7 +100,7 @@ export default function SimulationCreation() {
         }}
         maxSize={5 * 1024 * 1024} // 5MB
         uploadTrigger={uploadTrigger}
-        fileType={FBStorage.FileUploadType.algorithm}
+        fileType={FileUploadType.algorithm}
         simulationID={simulationID}
       />
       {algorithmError.length > 0 && <Text style={{ color: "red" }}>{algorithmError}</Text>}
@@ -113,7 +114,7 @@ export default function SimulationCreation() {
       <FileUpload
         onUploadComplete={() => {}}
         onFilePicked={(filename) => {
-          if (filename.split(".").pop() === "glb") {
+          if (AcceptedFileTypes.checkFilename(filename, FileUploadType.model)) {
             setModelError(""); // Clear any previous error
             return true;
           } else {
@@ -123,7 +124,7 @@ export default function SimulationCreation() {
         }}
         maxSize={5 * 1024 * 1024} // 5MB
         uploadTrigger={uploadTrigger}
-        fileType={FBStorage.FileUploadType.model}
+        fileType={FileUploadType.model}
         simulationID={simulationID}
       />
       {modelError.length > 0 && <Text style={{ color: "red" }}>{modelError}</Text>}

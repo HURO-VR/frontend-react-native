@@ -11,6 +11,7 @@ import {
 import * as DocumentPicker from 'expo-document-picker';
 import { FBStorage } from '@/firebase/storage';
 import TextStyles from '../styles/textStyles';
+import { FileUploadType } from '@/firebase/models';
 
 interface FileUploadProps {
     onUploadComplete?: (filename: string) => void;
@@ -19,7 +20,7 @@ interface FileUploadProps {
     allowedTypes?: string[];
     uploadTrigger?: boolean;
     title?: string
-    fileType: FBStorage.FileUploadType
+    fileType: FileUploadType
     simulationID: string
 }
 
