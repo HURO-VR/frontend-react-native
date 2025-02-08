@@ -139,7 +139,7 @@ export default function SimulationCreation() {
             <Text style={TextStyles.h6}>Environment:</Text>
             <DropdownMenu
               options={Object.keys(EnvironmentTypes)}
-              defaultValue={EnvironmentTypes.emptyRoom}
+              defaultValue={Object.keys(EnvironmentTypes)[0]}
               onSelect={(option) => {
                 setEnvironment(option as EnvironmentTypes);
               }}
