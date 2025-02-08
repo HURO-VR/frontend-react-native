@@ -80,6 +80,7 @@ export default function SimulationCreation() {
             style={{ ...DefaultStyles.input, width: "50%", backgroundColor: "#fff" }}
             onChangeText={setAlgorithmName}
             value={algorithmName}
+            placeholder="Enter Algorithm Name"
             maxLength={50}
           />
 
