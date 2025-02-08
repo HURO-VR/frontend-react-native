@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { FirebaseStorage, getStorage, ref, uploadBytes, UploadResult } from "firebase/storage";
 import { addDoc, collection, doc, getDoc, getDocs, getFirestore, query, setDoc } from "firebase/firestore";
-import { SimulationMetaData } from "./models";
+import { FileUploadType, SimulationMetaData } from "./models";
 
 
 const firebaseConfig = {
@@ -85,11 +85,6 @@ export namespace FBStorage {
 
 
   // MODELS
-
-  export enum FileUploadType {
-    algorithm = 'algorithms',
-    model = 'models',
-  }
 
   export interface FileUpload { 
     file: (File | Blob),

@@ -1,3 +1,4 @@
+
 export interface SimulationMetaData {
     name: string; // User defined name for the simulation
     ID: string; // Simulation ID. Aka the folder for sim in the storage bucket
@@ -9,5 +10,36 @@ export interface SimulationMetaData {
 export enum EnvironmentTypes {
     emptyRoom = "empty-room",
     // Add more environments here
+}
+
+export enum FileUploadType {
+    algorithm = 'algorithms',
+    model = 'models',
+}
+
+export namespace AcceptedFileTypes {
+    export enum Algorithm {
+        onnx = '.onnx'
+    }
+
+    export enum Model {
+        glb = '.glb'
+    }
+
+    export function checkFilename(filename: string, type: FileUploadType): boolean {
+        switch (type) {
+            case FileUploadType.algorithm:
+                for (let item in AcceptedFileTypes.Algorithm) {
+                    if (filename.endsWith(item)) return true;
+                }
+            case FileUploadType.model:
+                for (let item in AcceptedFileTypes.Model) {
+                    if (filename.endsWith(item)) return true;
+                }
+            default:
+                return false;
+        }
+    }
+
 }
 
