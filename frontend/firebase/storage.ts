@@ -54,14 +54,15 @@ export namespace FBStorage {
     });
   }
 
-  export async function uploadSimulationMetaData(organization: string, simulationID: string, simulationName: string, algorithmName: string) {
+  export async function uploadSimulationMetaData(org: string, metaData: SimulationMetaData) {
     try {
       let db = getFBFirestore();
-      await setDoc(doc(db, `organizations/${organization}/simulations`, simulationID), {
-        name: simulationName,
-        ID: simulationID,
-        dateCreated: new Date().toISOString(),
-        algorithmName: algorithmName,
+      await setDoc(doc(db, `organizations/${org}/simulations`, metaData.ID), {
+        name: metaData.name,
+        ID: metaData.ID,
+        dateCreated: metaData.dateCreated,
+        algorithmName: metaData.algorithmName,
+        environmentName: metaData.environmentName,
       }); // Model: SimulationMetaData
       return true;
 
