@@ -58,7 +58,7 @@ export default function SimulationCreation() {
       "TEST_ORG",
       {ID: simulationID,
       name: simulationName,
-      algorithmName: algorithmFileName,
+      algorithmFilename: algorithmFileName,
       dateCreated: new Date().toISOString(),
       environmentName: "empty-room"
     } // Use the actual uploaded ONNX file name
