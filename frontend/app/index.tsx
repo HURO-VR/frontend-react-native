@@ -51,6 +51,17 @@ export default function Index() {
         ...TextStyles.h4,
         marginVertical: 10
        }}>View Simulations</Link>
+
+    <View style={{ marginVertical: 20 }} />
+    
+    <Link href="/view_organization"
+      style={{
+        color: 'black',
+        // textDecorationLine: 'underline',
+        ...TextStyles.h4,
+        marginVertical: 10
+       }}>View Organization</Link>
+
     </View>
   );
 }
