@@ -2,7 +2,7 @@ import { Button, ListRenderItem, StyleSheet, Text, View } from "react-native";
 import FileUpload from "./components/fileUpload";
 import { useEffect, useState } from "react";
 import { DefaultStyles } from "./styles/DefaultStyles";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import TextStyles from "./styles/textStyles";
 import { FlatList } from "react-native-gesture-handler";
 import { SimulationMetaData } from "@/firebase/models";
@@ -18,6 +18,8 @@ export default function ViewSimulations() {
         setAllSimulations(sims);
     });
   }, []);
+
+  const router = useRouter();
 
   return (
     <View
@@ -36,6 +38,9 @@ export default function ViewSimulations() {
                     title={item.name}
                     algorithmName={item.algorithmFilename}
                     dateCreated={item.dateCreated.split("T")[0]}
+                    onPress={() => {
+                      router.push(`/detailed_simulation`);
+                    }}
                 />);
             }}        
         /> :
