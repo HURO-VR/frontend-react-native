@@ -1,4 +1,4 @@
-import { Text, View, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import { Text, View, TextInput, TouchableOpacity, StyleSheet, Image } from "react-native";
 import FileUpload from "./components/fileUpload";
 import { useEffect, useState } from "react";
 import { DefaultStyles } from "./styles/DefaultStyles";
@@ -6,7 +6,9 @@ import TextStyles from "./styles/textStyles";
 import { FBStorage } from "@/firebase/storage";
 import { v4 as uuid } from "uuid";
 import { useRouter } from "expo-router";
-import { AcceptedFileTypes, FileUploadType } from "@/firebase/models";
+import CustomDropdown from "./components/dropdown";
+import DropdownMenu from "./components/dropdown";
+import { AcceptedFileTypes, FileUploadType, EnvImages, EnvironmentTypes } from "@/firebase/models";
 
 export default function SimulationCreation() {
   const [uploadTrigger, setUploadTrigger] = useState(false);
@@ -15,8 +17,10 @@ export default function SimulationCreation() {
   const [algorithmName, setAlgorithmName] = useState("");
   const [algorithmFileName, setAlgorithmFileName] = useState(""); // Store uploaded file name
   const [simulationName, setSimulationName] = useState("");
+  const [environment, setEnvironment] = useState(EnvironmentTypes.emptyRoom);
   const [algorithmError, setAlgorithmError] = useState("");
   const [modelError, setModelError] = useState("");
+  const [envJPG, setEnvJPG] = useState(EnvImages[environment]);
 
   const router = useRouter();
 
@@ -29,6 +33,10 @@ export default function SimulationCreation() {
     setSimulationName(algorithmName + "--" + getTimestampPrefix());
   }, [algorithmName]);
 
+  useEffect(() => {
+    setEnvJPG(EnvImages[environment]);  
+  }, [environment]);
+
   const uploadMetaData = async () => {
     let done = await FBStorage.uploadSimulationMetaData(
       "TEST_ORG",
@@ -36,7 +44,7 @@ export default function SimulationCreation() {
       name: simulationName,
       algorithmFilename: algorithmFileName,
       dateCreated: new Date().toISOString(),
-      environmentName: "empty-room"
+      environmentName: environment
     } // Use the actual uploaded ONNX file name
     )
       .then(() => true)
@@ -65,19 +73,20 @@ export default function SimulationCreation() {
 
       <View style={{ marginVertical: 10 }} />
 
-      {/* Algorithm Name Input (User-Defined) */}
-      <Text style={TextStyles.h6}>Algorithm Name:</Text>
-      <TextInput
-        style={{ ...DefaultStyles.input, width: "50%", backgroundColor: "#fff" }}
-        onChangeText={setAlgorithmName}
-        value={algorithmName}
-        maxLength={50}
-      />
+      {/* User Defined Options Section */}
+      <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "90%", marginHorizontal: 20}}>
 
-      <View style={{ marginVertical: 15 }} />
-      <Text style={TextStyles.subtitle}>
-        1. Upload your robot algorithm [Supported formats: .onnx] (*Required):
-      </Text>
+        {/* Algorithm Name and File Upload Section */}
+        <View style={{flex: 1, marginRight: 10, alignItems: "flex-end"}}>
+          {/* Algorithm Name Input (User-Defined) */}
+          <Text style={TextStyles.h6}>Algorithm Name:</Text>
+          <TextInput
+            style={{ ...DefaultStyles.input, width: "50%", backgroundColor: "#fff" }}
+            onChangeText={setAlgorithmName}
+            value={algorithmName}
+            placeholder="Enter Algorithm Name"
+            maxLength={50}
+          />
 
       {/* File Upload for Algorithm (Updates algorithmFileName) */}
       <FileUpload
@@ -128,8 +137,23 @@ export default function SimulationCreation() {
         simulationID={simulationID}
       />
       {modelError.length > 0 && <Text style={{ color: "red" }}>{modelError}</Text>}
-
-      <View style={{ marginVertical: 10 }} />
+        </View>
+        {/* Environment Selection Section */}
+        <View style={{flex: 1, marginLeft: 10, alignItems: "flex-start"}}>
+            <Text style={TextStyles.h6}>Environment:</Text>
+            <DropdownMenu
+              options={Object.values(EnvironmentTypes)}
+              defaultValue={Object.values(EnvironmentTypes)[0]}
+              onSelect={(option) => {
+                setEnvironment(option as EnvironmentTypes);
+              }}
+            />
+            <Image 
+              source={envJPG} 
+              style={{ width: "40%", marginTop: 20 }} 
+            />
+        </View>
+      </View>
 
       {/* Auto-filled Simulation Name (Non-editable) */}
       <Text style={TextStyles.h6}>Simulation Name:</Text>
