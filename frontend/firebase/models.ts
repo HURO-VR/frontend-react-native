@@ -5,6 +5,7 @@ export interface SimulationMetaData {
     dateCreated: string; // ISO formatted Date. Ex: 2025-02-02T12:34:56.789Z
     algorithmFilename: string; // The algorithm used for the simulation
     environmentName: string; // The environment used for the simulation. Stored in "Resources/Training_Environments" in Unity
+    runs: number; // Number of times the simulation has been run.
 }
 
 export enum EnvironmentTypes {
