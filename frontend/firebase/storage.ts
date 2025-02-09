@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { FirebaseStorage, getStorage, ref, uploadBytes, UploadResult } from "firebase/storage";
 import { addDoc, collection, doc, getDoc, getDocs, getFirestore, query, setDoc } from "firebase/firestore";
-import { FileUploadType, SimulationMetaData } from "./models";
+import { FileUploadType, SimulationMetaData, SimulationRun } from "./models";
 
 
 const firebaseConfig = {
@@ -81,6 +81,30 @@ export namespace FBStorage {
       sims.push(doc.data() as SimulationMetaData);
     });
     return sims;
+  }
+
+  export async function getSimulationMetaData(organization: string, simID: string) {
+    let db = getFBFirestore();
+    const docRef = doc(db, `organizations/${organization}/simulations`, simID);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      return docSnap.data() as SimulationMetaData;
+    } else {
+      console.log("No such document!");
+      return null;
+    }
+  }
+
+  export async function getSimulationRuns(organization: string, simID: string) {
+    let db = getFBFirestore();
+    let runs: SimulationRun[] = []
+    const q = query(collection(db, `organizations/${organization}/simulations/${simID}/runs`));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      runs.push(doc.data() as SimulationRun);
+    });
+    return runs;
   }
 
 
