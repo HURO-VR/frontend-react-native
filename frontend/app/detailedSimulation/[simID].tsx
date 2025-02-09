@@ -1,17 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { SimulationMetaData, SimulationRun } from '@/firebase/models';
+import { useLocalSearchParams } from 'expo-router';
+import { FBStorage } from '@/firebase/storage';
 
-const SimulationCard = () => {
-  const runs = [
-    { id: 1, status: 'failed' },
-    { id: 2, status: 'failed' },
-    { id: 3, status: 'failed' },
-    { id: 4, status: 'failed' },
-    { id: 5, status: 'warning' },
-    { id: 6, status: 'success', starred: true },
-    { id: 7, status: 'warning' },
-  ];
+
+const DetailedSimulation = () => {
+
+  const { simID } = useLocalSearchParams();
+  const [metadata, setMetadata] = React.useState<SimulationMetaData | null>(null);
+  const [simRuns, setSimRuns] = React.useState<SimulationRun[]>([]);
+
+  useEffect(() => {
+    FBStorage.getSimulationMetaData("TEST_ORG", simID as string).then((data) => {
+      setMetadata(data);
+    });
+
+    FBStorage.getSimulationRuns("TEST_ORG", simID as string).then((data) => {
+      setSimRuns(data);
+    });
+  }, []);
 
   const RenderStatusIcon = ({ status }: any) => {
     switch (status) {
@@ -33,7 +42,7 @@ const SimulationCard = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Empty Room Sim #1</Text>
+        <Text style={styles.title}>{metadata?.name}</Text>
         <View style={styles.headerIcons}>
           <MaterialIcons name="content-copy" size={24} color="#666" />
           <MaterialIcons name="delete" size={24} color="#666" style={styles.iconSpacing} />
@@ -45,7 +54,7 @@ const SimulationCard = () => {
         <View style={styles.leftPanel}>
           <View style={styles.section}>
             <Text style={styles.sectionLabel}>Algorithm</Text>
-            <Text style={styles.sectionValue}>Navigation.py</Text>
+            <Text style={styles.sectionValue}>{metadata?.algorithmFilename}</Text>
           </View>
 
           <View style={styles.section}>
@@ -75,11 +84,11 @@ const SimulationCard = () => {
         <View style={styles.middlePanel}>
           <Text style={styles.panelTitle}>Simulation Runs</Text>
           <ScrollView>
-            {runs.map((run) => (
-              <View key={run.id} style={styles.runItem}>
+            {simRuns.map((run) => (
+              <View key={run.runID} style={styles.runItem}>
                 <View style={styles.runInfo}>
                   <RenderStatusIcon status={run.status} />
-                  <Text style={styles.runText}>Run #{run.id}</Text>
+                  <Text style={styles.runText}>{run.name}</Text>
                 </View>
                 {run.starred ? (
                   <MaterialIcons name="star" size={20} color="#FFB800" />
@@ -235,4 +244,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SimulationCard;
+export default DetailedSimulation;
