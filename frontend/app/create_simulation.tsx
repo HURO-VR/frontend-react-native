@@ -21,6 +21,7 @@ export default function SimulationCreation() {
   const [algorithmError, setAlgorithmError] = useState("");
   const [modelError, setModelError] = useState("");
   const [envJPG, setEnvJPG] = useState(EnvImages[environment]);
+  const [modelFileName, setModelFileName] = useState("Default");
 
   const router = useRouter();
 
@@ -44,7 +45,8 @@ export default function SimulationCreation() {
       name: simulationName,
       algorithmFilename: algorithmFileName,
       dateCreated: new Date().toISOString(),
-      environmentName: environment
+      environmentName: environment,
+      modelFilename: modelFileName,
     } // Use the actual uploaded ONNX file name
     )
       .then(() => true)
@@ -125,6 +127,7 @@ export default function SimulationCreation() {
         onFilePicked={(filename) => {
           if (AcceptedFileTypes.checkFilename(filename, FileUploadType.model)) {
             setModelError(""); // Clear any previous error
+            setModelFileName(filename);
             return true;
           } else {
             setModelError("Please upload a valid GLB file.");
