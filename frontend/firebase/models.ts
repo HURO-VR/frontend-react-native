@@ -8,6 +8,18 @@ export interface SimulationMetaData {
     runs: number; // Number of times the simulation has been run.
 }
 
+export interface Organization {
+    id: string
+    simulations: string[] // Array of SimIDs
+}
+
+export interface User {
+    uid: string // User unique identifier. Equal to auth id
+    name: string
+    email: string
+    organizations: Organization[]
+}
+
 export enum EnvironmentTypes {
     emptyRoom = "empty-room",
     // Add more environments here

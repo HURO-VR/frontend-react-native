@@ -2,16 +2,8 @@ import { initializeApp } from "firebase/app";
 import { FirebaseStorage, getStorage, ref, uploadBytes, UploadResult } from "firebase/storage";
 import { addDoc, collection, doc, getDoc, getDocs, getFirestore, query, setDoc } from "firebase/firestore";
 import { FileUploadType, SimulationMetaData } from "./models";
+import { firebaseConfig } from "./config";
 
-
-const firebaseConfig = {
-    apiKey: "AIzaSyCbo5BHBJKwhVblw_8RALdzKWnhCxyHGvI",
-    authDomain: "huro-1b182.firebaseapp.com",
-    projectId: "huro-1b182",
-    storageBucket: "huro-1b182.firebasestorage.app",
-    messagingSenderId: "155701458557",
-    appId: "1:155701458557:web:c930b0728f08f7b66b2314"
-  };
 
 
 export namespace FBStorage {
@@ -81,6 +73,26 @@ export namespace FBStorage {
       sims.push(doc.data() as SimulationMetaData);
     });
     return sims;
+  }
+
+  export async function firestoreDocUpload(docID: string, path: string, data: any) {
+    try {
+      let db = getFBFirestore();
+      await setDoc(doc(db, path, docID), data); // Model: SimulationMetaData
+      return true;
+
+    } catch (e) {
+      console.error("Error adding document: ", e);
+      return false;
+    }
+  }
+
+  export async function getDoc(path: string): Promise<any> {
+    try {
+      return await getDoc(path);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
   }
 
 
