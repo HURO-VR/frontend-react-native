@@ -132,6 +132,9 @@ const LoginScreen = () => {
                         placeholderTextColor="#666"
                         value={password}
                         onChangeText={setPassword}
+                        onSubmitEditing={() => {
+                          handleLogin()
+                        }}
                         secureTextEntry
                     />
                     <Text style={styles.errorText}>{passwordError}</Text>
@@ -145,6 +148,7 @@ const LoginScreen = () => {
                         placeholderTextColor="#666"
                         onChangeText={setConfirmPassword}
                         value={confirmPassword}
+                        onSubmitEditing={handleLogin}
                         secureTextEntry
                     />
                     <Text style={styles.errorText}>{confirmPasswordError}</Text>
