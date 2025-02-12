@@ -60,6 +60,8 @@ const LoginScreen = () => {
       setPasswordError("Invalid Password")
     } else if (error.includes("weak-password")) {
       setPasswordError("Please choose a stronger password.")
+    } else if (error.includes("network-request-failed")) {
+      setError("Failed to connect to server. Check internet connection.")
     } else {
       setError(error)
     } 

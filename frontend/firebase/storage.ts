@@ -87,11 +87,12 @@ export namespace FBStorage {
     }
   }
 
-  export async function getDoc(path: string): Promise<any> {
+  export async function getFSDoc(path: string): Promise<any> {
     try {
-      return await getDoc(path);
+      let db = getFBFirestore();
+      return (await getDoc(doc(db, path)))?.data();
     } catch (e) {
-      console.error("Error adding document: ", e);
+      console.error("Error getting document: ", e);
     }
   }
 

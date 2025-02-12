@@ -1,21 +1,29 @@
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "./config";
 import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import {User} from "./models"
+import {UserMetaData} from "./models"
 import { FBStorage } from "./storage";
 
 export class FBAuth {
     static app = initializeApp(firebaseConfig);
     static auth = getAuth()
 
-    public static isSignedIn(): boolean {
+    public static isSignedIn(): string | null {
         if (this.auth.currentUser == null) {
-            return false;
+            return null;
         }
-        return true;
+        return this.auth.currentUser.uid;
     }
 
-    static initializeUser(user: User) {
+    public static getUID() {
+        return this.auth.currentUser?.uid;
+    }
+
+    public static GetUserMetaData(uid: string) {
+        return FBStorage.getFSDoc(`users/${uid}`)
+    }
+
+    static initializeUser(user: UserMetaData) {
         return FBStorage.firestoreDocUpload(user.uid, `users`, user)
     }
 
@@ -44,7 +52,7 @@ export class FBAuth {
         .then(async (userCredential) => {
             // Signed in 
             const authUser = userCredential.user;
-            const user = await FBStorage.getDoc(`users/${authUser.uid}`) as User
+            const user = await FBStorage.getFSDoc(`users/${authUser.uid}`) as UserMetaData
             return user;
         })
         .catch((error) => {

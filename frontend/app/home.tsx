@@ -3,13 +3,21 @@ import { useEffect, useState } from "react";
 import { Link, Redirect, useRootNavigationState, useRouter } from "expo-router";
 import TextStyles from "./styles/textStyles";
 import { FBAuth } from "@/firebase/auth";
+import { UserMetaData } from "@/firebase/models";
 
 export default function Home() {
   const [loggedIn, setLogin] = useState(FBAuth.isSignedIn())
-  const rootNavigationState = useRootNavigationState();
+  const [user, setUser] = useState(null as UserMetaData | null)
+
 
   useEffect(() => {
-    
+    if (loggedIn) {
+      FBAuth.GetUserMetaData(loggedIn).then((user) => {
+        setUser(user)
+      }).catch((e) => {
+        window.alert(e.message)
+      })
+    }
   }, [])
 
   
@@ -25,7 +33,7 @@ export default function Home() {
       </View>
 
     <Text>
-      <b>Welcome to HURO.</b>
+      <b>Welcome to HURO {user ? user.name : ""}.</b>
     </Text>
     
     <View style={{ marginVertical: 10 }} />

@@ -13,7 +13,7 @@ export interface Organization {
     simulations: string[] // Array of SimIDs
 }
 
-export interface User {
+export interface UserMetaData {
     uid: string // User unique identifier. Equal to auth id
     name: string
     email: string
