@@ -66,7 +66,7 @@ export default function Home() {
         marginVertical: 10
        }}>View Simulations</Link>
     
-    <Link href="/view_organization"
+    <Link href={{pathname: "/view_organization", params: {param_user: JSON.stringify(user)}}}
       style={{
         color: 'black',
         // textDecorationLine: 'underline',

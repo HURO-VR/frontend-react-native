@@ -1,8 +1,9 @@
 import { initializeApp } from "firebase/app";
 import { FirebaseStorage, getStorage, ref, uploadBytes, UploadResult } from "firebase/storage";
-import { addDoc, collection, doc, getDoc, getDocs, getFirestore, query, setDoc } from "firebase/firestore";
-import { FileUploadType, SimulationMetaData } from "./models";
+import { addDoc, collection, doc, getDoc, getDocs, getFirestore, query, setDoc, SetOptions, where, WhereFilterOp } from "firebase/firestore";
+import { FileUploadType, Organization, SimulationMetaData } from "./models";
 import { firebaseConfig } from "./config";
+import { v4 } from "uuid";
 
 
 
@@ -75,16 +76,23 @@ export namespace FBStorage {
     return sims;
   }
 
-  export async function firestoreDocUpload(docID: string, path: string, data: any) {
+  export async function firestoreDocUpload(docID: string, path: string, data: any, options?: SetOptions) {
     try {
       let db = getFBFirestore();
-      await setDoc(doc(db, path, docID), data); // Model: SimulationMetaData
+      if (options) await setDoc(doc(db, path, docID), data, options);
+      else await setDoc(doc(db, path, docID), data);
       return true;
 
     } catch (e) {
       console.error("Error adding document: ", e);
       return false;
     }
+  }
+
+  export async function addMembersToOrg(org: Organization, memberIDs: string[]) {
+      return firestoreDocUpload(org.id, "organizations", {
+        members: [...org.members, ...memberIDs]
+      }, {merge: true})
   }
 
   export async function getFSDoc(path: string): Promise<any> {
@@ -94,6 +102,34 @@ export namespace FBStorage {
     } catch (e) {
       console.error("Error getting document: ", e);
     }
+  }
+
+  export async function createOrganization(name: string, admin: string, members: string[]) {
+      let db = getFBFirestore();
+      let id = v4()
+      const org : Organization = {
+          name: name,
+          id: id,
+          dateCreated: new Date().toISOString(),
+          members: members,
+          admins: [admin],
+          simulations: []
+      }
+      await setDoc(doc(db, `organizations`, id), org); // Model: Organization
+      return org;
+  }
+
+  export async function getCollection(path: string, options?: {field: string, operation: WhereFilterOp, value: string | string[]}) {
+    let db = getFBFirestore();
+    let data: any[] = []
+    let q;
+    if (options) q = query(collection(db, path), where(options.field, options.operation, options.value));
+    else q = query(collection(db, path))
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      data.push(doc.data() as SimulationMetaData);
+    });
+    return data;
   }
 
 

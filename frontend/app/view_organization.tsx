@@ -1,6 +1,7 @@
-import { SimulationMetaData } from '@/firebase/models';
+import { Organization, SimulationMetaData, UserMetaData } from '@/firebase/models';
 import { FBStorage } from '@/firebase/storage';
-import React, { useEffect, useState } from 'react';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -8,114 +9,184 @@ import {
   ScrollView,
   TouchableOpacity,
   SafeAreaView,
+  TextInput,
 } from 'react-native';
+import ConditionalView from './components/ConditionalView';
+import { CreateOrganizationForm } from './components/CreateOrganizationForm';
+import UserSelector from './components/UserSelector';
+import { styles } from './styles/styles';
 
 const SimulationItem = ({ name, algorithm, runs }: any) => (
-  <View style={styles.listItem}>
-    <Text style={styles.itemName}>{name}</Text>
-    <Text style={styles.itemAlgorithm}>{algorithm}</Text>
-    <Text style={styles.itemRuns}>{runs}</Text>
+  <View style={_styles.listItem}>
+    <Text style={_styles.itemName}>{name}</Text>
+    <Text style={_styles.itemAlgorithm}>{algorithm}</Text>
+    <Text style={_styles.itemRuns}>{runs}</Text>
   </View>
 );
 
 const TeamMemberItem = ({ name, runs }: any) => (
-  <View style={styles.listItem}>
-    <Text style={styles.itemName}>{name}</Text>
-    <Text style={styles.itemRuns}>{runs}</Text>
+  <View style={_styles.listItem}>
+    <Text style={_styles.itemName}>{name}</Text>
+    <Text style={_styles.itemRuns}>{runs}</Text>
   </View>
 );
 
 const OrganizationView = () => {
-  const _simulations = [
-    { name: 'Empty Room', algorithmFilename: 'Navigation', runs: 12 },
-    { name: 'Corridor', algorithmFilename: 'Navigation', runs: 21 },
-    { name: 'Crowd', algorithmFilename: 'Navigation', runs: 20 },
-    { name: 'Bedroom', algorithmFilename: 'Grab + Move', runs: 54 },
-    { name: 'Intersection', algorithmFilename: 'Navigation', runs: 26 },
-  ];
 
-  const teamMembers = [
-    { name: 'Vencent Vang', runs: 12 },
-    { name: 'Karan Soin', runs: 21 },
-    { name: 'Michael Marcotte', runs: 20 },
-    { name: 'Tasha Kim', runs: 54 },
-    { name: 'Nikita X-One', runs: 26 },
-  ];
+  const router = useRouter()
 
-  const [orgName, setOrgName] = useState("TEST_ORG")
+  const [organization, setOrganization] = useState({
+    name: "No Organization",
+    simulations: [],
+    members: [],
+    admins: [],
+    id: "",
+    dateCreated: ""
+  } as Organization)
   const [simulations, setSimulations] = useState([] as SimulationMetaData[])
+  const [members, setMembers] = useState([] as UserMetaData[])
+
+  const { param_user } = useLocalSearchParams();
+  const user = JSON.parse(param_user as string) as UserMetaData;
+
+  const [loading, setLoading] = useState(true)
+  const [invitedUsers, setInvitedUsers] = useState([] as UserMetaData[])
+  const [inviteAbleUsers, setInvitable] =  useState([] as UserMetaData[])
+  const [inviteLoading, setInviteLoading] = useState(false)
+  const [inviteErrorText, setInviteError] = useState("")
+  const [isAdmin, setAdmin] = useState(false)
+
 
   useEffect(() => {
-    FBStorage.getAllSimulationsMetaData(orgName).then((data) => {
-        setSimulations(data)
-    })
-  })
+     if (user.organizations.length > 0) {
+        FBStorage.getFSDoc(`organizations/${user.organizations[0]}`).then((org) => {
+          setOrganization(org)
+          setAdmin((org as Organization).admins.find((u) => u == user.uid) != undefined)
+        })
+     } else {
+      setLoading(false)
+     }
+  }, [])
+
+  useEffect(() => {
+    if (organization.id.length > 0) {
+      const promises = []
+       promises.push(FBStorage.getAllSimulationsMetaData(organization.id).then((data) => {
+          setSimulations(data)
+        }))
+        promises.push(FBStorage.getCollection(`users`).then((data) => {
+          setMembers(data.filter((user) => organization.members.find(m => m == user.uid)))
+          setInvitable(data.filter((user) => organization.members.find(m => m != user.uid) == undefined))
+        }))
+        Promise.all(promises).finally(() => {
+          setLoading(false)
+        })
+  }
+  }, [organization])
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>{orgName}</Text>
+    <SafeAreaView style={_styles.container}>
+      <View style={_styles.header}>
+        <Text style={_styles.headerText}>{organization?.name}</Text>
       </View>
 
-      <ScrollView style={styles.content}>
+      {/* Org View */}
+      {organization.id != "" && <ScrollView style={_styles.content}>
         <View style={{flexDirection: "row", flex: 1}}>
-
             {/* First Section */}
-            <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-                <Text style={styles.sectionTitle}>Simulations</Text>
-            </View>
-            
-            <View style={styles.listHeader}>
-                <Text style={styles.columnHeader}>Name</Text>
-                <Text style={styles.columnHeader}>Algorithm</Text>
-                <Text style={styles.columnHeader}># Runs</Text>
-            </View>
-            
-            {_simulations.map((sim, index) => (
-                <SimulationItem
-                key={index}
-                name={sim.name}
-                algorithm={sim.algorithmFilename}
-                runs={sim.runs}
-                />
-            ))}
-            
-            <TouchableOpacity style={styles.addButton}>
-                <Text style={styles.addButtonText}>New +</Text>
-            </TouchableOpacity>
-            </View>
+            <ConditionalView 
+              style={_styles.section} 
+              isVisible={organization.id != ""}
+            >
+              <View style={_styles.sectionHeader}>
+                  <Text style={_styles.sectionTitle}>Simulations</Text>
+              </View>
+              
+              <View style={_styles.listHeader}>
+                  <Text style={_styles.columnHeader}>Name</Text>
+                  <Text style={_styles.columnHeader}>Algorithm</Text>
+                  <Text style={_styles.columnHeader}># Runs</Text>
+              </View>
+              
+              {simulations.map((sim, index) => (
+                  <SimulationItem
+                  key={index}
+                  name={sim.name}
+                  algorithm={sim.algorithmFilename}
+                  runs={sim.runs}
+                  />
+              ))}
+              
+              <TouchableOpacity style={_styles.addButton}
+              onPress={() => {
+                router.push("/create_simulation")
+              }}>
+                  <Text style={_styles.addButtonText}>New +</Text>
+              </TouchableOpacity>
+            </ConditionalView>
+
             <View style={{margin: 10}} />
+
             {/* Second Section */}
-            <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-                <Text style={styles.sectionTitle}>Team Members</Text>
-            </View>
+            <ConditionalView 
+              style={_styles.section} 
+              isVisible={organization.id != ""}
+            >
+              <View style={_styles.sectionHeader}>
+                  <Text style={_styles.sectionTitle}>Team Members</Text>
+              </View>
             
-            <View style={styles.listHeader}>
-                <Text style={styles.columnHeader}>Name</Text>
-                <Text style={styles.columnHeader}># Runs</Text>
-            </View>
+              <View style={_styles.listHeader}>
+                  <Text style={_styles.columnHeader}>Name</Text>
+                  <Text style={_styles.columnHeader}># Runs</Text>
+              </View>
             
-            {teamMembers.map((member, index) => (
-                <TeamMemberItem
-                key={index}
-                name={member.name}
-                runs={member.runs}
-                />
-            ))}
-            
-            <TouchableOpacity style={styles.addButton}>
-                <Text style={styles.addButtonText}>Invite +</Text>
-            </TouchableOpacity>
-          </View>
+              {organization.id != "" && members.map((member, index) => (
+                  <TeamMemberItem
+                  key={index}
+                  name={member.name}
+                  //runs={member.runs}
+                  />
+              ))}
+              <View style ={{marginTop: 30}}></View>
+              {!loading && isAdmin && <>
+              <UserSelector users={inviteAbleUsers} selectedUsers={invitedUsers} setSelectedUsers={setInvitedUsers}/>
+              <Text style={styles.errorText}>{inviteErrorText}</Text>
+              <TouchableOpacity style={_styles.addButton}
+                onPress={() => {
+                  if (invitedUsers.length == 0) setInviteError("Must invite at least one user.")
+                  setInviteLoading(true)
+                  FBStorage.addMembersToOrg(organization, invitedUsers.map(u => u.uid)).then(() => {
+                    setInvitedUsers([])
+                  }).catch(() => {
+                    window.alert("Failed to add users")
+                  }).finally(() => {
+                    setInviteLoading(false)
+                  })
+                }}
+                disabled={inviteLoading}>
+          
+                  <Text style={_styles.addButtonText}>Invite +</Text>
+              </TouchableOpacity>
+              </>}
+          </ConditionalView>
         </View>
-      </ScrollView>
+      </ScrollView>}
+
+
+      {/* Create Organization Section*/}
+      {organization.id == "" && !loading && <CreateOrganizationForm 
+        user={user} 
+        initialVisibility={organization.id == ""}
+        onSubmit={(org) => {
+          setOrganization(org)
+        }}
+      />}
     </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({
+const _styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
