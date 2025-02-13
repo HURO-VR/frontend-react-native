@@ -36,7 +36,7 @@ const OrganizationView = () => {
   const router = useRouter()
 
   const [organization, setOrganization] = useState({
-    name: "No Organization",
+    name: "Create an Organization",
     simulations: [],
     members: [],
     admins: [],
@@ -76,7 +76,7 @@ const OrganizationView = () => {
         }))
         promises.push(FBStorage.getCollection(`users`).then((data) => {
           setMembers(data.filter((user) => organization.members.find(m => m == user.uid)))
-          setInvitable(data.filter((user) => organization.members.find(m => m != user.uid) == undefined))
+          setInvitable(data.filter((user) => organization.members.find(m => m == user.uid) == undefined))
         }))
         Promise.all(promises).finally(() => {
           setLoading(false)
