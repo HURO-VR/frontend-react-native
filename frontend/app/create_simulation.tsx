@@ -40,11 +40,13 @@ export default function SimulationCreation() {
   const uploadMetaData = async () => {
     let done = await FBStorage.uploadSimulationMetaData(
       "TEST_ORG",
-      {ID: simulationID,
-      name: simulationName,
-      algorithmFilename: algorithmFileName,
-      dateCreated: new Date().toISOString(),
-      environmentName: environment
+      {
+        ID: simulationID,
+        name: simulationName,
+        algorithmFilename: algorithmFileName,
+        dateCreated: new Date().toISOString(),
+        environmentName: environment,
+        runs: 0
     } // Use the actual uploaded ONNX file name
     )
       .then(() => true)
