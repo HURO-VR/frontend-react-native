@@ -23,7 +23,7 @@ export const OrganizationMemberUpdate = functions.firestore.onDocumentWritten("o
     const fs = initFirebase()
     const batch = fs.batch()
 
-    if ((before && after && before.members.length < after.members.length) || (!before && after.members.length > 1)) {
+    if ((before && after && before.members.length < after.members.length) || (!before && after.members.length > 0)) {
         let newMembers
         if (before) {
             newMembers = (after.members).filter((newMember) => {
