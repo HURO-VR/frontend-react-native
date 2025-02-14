@@ -201,8 +201,17 @@ const OrganizationView = () => {
               </>}
           </ConditionalView>
         </View>
+
+      {/* Create org Button*/}
+      <TouchableOpacity style={_styles.addButton}
+        onPress={() => {
+          router.push("/create_organization")
+        }}>
+          <Text style={_styles.addButtonText}>New Organization +</Text>
+      </TouchableOpacity>
       </ScrollView>}
-              
+
+      
     </SafeAreaView> 
     
     : <Redirect href={redirect} />
