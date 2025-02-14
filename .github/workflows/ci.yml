@@ -10,8 +10,13 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     
+    defaults:
+      run:
+        working-directory: ./frontend
+    
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
     
     - name: Setup Node.js
       uses: actions/setup-node@v4
