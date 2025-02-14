@@ -18,6 +18,7 @@ import UserSelector from './components/UserSelector';
 import { styles } from './styles/styles';
 import { FBAuth } from '@/firebase/auth';
 import DropdownMenu from './components/dropdown';
+import { LocalRouteParamsContext } from 'expo-router/build/Route';
 
 const SimulationItem = ({ name, algorithm, runs }: any) => (
   <View style={_styles.listItem}>
@@ -49,7 +50,6 @@ const OrganizationView = () => {
   const [allOrgs, setAllOrgs] = useState([] as Organization[])
   const [simulations, setSimulations] = useState([] as SimulationMetaData[])
   const [members, setMembers] = useState([] as UserMetaData[])
-
   const [user, setUser] = useState(null as UserMetaData | null)
   const [loading, setLoading] = useState(true)
   const [invitedUsers, setInvitedUsers] = useState([] as UserMetaData[])
@@ -58,6 +58,8 @@ const OrganizationView = () => {
   const [inviteErrorText, setInviteError] = useState("")
   const [isAdmin, setAdmin] = useState(false)
   const [redirect, setRedirect] = useState("" as "/login" | "/create_organization")
+
+  const { org_id } = useLocalSearchParams()
 
   useEffect(() => {
       if (FBAuth.isSignedIn() == null) setRedirect("/login")
@@ -77,8 +79,10 @@ const OrganizationView = () => {
           setAllOrgs(orgs)
           setAdmin((currOrg as Organization).admins.find((u) => u == user.uid) != undefined)
         })
-     } else if (user) { // Only navigate after user has loaded in.
-      setRedirect("/create_organization")
+     } else if (org_id) { 
+        FBStorage.getFSDoc(`organizations/${org_id}`).then(setOrganization)
+     } else if (user) { // Only navigate if user has loaded in.
+        setRedirect("/create_organization")
      }
   }, [user])
 
