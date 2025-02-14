@@ -2,13 +2,25 @@ import * as functions from "firebase-functions";
 import { FieldValue, getFirestore } from "firebase-admin/firestore";
 import { initializeApp } from "firebase-admin/app";
 
+const initFirebase = () => {
+    let fs
+    if (admin.apps.length == 0) admin.initializeApp();
+    try {
+        fs = getFirestore()
+    } catch (e) {
+        initializeApp();
+        fs = getFirestore()
+    }
+    return fs
+}
+
+
 export const OrganizationMemberUpdate = functions.firestore.onDocumentWritten("organizations/{orgID}", (event) => {
     const before = event.data?.before.exists ? event.data.before.data() : null;
     const after = event.data?.after.exists ? event.data.after.data() : null;
     const params = event.params
 
-    initializeApp()
-    const fs = getFirestore()
+    const fs = initFirebase()
     const batch = fs.batch()
 
     if ((before && after && before.members.length < after.members.length) || (!before && after.members.length > 1)) {
