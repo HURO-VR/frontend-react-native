@@ -21,7 +21,6 @@ export default function SimulationCreation() {
   const [algorithmError, setAlgorithmError] = useState("");
   const [modelError, setModelError] = useState("");
   const [envJPG, setEnvJPG] = useState(EnvImages[environment]);
-  const [modelFileName, setModelFileName] = useState("Default");
 
   const router = useRouter();
 
@@ -41,12 +40,13 @@ export default function SimulationCreation() {
   const uploadMetaData = async () => {
     let done = await FBStorage.uploadSimulationMetaData(
       "TEST_ORG",
-      {ID: simulationID,
-      name: simulationName,
-      algorithmFilename: algorithmFileName,
-      dateCreated: new Date().toISOString(),
-      environmentName: environment,
-      modelFilename: modelFileName,
+      {
+        ID: simulationID,
+        name: simulationName,
+        algorithmFilename: algorithmFileName,
+        dateCreated: new Date().toISOString(),
+        environmentName: environment,
+        runs: 0
     } // Use the actual uploaded ONNX file name
     )
       .then(() => true)
@@ -55,7 +55,7 @@ export default function SimulationCreation() {
         return false;
       });
 
-    if (done) router.push("/view_simulations");
+    if (done) router.push("/home");
   };
 
   useEffect(() => {
@@ -127,7 +127,6 @@ export default function SimulationCreation() {
         onFilePicked={(filename) => {
           if (AcceptedFileTypes.checkFilename(filename, FileUploadType.model)) {
             setModelError(""); // Clear any previous error
-            setModelFileName(filename);
             return true;
           } else {
             setModelError("Please upload a valid GLB file.");
