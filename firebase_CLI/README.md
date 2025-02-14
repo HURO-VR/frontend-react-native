@@ -1,7 +1,7 @@
 # Firebase Functions
 
 ### Environment Setup
-1. npm i
+1. `npm i` in the `functions` folder
 
 ### Deploy Functions
 1. Add desired functions to `index.js` exports
