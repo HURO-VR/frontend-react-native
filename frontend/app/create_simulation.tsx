@@ -55,7 +55,7 @@ export default function SimulationCreation() {
         return false;
       });
 
-    if (done) router.push("/view_simulations");
+    if (done) router.push("/home");
   };
 
   useEffect(() => {
