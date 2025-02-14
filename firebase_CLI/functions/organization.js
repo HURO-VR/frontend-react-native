@@ -1,10 +1,10 @@
 import * as functions from "firebase-functions";
 import { FieldValue, getFirestore } from "firebase-admin/firestore";
-import { initializeApp } from "firebase-admin/app";
+import { initializeApp, getApps } from "firebase-admin/app";
 
 const initFirebase = () => {
     let fs
-    if (admin.apps.length == 0) admin.initializeApp();
+    if (getApps().length == 0) initializeApp();
     try {
         fs = getFirestore()
     } catch (e) {
