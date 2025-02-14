@@ -10,12 +10,14 @@ import {
   TouchableOpacity,
   SafeAreaView,
   TextInput,
+  Modal,
 } from 'react-native';
 import ConditionalView from './components/ConditionalView';
 import { CreateOrganizationForm } from './components/CreateOrganizationForm';
 import UserSelector from './components/UserSelector';
 import { styles } from './styles/styles';
 import { FBAuth } from '@/firebase/auth';
+import DropdownMenu from './components/dropdown';
 
 const SimulationItem = ({ name, algorithm, runs }: any) => (
   <View style={_styles.listItem}>
@@ -44,6 +46,7 @@ const OrganizationView = () => {
     id: "",
     dateCreated: ""
   } as Organization)
+  const [allOrgs, setAllOrgs] = useState([] as Organization[])
   const [simulations, setSimulations] = useState([] as SimulationMetaData[])
   const [members, setMembers] = useState([] as UserMetaData[])
 
@@ -68,9 +71,11 @@ const OrganizationView = () => {
 
   useEffect(() => {
      if (user && user.organizations.length > 0) {
-        FBStorage.getFSDoc(`organizations/${user.organizations[0]}`).then((org) => {
-          setOrganization(org)
-          setAdmin((org as Organization).admins.find((u) => u == user.uid) != undefined)
+        FBStorage.getCollection(`organizations`, {field: "id", operation: "in", value: user.organizations}).then((orgs) => {
+          const currOrg = orgs[0]
+          setOrganization(currOrg)
+          setAllOrgs(orgs)
+          setAdmin((currOrg as Organization).admins.find((u) => u == user.uid) != undefined)
         })
      } else if (user) { // Only navigate after user has loaded in.
       setRedirect("/create_organization")
@@ -79,6 +84,7 @@ const OrganizationView = () => {
 
   useEffect(() => {
     if (organization.id.length > 0) {
+      if (!loading) setLoading(true)
       const promises = []
        promises.push(FBStorage.getAllSimulationsMetaData(organization.id).then((data) => {
           setSimulations(data)
@@ -94,13 +100,28 @@ const OrganizationView = () => {
   }, [organization])
 
   return (redirect.length == 0 ?
+
+    
     <SafeAreaView style={_styles.container}>
-      <View style={_styles.header}>
-        <Text style={_styles.headerText}>{organization?.name}</Text>
-      </View>
+      {!loading && <View style={_styles.header}>
+        {/*<Text style={_styles.headerText}>{organization?.name}</Text>*/}
+        
+          <DropdownMenu 
+            defaultValue={organization?.name} 
+            options={allOrgs.map((org) => org.name)}
+            onSelect={(name) => {
+              if (name != organization.name) setOrganization(allOrgs.find(org => org.name == name)!)
+            }}
+            dropdownStyle={{backgroundColor: "black"}}
+            textStyle={{color: "white"}}
+            containerStyle={{zIndex: 100}}
+            optionStyle={{zIndex: 100}}
+            
+          />
+      </View>}
 
       {/* Org View */}
-      {organization.id != "" && user && <ScrollView style={_styles.content}>
+      {organization.id != "" && user && !loading && <ScrollView style={_styles.content}>
         <View style={{flexDirection: "row", flex: 1}}>
             {/* First Section */}
             <ConditionalView 
@@ -181,8 +202,10 @@ const OrganizationView = () => {
           </ConditionalView>
         </View>
       </ScrollView>}
-
-    </SafeAreaView> : <Redirect href={redirect} />
+              
+    </SafeAreaView> 
+    
+    : <Redirect href={redirect} />
   );
 };
 

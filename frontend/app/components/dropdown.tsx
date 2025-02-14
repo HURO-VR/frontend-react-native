@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { createRef, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -8,9 +8,10 @@ import {
   LayoutAnimation,
   Platform,
   UIManager,
+  Modal,
+  Dimensions,
 } from 'react-native';
 import { ViewStyle, TextStyle } from 'react-native';
-
 
 // Enable LayoutAnimation for Android
 if (Platform.OS === 'android') {
@@ -30,8 +31,13 @@ const DropdownMenu = ({
 }: DropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(defaultValue);
+  const [dropdownLayout, setDropdownLayout] = useState({ x: 0, y: 0, width: 0, height: 0 });
   const rotateAnimation = new Animated.Value(0);
 
+  useEffect(() => {
+    setSelectedOption(defaultValue);
+  }, [defaultValue]);
+  
   const toggleDropdown = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setIsOpen(!isOpen);
@@ -62,78 +68,87 @@ const DropdownMenu = ({
     transform: [{ rotate: rotateInterpolate }],
   };
 
+  const measureDropdown = () => {
+    if (dropdownRef?.current) {
+      dropdownRef.current.measure((x, y, width, height, pageX, pageY) => {
+        setDropdownLayout({
+          x: pageX,
+          y: pageY,
+          width: width,
+          height: height,
+        });
+      });
+    }
+  };
+
+  const dropdownRef = createRef<View>()
+
   return (
-    <View style={[styles.container, containerStyle]}>
+    <View style={[styles.container, containerStyle]} ref={dropdownRef}>
       <TouchableOpacity 
         style={[styles.dropdownButton, dropdownStyle]} 
-        onPress={toggleDropdown}
+        onPress={() => {
+          measureDropdown();
+          toggleDropdown();
+        }}
         activeOpacity={0.7}
       >
         <Text style={[styles.selectedText, textStyle]}>{selectedOption}</Text>
         <Animated.Text style={[styles.arrow, animatedStyle]}>▼</Animated.Text>
       </TouchableOpacity>
       
-      {isOpen && (
-        <View style={[styles.optionsContainer, dropdownStyle]}>
-          {options.map((option, index) => (
-            <TouchableOpacity
-              key={index}
-              style={[styles.option, optionStyle]}
-              onPress={() => handleSelect(option)}
-              activeOpacity={0.7}
-            >
-              <Text style={[styles.optionText, textStyle]}>{option}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      )}
+      <Modal
+        visible={isOpen}
+        transparent={true}
+        animationType="none"
+        onRequestClose={() => setIsOpen(false)}
+      >
+        <TouchableOpacity 
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setIsOpen(false)}
+        >
+          <View 
+            style={[
+              styles.optionsContainer,
+              dropdownStyle,
+              {
+                position: 'absolute',
+                top: dropdownLayout.y + dropdownLayout.height + 4,
+                left: dropdownLayout.x,
+                width: dropdownLayout.width,
+              }
+            ]}
+          >
+            {options.map((option, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[styles.option, optionStyle]}
+                onPress={() => handleSelect(option)}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.optionText, textStyle]}>{option}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 };
 
 interface DropdownProps {
-    /**
-     * Array of options to be displayed in the dropdown
-     */
-    options: string[];
-  
-    /**
-     * Default text to show when no option is selected
-     * @default 'Select an option'
-     */
-    defaultValue?: string;
-  
-    /**
-     * Callback function triggered when an option is selected
-     * @param selectedOption The selected option value
-     */
-    onSelect?: (selectedOption: string) => void;
-  
-    /**
-     * Style object for the main container view
-     */
-    containerStyle?: ViewStyle;
-  
-    /**
-     * Style object for the dropdown button and options container
-     */
-    dropdownStyle?: ViewStyle;
-  
-    /**
-     * Style object for individual option items
-     */
-    optionStyle?: ViewStyle;
-  
-    /**
-     * Style object for text elements within the dropdown
-     */
-    textStyle?: TextStyle;
-  }
+  options: string[];
+  defaultValue?: string;
+  onSelect?: (selectedOption: string) => void;
+  containerStyle?: ViewStyle;
+  dropdownStyle?: ViewStyle;
+  optionStyle?: ViewStyle;
+  textStyle?: TextStyle;
+}
 
 const styles = StyleSheet.create({
   container: {
-    position: 'relative',
-    zIndex: 1000,
     width: '100%',
     maxWidth: 300,
   },
@@ -155,16 +170,15 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#666',
   },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'transparent',
+  },
   optionsContainer: {
-    position: 'absolute',
-    top: '100%',
-    left: 0,
-    right: 0,
     backgroundColor: '#fff',
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#ddd',
-    marginTop: 4,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
