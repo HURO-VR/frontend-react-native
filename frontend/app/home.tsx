@@ -4,6 +4,7 @@ import { Link, Redirect, useRootNavigationState, useRouter } from "expo-router";
 import TextStyles from "./styles/textStyles";
 import { FBAuth } from "@/firebase/auth";
 import { UserMetaData } from "@/firebase/models";
+import { FBStorage } from "@/firebase/storage";
 
 export default function Home() {
   const [loggedIn, setLogin] = useState(FBAuth.isSignedIn())
@@ -14,6 +15,12 @@ export default function Home() {
     if (loggedIn) {
       FBAuth.GetUserMetaData(loggedIn).then((user) => {
         setUser(user)
+        FBStorage.subscribeToDoc(user.uid, "users", (data) => {
+          console.log("Recieved update " + data)
+          if (data) {
+            setUser(data as UserMetaData)
+          }
+        })
       }).catch((e) => {
         window.alert(e.message)
       })
