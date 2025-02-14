@@ -9,6 +9,7 @@ import {
   StyleSheet,
   SafeAreaView,
 } from 'react-native';
+import { styles } from './styles/styles';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
@@ -180,80 +181,5 @@ const LoginScreen = () => {
   : <Redirect href={redirect}/>);
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000',
-    padding: 20,
-    alignItems: "center"
-  },
-  headerContainer: {
-    marginTop: 60,
-    marginBottom: 40,
-  },
-  logo: {
-    color: '#fff',
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  title: {
-    color: '#fff',
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  formContainer: {
-    flex: 1,
-    justifyContent: 'flex-start',
-  },
-  inputContainer: {
-    marginBottom: 20,
-  },
-  label: {
-    color: '#fff',
-    fontSize: 16,
-    marginBottom: 8,
-  },
-  input: {
-    backgroundColor: '#1a1a1a',
-    borderRadius: 8,
-    padding: 15,
-    color: '#fff',
-    fontSize: 16,
-  },
-  loginButton: {
-    backgroundColor: '#00E676',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 20,
-    width: "50%",
-    alignSelf: "center"
-  },
-  signUpToggle: {
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    width: "30%",
-    alignSelf: "center"
-  },
-  loginButtonText: {
-    color: '#000',
-    fontSize: 16,
-    fontWeight: '600'
-  },
-  signUpText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '200'
-  },
-  errorText: {
-    color: '#ff3333',
-    fontSize: 14,
-    marginTop: 4,
-    marginLeft: 2,
-    fontWeight: '500',
-}
-});
 
 export default LoginScreen;

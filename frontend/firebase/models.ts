@@ -11,13 +11,17 @@ export interface SimulationMetaData {
 export interface Organization {
     id: string
     simulations: string[] // Array of SimIDs
+    members: string[] // User IDs
+    admins: string[] // User IDs
+    name: string,
+    dateCreated: string
 }
 
 export interface UserMetaData {
     uid: string // User unique identifier. Equal to auth id
     name: string
     email: string
-    organizations: Organization[]
+    organizations: string[] // OrgIDs
 }
 
 export enum EnvironmentTypes {
