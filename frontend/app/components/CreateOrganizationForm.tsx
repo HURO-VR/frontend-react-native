@@ -32,6 +32,7 @@ export const CreateOrganizationForm = ({ user, onSubmit }: Props) => {
     const [membersError, setMembersError] = useState("")
     const [loading, setLoading] = useState(false)
     const [allOrgs, setAllOrgs] = useState([] as Organization[])
+    const router = useRouter()
 
     const verifyOrg = () => {
         if (name.length < 3) {
@@ -94,6 +95,16 @@ export const CreateOrganizationForm = ({ user, onSubmit }: Props) => {
                 disabled={loading}
             >
               <Text style={styles.addButtonText}>Create New Organization</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+                style={{marginTop: 20, alignSelf: "center"}} 
+                onPress={() => {
+                    router.back()
+                }}
+                disabled={loading}
+            >
+              <Text style={{color: "white"}}>Back</Text>
             </TouchableOpacity>
         </View>
 
