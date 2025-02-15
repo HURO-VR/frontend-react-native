@@ -207,7 +207,7 @@ const OrganizationView = () => {
                 }}
                 disabled={inviteLoading}>
           
-                  <Text style={_styles.addButtonText}>Invite +</Text>
+                  <Text style={_styles.addButtonText}>Add +</Text>
               </TouchableOpacity>
               </View>}
           </ConditionalView>
