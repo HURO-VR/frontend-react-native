@@ -22,7 +22,7 @@ This is an [Expo](https://expo.dev) project with deployment capabilities to mobi
 
 
 ### Deploy Website
-1. Run `npx expo export -p web`
+1. Run `npx expo export -p web` or `npm run deploy`
 
 2. Upload dist folder to Netlify (currently only Nikita can do this because of Netlify free plan.)
 

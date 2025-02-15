@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "./config";
-import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, setPersistence, browserLocalPersistence  } from "firebase/auth";
 import {UserMetaData} from "./models"
 import { FBStorage } from "./storage";
 
@@ -8,7 +8,12 @@ export class FBAuth {
     static app = initializeApp(firebaseConfig);
     static auth = getAuth()
 
+    static init() {
+        setPersistence(FBAuth.auth, browserLocalPersistence);
+    }
+
     public static isSignedIn(): string | null {
+        this.init()
         if (this.auth.currentUser == null) {
             return null;
         }
@@ -27,7 +32,7 @@ export class FBAuth {
         return FBStorage.firestoreDocUpload(user.uid, `users`, user)
     }
 
-    public static createUser(email: string, password: string, name: string) {
+    public static async createUser(email: string, password: string, name: string) {
         return createUserWithEmailAndPassword(this.auth, email, password)
         .then(async (userCredential) => {
             // Signed up 
@@ -47,7 +52,7 @@ export class FBAuth {
         });
     }
 
-    public static authenticate(email: string, password: string) {
+    public static async authenticate(email: string, password: string) {
         return signInWithEmailAndPassword(this.auth, email, password)
         .then(async (userCredential) => {
             // Signed in 
