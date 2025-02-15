@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
+  ScrollView,
 } from 'react-native';
 import { styles } from './styles/styles';
 import TextStyles from './styles/textStyles';
@@ -92,13 +93,11 @@ const LoginScreen = () => {
 
   return (redirect.length == 0 ?
     <SafeAreaView style={styles.container}>
-        <View style={{width: "60%"}}>
-            <Text style={{...TextStyles.h1, color: "white", marginTop: 40}}>Welcome to your playground.</Text>
+        <ScrollView style={{width: "60%", marginBottom: 30}}
+        showsVerticalScrollIndicator={false}>
+            <Text style={{...TextStyles.h1, color: "white", marginTop: 40}}>{signUpToggle ? "Join the" : "Welcome to your"} playground.</Text>
             <Text style={{...TextStyles.subtitle, marginTop: 0, fontSize: 20, color: "white"}}>Huro VR</Text>
-            <View style={{ height: 1, backgroundColor: '#ccc', width: '90%', marginVertical: 10 }} />
-            <View style={styles.headerContainer}>
-                <Text style={styles.title}>{signUpToggle ? "Sign Up" : "Login"}</Text>
-            </View>
+            <View style={{ height: 1, backgroundColor: '#ccc', width: '90%', marginVertical: 10, marginBottom: 20 }} />
 
             <View style={styles.formContainer}>
                 {signUpToggle && <View style={styles.inputContainer}>
@@ -178,7 +177,7 @@ const LoginScreen = () => {
                 <Text style={styles.signUpText}>{!signUpToggle ? "Sign Up" : "Login"}</Text>
                 </TouchableOpacity>
             </View>
-      </View>
+      </ScrollView>
       {}
     </SafeAreaView>
   : <Redirect href={redirect}/>);

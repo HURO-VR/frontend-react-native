@@ -89,6 +89,8 @@ const OrganizationView = () => {
           setOrganization(org)
           setAllOrgs([org])
      })
+     } else if (user) {
+        setLoading(false)
      }
   }, [user])
 
@@ -133,7 +135,7 @@ const OrganizationView = () => {
       </View>}
 
       {/* Org View */}
-      {organization.id != "" && user && !loading && <ScrollView style={_styles.content}>
+      {user && !loading && <ScrollView style={_styles.content}>
         <View style={{flexDirection: "row", flex: 1, marginHorizontal: 20}}>
             {/* First Section */}
             <ConditionalView 

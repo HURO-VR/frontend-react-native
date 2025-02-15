@@ -108,6 +108,9 @@ export const CreateOrganizationForm = ({ user, onSubmit }: Props) => {
             </TouchableOpacity>
         </View>
 
+        // Add scroll view on login
+        // Check first user experience.
+
     )
 }
 

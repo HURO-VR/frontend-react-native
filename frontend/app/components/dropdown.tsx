@@ -40,7 +40,7 @@ const DropdownMenu = ({
   
   const toggleDropdown = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setIsOpen(!isOpen);
+    if (options.length > 1) setIsOpen(!isOpen);
     Animated.timing(rotateAnimation, {
       toValue: isOpen ? 0 : 1,
       duration: 300,
