@@ -5,7 +5,8 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000',
     padding: 20,
-    alignItems: "center"
+    alignItems: "center",
+    width: "100%"
   },
   headerContainer: {
     marginTop: 20,

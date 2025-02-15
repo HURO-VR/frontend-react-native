@@ -15,15 +15,15 @@ import { Organization, UserMetaData } from '@/firebase/models';
 import { FBStorage } from '@/firebase/storage';
 import { isLoading } from 'expo-font';
 import ConditionalView from './ConditionalView';
+import TextStyles from '../styles/textStyles';
 
 
 interface Props {
     user: UserMetaData
-    initialVisibility: boolean
     onSubmit: (org: Organization) => void
 }
 
-export const CreateOrganizationForm = ({ user, initialVisibility, onSubmit }: Props) => {
+export const CreateOrganizationForm = ({ user, onSubmit }: Props) => {
 
     const [name, setName] = useState("")
     const [nameError, setNameError] = useState("")
@@ -31,12 +31,11 @@ export const CreateOrganizationForm = ({ user, initialVisibility, onSubmit }: Pr
     const [selectedUsers, setSelectedUsers] = useState([] as UserMetaData[])
     const [membersError, setMembersError] = useState("")
     const [loading, setLoading] = useState(false)
-    const [formVisible, setFormVisible] = useState(initialVisibility)
     const [allOrgs, setAllOrgs] = useState([] as Organization[])
 
     const verifyOrg = () => {
-        if (name.length < 5) {
-            setNameError("Name must be at least 6 characters.")
+        if (name.length < 3) {
+            setNameError("Name must be at least 3 characters.")
             return false
         } if (allOrgs.find(org => org.name == name)) {
             setNameError("An organization already exists with this name.")
@@ -63,8 +62,8 @@ export const CreateOrganizationForm = ({ user, initialVisibility, onSubmit }: Pr
 
     return (
         <View style={{...styles.container}}>
-            
-            <ConditionalView isVisible={formVisible} style={{width: "100%"}}>
+            <View style={{width: "50%"}}>
+            <Text style={{...TextStyles.h1, marginVertical: 20, color: "white", alignSelf: "flex-start"}}>Assemble your team.</Text>
                 {/* Organization Name */}
                 <View style={styles.inputContainer}>
                         <Text style={styles.label}>Organization Name</Text>
@@ -84,14 +83,13 @@ export const CreateOrganizationForm = ({ user, initialVisibility, onSubmit }: Pr
                     <UserSelector users={users} selectedUsers={selectedUsers} setSelectedUsers={setSelectedUsers}/>
                     <Text style={styles.errorText}>{membersError}</Text>
                 </View>
-            </ConditionalView>
+            </View>
 
             {/* Create Org Button */}
             <TouchableOpacity 
                 style={{...styles.addButton, marginTop: 20, alignSelf: "center"}} 
                 onPress={() => {
-                    if (formVisible) createOrganization()
-                    else setFormVisible(true)
+                    createOrganization()
                 }}
                 disabled={loading}
             >
