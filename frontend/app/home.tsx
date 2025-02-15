@@ -74,16 +74,21 @@ const OrganizationView = () => {
 
   useEffect(() => {
      if (user && user.organizations.length > 0) {
-        FBStorage.getCollection(`organizations`, {field: "id", operation: "in", value: user.organizations}).then((orgs) => {
-          const currOrg = orgs[0]
-          setOrganization(currOrg)
-          setAllOrgs(orgs)
-          setAdmin((currOrg as Organization).admins.find((u) => u == user.uid) != undefined)
+        FBStorage.getCollection(`organizations`, {field: "members", operation: "array-contains", value: user.uid}).then((orgs) => {
+          if (orgs.length == 0) setRedirect("/create_organization")
+          else {
+            let currOrg = orgs[0]
+            if (org_id) currOrg = orgs.find(org => org.id == org_id)
+            setOrganization(currOrg)
+            setAllOrgs(orgs)
+            setAdmin((currOrg as Organization).admins.find((u) => u == user.uid) != undefined)
+          }
         })
      } else if (org_id) { 
-        FBStorage.getFSDoc(`organizations/${org_id}`).then(setOrganization)
-     } else if (user) { // Only navigate if user has loaded in.
-        setRedirect("/create_organization")
+        FBStorage.getFSDoc(`organizations/${org_id}`).then((org) => {
+          setOrganization(org)
+          setAllOrgs([org])
+     })
      }
   }, [user])
 
