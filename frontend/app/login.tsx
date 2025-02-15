@@ -10,6 +10,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { styles } from './styles/styles';
+import TextStyles from './styles/textStyles';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
@@ -92,7 +93,9 @@ const LoginScreen = () => {
   return (redirect.length == 0 ?
     <SafeAreaView style={styles.container}>
         <View style={{width: "60%"}}>
-
+            <Text style={{...TextStyles.h1, color: "white", marginTop: 40}}>Welcome to your playground.</Text>
+            <Text style={{...TextStyles.subtitle, marginTop: 0, fontSize: 20, color: "white"}}>Huro VR</Text>
+            <View style={{ height: 1, backgroundColor: '#ccc', width: '90%', marginVertical: 10 }} />
             <View style={styles.headerContainer}>
                 <Text style={styles.title}>{signUpToggle ? "Sign Up" : "Login"}</Text>
             </View>

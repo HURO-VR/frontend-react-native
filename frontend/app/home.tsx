@@ -19,6 +19,7 @@ import { styles } from './styles/styles';
 import { FBAuth } from '@/firebase/auth';
 import DropdownMenu from './components/dropdown';
 import { LocalRouteParamsContext } from 'expo-router/build/Route';
+import TextStyles from './styles/textStyles';
 
 const SimulationItem = ({ name, algorithm, runs }: any) => (
   <View style={_styles.listItem}>
@@ -107,7 +108,8 @@ const OrganizationView = () => {
 
     
     <SafeAreaView style={_styles.container}>
-      {!loading && <View style={_styles.header}>
+      <Text style={{...TextStyles.h1, marginVertical: 20, color: "white", marginHorizontal: 40}}>Huro VR</Text>
+      {!loading && <View style={{..._styles.header, marginHorizontal: 20}}>
         {/*<Text style={_styles.headerText}>{organization?.name}</Text>*/}
         
           <DropdownMenu 
@@ -126,10 +128,10 @@ const OrganizationView = () => {
 
       {/* Org View */}
       {organization.id != "" && user && !loading && <ScrollView style={_styles.content}>
-        <View style={{flexDirection: "row", flex: 1}}>
+        <View style={{flexDirection: "row", flex: 1, marginHorizontal: 20}}>
             {/* First Section */}
             <ConditionalView 
-              style={_styles.section} 
+              style={{..._styles.section, flex: 2}} 
               isVisible={organization.id != ""}
             >
               <View style={_styles.sectionHeader}>
@@ -183,7 +185,7 @@ const OrganizationView = () => {
                   />
               ))}
               <View style ={{marginTop: 30}}></View>
-              {!loading && isAdmin && <>
+              {!loading && isAdmin && <View style={{flexDirection: "row", justifyContent:"space-evenly"}}>
               <UserSelector users={inviteAbleUsers} selectedUsers={invitedUsers} setSelectedUsers={setInvitedUsers}/>
               <Text style={styles.errorText}>{inviteErrorText}</Text>
               <TouchableOpacity style={_styles.addButton}
@@ -202,12 +204,12 @@ const OrganizationView = () => {
           
                   <Text style={_styles.addButtonText}>Invite +</Text>
               </TouchableOpacity>
-              </>}
+              </View>}
           </ConditionalView>
         </View>
 
       {/* Create org Button*/}
-      <TouchableOpacity style={_styles.addButton}
+      <TouchableOpacity style={{..._styles.addButton, marginLeft: 20}}
         onPress={() => {
           router.push("/create_organization")
         }}>
@@ -225,7 +227,7 @@ const OrganizationView = () => {
 const _styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: styles.container.backgroundColor,
   },
   header: {
     padding: 16,
