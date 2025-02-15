@@ -113,10 +113,11 @@ const OrganizationView = () => {
 
     
     <SafeAreaView style={_styles.container}>
-      <Text style={{...TextStyles.h1, marginVertical: 20, color: "white", marginHorizontal: 40}}>Huro VR</Text>
-      {!loading && <View style={{..._styles.header, marginHorizontal: 20}}>
+      <Text style={{...TextStyles.h1, marginTop: 20, color: "white", marginHorizontal: 40, marginBottom: 0}}>Huro VR</Text>
+      <View style={{ height: 1, backgroundColor: '#ccc', width: '60%', marginVertical: 10, marginLeft: 40 }} />
+      {!loading && <View style={{..._styles.header, marginHorizontal: 20, flexDirection: "row", alignItems:"flex-end"}}>
         {/*<Text style={_styles.headerText}>{organization?.name}</Text>*/}
-        
+          <Text style={{...TextStyles.h3, color: "white", marginRight: 20, fontWeight: 200}}>Organization:</Text>
           <DropdownMenu 
             defaultValue={organization?.name} 
             options={allOrgs.map((org) => org.name)}
@@ -190,10 +191,16 @@ const OrganizationView = () => {
                   />
               ))}
               <View style ={{marginTop: 30}}></View>
-              {!loading && isAdmin && <View style={{flexDirection: "row", justifyContent:"space-evenly"}}>
-              <UserSelector users={inviteAbleUsers} selectedUsers={invitedUsers} setSelectedUsers={setInvitedUsers}/>
+              {!loading && isAdmin && <View style={{flexDirection: "row", justifyContent:"center", alignItems: "center"}}>
+              <UserSelector 
+                users={inviteAbleUsers} 
+                selectedUsers={invitedUsers} 
+                setSelectedUsers={setInvitedUsers}
+                dropdownStyle={{backgroundColor: styles.container.backgroundColor}}
+                
+                />
               <Text style={styles.errorText}>{inviteErrorText}</Text>
-              <TouchableOpacity style={_styles.addButton}
+              <TouchableOpacity style={{..._styles.addButton, marginLeft: 5 }}
                 onPress={() => {
                   if (invitedUsers.length == 0) setInviteError("Must invite at least one user.")
                   setInviteLoading(true)

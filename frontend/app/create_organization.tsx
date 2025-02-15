@@ -23,7 +23,6 @@ const CreateOrganization = () => {
         <SafeAreaView style={{...styles.container}}>
             {user && <CreateOrganizationForm 
                 user={user} 
-                initialVisibility={true}
                 onSubmit={(org) => {
                     router.push({
                         pathname: '/home',

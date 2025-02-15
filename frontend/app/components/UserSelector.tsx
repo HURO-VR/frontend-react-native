@@ -9,6 +9,8 @@ import {
   FlatList,
   StyleSheet,
   Keyboard,
+  StyleProp,
+  ViewStyle,
 } from 'react-native';
 import { styles } from '../styles/styles';
 
@@ -17,9 +19,10 @@ interface Props {
     users: UserMetaData[],
     selectedUsers: UserMetaData[],
     setSelectedUsers: any
+    dropdownStyle?: StyleProp<ViewStyle>
 }
 
-const UserSelector = ({users, selectedUsers, setSelectedUsers}: Props) => {
+const UserSelector = ({users, selectedUsers, setSelectedUsers, dropdownStyle}: Props) => {
   const [inputValue, setInputValue] = useState('');
   const [suggestions, setSuggestions] = useState([] as UserMetaData[]);
   const [isFocused, setIsFocused] = useState(false);
@@ -73,7 +76,7 @@ const UserSelector = ({users, selectedUsers, setSelectedUsers}: Props) => {
   );
 
   return (
-    <View style={{}}>
+    <View style={{flex: 1}}>
       <View style={{}}>
         <FlatList
           data={selectedUsers}
@@ -105,7 +108,7 @@ const UserSelector = ({users, selectedUsers, setSelectedUsers}: Props) => {
           data={suggestions}
           renderItem={renderSuggestion}
           keyExtractor={(item) => item.uid}
-          style={styles.suggestionsList}
+          style={[styles.suggestionsList, dropdownStyle]}
           keyboardShouldPersistTaps="never"
         />
       )}
