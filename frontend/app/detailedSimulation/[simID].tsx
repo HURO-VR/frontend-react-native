@@ -1,23 +1,21 @@
 import React, { useEffect } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, ViewStyle, StyleProp } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { SimulationMetaData, SimulationRun } from '@/firebase/models';
 import { useLocalSearchParams } from 'expo-router';
 import { FBStorage } from '@/firebase/storage';
 
+interface Props {
+  metadata: SimulationMetaData
+  viewStyle?: StyleProp<ViewStyle>
+  simID?:string
+}
+const DetailedSimulation = ({metadata, viewStyle, simID}: Props) => {
 
-const DetailedSimulation = () => {
-
-  const { simID } = useLocalSearchParams();
-  const [metadata, setMetadata] = React.useState<SimulationMetaData | null>(null);
   const [simRuns, setSimRuns] = React.useState<SimulationRun[]>([]);
 
   useEffect(() => {
-    FBStorage.getSimulationMetaData("TEST_ORG", simID as string).then((data) => {
-      setMetadata(data);
-    });
-
-    FBStorage.getSimulationRuns("TEST_ORG", simID as string).then((data) => {
+    FBStorage.getCollection(`organizations/TEST_ORG/simulations/${simID}/runs`).then((data) => {
       setSimRuns(data);
     });
   }, []);
@@ -40,9 +38,9 @@ const DetailedSimulation = () => {
   );
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, viewStyle]}>
       <View style={styles.header}>
-        <Text style={styles.title}>{metadata?.name}</Text>
+        <Text style={styles.title}>{metadata.name}</Text>
         <View style={styles.headerIcons}>
           <MaterialIcons name="content-copy" size={24} color="#666" />
           <MaterialIcons name="delete" size={24} color="#666" style={styles.iconSpacing} />
@@ -53,7 +51,7 @@ const DetailedSimulation = () => {
         {/* Left Panel */}
         <View style={styles.leftPanel}>
           <View style={styles.section}>
-            <Text style={styles.sectionLabel}>Algorithm</Text>
+            <Text style={styles.panelTitle}>Environment Setup</Text>
             <Text style={styles.sectionValue}>{metadata?.algorithmFilename}</Text>
           </View>
 
@@ -127,7 +125,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 10,
     padding: 20,
-    margin: 10,
+    width: "100%"
   },
   header: {
     flexDirection: 'row',
