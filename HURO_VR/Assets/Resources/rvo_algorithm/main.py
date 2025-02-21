@@ -1,4 +1,3 @@
-import sys
 from RVO import RVO_update, compute_V_des
 from huro_vr import get_obstacles, get_boundary, get_robot_radius, Velocity, apply_velocity, get_robots
 

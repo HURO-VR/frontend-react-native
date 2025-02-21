@@ -1,11 +1,7 @@
-from math import ceil, floor, sqrt
-import copy
+from math import sqrt
 from numpy_funcs import arange
-
-from math import cos, sin, tan, atan2, asin
-
+from math import cos, sin, atan2, asin
 from math import pi as PI
-
 
 
 def distance(pose1, pose2):
