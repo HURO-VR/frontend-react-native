@@ -12,12 +12,12 @@ public class Robot
     public XYZ curr_velocity;
     public float max_velocity;
     public float radius;
+    public string name;
 }
 
 public class Boundary
 {
-    public float x;
-    public float y;
+    public XYZ position;
     public float width;
     public float length;
 }

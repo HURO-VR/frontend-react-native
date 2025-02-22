@@ -1,5 +1,5 @@
 from typing import NamedTuple
-import UnityEngine
+
 
 ROBOT_SCRIPT = "RobotController"
 ROBOT_TAG = "Robot"

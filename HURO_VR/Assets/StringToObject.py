@@ -7,8 +7,10 @@ class StringToObject:
 
     def _convert_dict_to_object(self, dictionary):
         for key, value in dictionary.items():
-            if isinstance(value, dict):
+            if type(value) is dict:
                 value = StringToObject(json.dumps(value))  # Recursively convert
+            if (type(value) is list) and (len(value) > 0) and (type(value[0]) is dict):
+                value = [StringToObject(json.dumps(item)) for item in value]  # Recursively convert
             setattr(self, key, value)
 
     def __repr__(self):
