@@ -4,20 +4,27 @@ using UnityEngine;
 using Newtonsoft.Json;
 using System.IO;
 using Microsoft.Scripting.Hosting;
+using Unity.VisualScripting;
 
 
 
 
 public class AlgorithmRunner : MonoBehaviour {
 
+
+    private readonly ScriptEngine engine = Python.CreateEngine();
+    private dynamic algorithm;
+    bool initAlgorithm = false;
+    SceneData sceneData;
+
     private void Start()
     {
+
     }
 
-    Robot InitRobotData()
+
+    void SetRobotData(Robot robot, GameObject robot_go)
     {
-        Robot robot = new Robot();
-        GameObject robot_go = GameObject.FindGameObjectWithTag("Robot");
         Transform robot_transform = robot_go.transform;
         Vector3 robot_velocity = robot_go.GetComponent<Rigidbody>().velocity;
         RobotController robotController = robot_go.GetComponent<RobotController>();
@@ -41,9 +48,37 @@ public class AlgorithmRunner : MonoBehaviour {
 
         robot.max_velocity = robotController.maxVelocity;
         robot.radius = renderer.bounds.size.x / 2;
-
-        return robot;
     }
+
+    Robot[] InitRobotData()
+    {
+        GameObject[] robot_gos = GameObject.FindGameObjectsWithTag("Robot");
+        Robot[] robots = new Robot[robot_gos.Length];
+        int i = 0;
+        foreach (GameObject robot_go in robot_gos)
+        {
+            robots[i] = new();
+            Robot robot = robots[i];
+            SetRobotData(robot, robot_go);
+        }
+        return robots;
+    }
+
+    void UpdateRobotData()
+    {
+        GameObject[] robots = GameObject.FindGameObjectsWithTag("Robot");
+        foreach (var robot in sceneData.robots)
+        {
+            foreach (var go in robots)
+            {
+                if (go.name == robot.name)
+                {
+                    SetRobotData(robot, go);
+                }
+            }
+        }
+    }
+
     Boundary InitBoundary()
     {
         Boundary boundary = new Boundary();
@@ -69,6 +104,7 @@ public class AlgorithmRunner : MonoBehaviour {
             obstacles[i].position.x = go.transform.localPosition.x;
             obstacles[i].position.y = go.transform.localPosition.y;
             obstacles[i].position.z = go.transform.localPosition.z;
+            obstacles[i].isDynamic = false;
 
             Renderer renderer = go.GetComponent<Renderer>();
             obstacles[i].radius = Mathf.Max(renderer.bounds.size.z, renderer.bounds.size.x);
@@ -82,15 +118,18 @@ public class AlgorithmRunner : MonoBehaviour {
     {
         SceneData sceneData = new()
         {
-            robots = new Robot[1],
+            robots = InitRobotData(),
             obstacles = InitObstacles(),
             boundary = InitBoundary()
         };
-
-        sceneData.robots[0] = InitRobotData();        
         sceneData.robot_radius = sceneData.robots[0].radius;
 
         return sceneData;
+    }
+
+    void UpdateSceneData()
+    {
+        UpdateRobotData();
     }
 
     void SetImportPaths(ScriptEngine engine)
@@ -106,21 +145,27 @@ public class AlgorithmRunner : MonoBehaviour {
         engine.SetSearchPaths(searchPaths);
     }
 
+    void InitAlgorithm()
+    {
+        Debug.Log("Executing Main Function at " + "main.py");
+        SetImportPaths(engine);
+        algorithm = engine.ExecuteFile(Application.dataPath + @"\main.py");
+        sceneData = InitSceneData();
+        initAlgorithm = true;
+    }
 
-    // Use this for initialization
     void RunRVOAlgorithm()
     {
-        var engine = Python.CreateEngine();
-
-        SetImportPaths(engine);
-
-        dynamic py = engine.ExecuteFile(Application.dataPath + @"\main.py");
-        //Debug.Log("Executing Main Function at " + "main.py");
-        var sceneData = InitSceneData();
-        string json = JsonConvert.SerializeObject(sceneData);
-        //Debug.Log(json);
-        string output = py.main(json);
-        //Debug.Log(output);
+        if (!initAlgorithm)
+        {
+            InitAlgorithm();
+        } else
+        {
+            UpdateSceneData();
+        }
+        
+        string input = JsonConvert.SerializeObject(sceneData);
+        string output = algorithm.main(input);
         var newVelocities = JsonConvert.DeserializeObject<float[][]>(output);
         SetNewVelocities(newVelocities, sceneData.robots);
     }
@@ -145,7 +190,7 @@ public class AlgorithmRunner : MonoBehaviour {
     int cycles = 0;
     // Update is called once per frame
     void FixedUpdate () {
-        if (cycles % 10 != 0)
+        if (cycles % 5 != 0)
         {
             cycles++;
             return;

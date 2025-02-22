@@ -26,6 +26,7 @@ public class Obstacle
 {
     public XYZ position;
     public float radius;
+    public bool isDynamic;
 }
 
 public class SceneData
