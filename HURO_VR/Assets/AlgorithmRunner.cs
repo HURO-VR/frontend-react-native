@@ -187,15 +187,8 @@ public class AlgorithmRunner : MonoBehaviour {
         }
     }
 
-    int cycles = 0;
     // Update is called once per frame
     void FixedUpdate () {
-        if (cycles % 5 != 0)
-        {
-            cycles++;
-            return;
-        }
         RunRVOAlgorithm();
-        cycles = 1;
 	}
 }
