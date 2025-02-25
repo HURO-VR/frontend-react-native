@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.meta.xr.mrutilitykit": "72.0.0",
     "com.meta.xr.sdk.interaction.ovr": "72.0.0",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.2d.tilemap": "1.0.0",
