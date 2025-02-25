@@ -10,7 +10,6 @@ public class TrailRendererController : MonoBehaviour
     public float trailWidth = 0.1f; // Constant width of the trail
     public Color trailColor = Color.white; // Base color of the trail
     public bool colorChangesOverTime = false; // Toggle color change over time
-    public Gradient colorOverTime; // Gradient for color change over time
 
     private TrailRenderer trailRenderer;
     private float timeSinceStart = 0f;
@@ -35,7 +34,7 @@ public class TrailRendererController : MonoBehaviour
         // Update the trail's color over time if enabled
         if (colorChangesOverTime)
         {
-            UpdateTrailColorOverTime();
+            UpdateRainbowColorOverTime();
         }
     }
 
@@ -53,16 +52,16 @@ public class TrailRendererController : MonoBehaviour
         trailRenderer.material.color = trailColor;
     }
 
-    void UpdateTrailColorOverTime()
+    void UpdateRainbowColorOverTime()
     {
-        // Calculate the normalized time (0 to 1) based on the trail's duration
+        // Calculate a normalized time value (0 to 1) based on the trail's duration
         float normalizedTime = timeSinceStart / trailTime;
 
-        // Evaluate the gradient at the current time
-        Color currentColor = colorOverTime.Evaluate(normalizedTime);
+        // Generate a rainbow color based on the normalized time
+        Color rainbowColor = GetRainbowColor(normalizedTime);
 
         // Apply the color to the trail
-        trailRenderer.material.color = currentColor;
+        trailRenderer.material.color = rainbowColor;
 
         // Increment the time since start
         timeSinceStart += Time.deltaTime;
@@ -72,6 +71,13 @@ public class TrailRendererController : MonoBehaviour
         {
             timeSinceStart = 0f;
         }
+    }
+
+    Color GetRainbowColor(float time)
+    {
+        // Map the time value to a hue in the HSV color space (0 to 1)
+        float hue = time % 1f; // Ensure the value stays within 0-1
+        return Color.HSVToRGB(hue, 1f, 1f); // Convert HSV to RGB
     }
 
     // Public method to toggle the trail on/off
