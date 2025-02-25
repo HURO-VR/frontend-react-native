@@ -20,6 +20,7 @@ public class TrailRendererController : MonoBehaviour
         if (!TryGetComponent(out trailRenderer))
         {
             trailRenderer = gameObject.AddComponent<TrailRenderer>();
+            trailRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         }
 
         // Initialize the trail settings
