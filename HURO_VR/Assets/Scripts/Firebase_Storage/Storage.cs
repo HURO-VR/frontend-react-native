@@ -1,18 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using Firebase.Extensions;
 using Firebase.Storage;
 using Firebase.Firestore;
-using Unity.Barracuda;
-using Unity.VisualScripting;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Networking;
-using System.Drawing;
 using System.Threading.Tasks;
-using System.IO;
 
 public class FileType
 {
