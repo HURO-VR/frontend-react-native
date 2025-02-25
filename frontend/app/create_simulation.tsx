@@ -1,4 +1,4 @@
-import { Text, View, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import { Text, View, TextInput, TouchableOpacity, StyleSheet, Image } from "react-native";
 import FileUpload from "./components/fileUpload";
 import { useEffect, useState } from "react";
 import { DefaultStyles } from "./styles/DefaultStyles";
@@ -6,15 +6,21 @@ import TextStyles from "./styles/textStyles";
 import { FBStorage } from "@/firebase/storage";
 import { v4 as uuid } from "uuid";
 import { useRouter } from "expo-router";
+import CustomDropdown from "./components/dropdown";
+import DropdownMenu from "./components/dropdown";
+import { AcceptedFileTypes, FileUploadType, EnvImages, EnvironmentTypes } from "@/firebase/models";
 
 export default function SimulationCreation() {
   const [uploadTrigger, setUploadTrigger] = useState(false);
   const [simulationID, setSimulationID] = useState(uuid());
   const [filesUploaded, setFilesUploaded] = useState(false);
-  const [algorithmName, setAlgorithmName] = useState("Example");
+  const [algorithmName, setAlgorithmName] = useState("");
   const [algorithmFileName, setAlgorithmFileName] = useState(""); // Store uploaded file name
   const [simulationName, setSimulationName] = useState("");
-  const [trialNumber, setTrialNumber] = useState(1);
+  const [environment, setEnvironment] = useState(EnvironmentTypes.emptyRoom);
+  const [algorithmError, setAlgorithmError] = useState("");
+  const [modelError, setModelError] = useState("");
+  const [envJPG, setEnvJPG] = useState(EnvImages[environment]);
 
   const router = useRouter();
 
@@ -23,42 +29,25 @@ export default function SimulationCreation() {
     return now.toISOString().replace(/[-:T]/g, "").slice(0, 13); // YYYYMMDD-HHMM
   };
 
-  const fetchAndSetTrialNumber = async (algoName: string) => {
-    const timestampPrefix = getTimestampPrefix();
-    const baseName = `${algoName}-${timestampPrefix}`;
-
-    try {
-      // const existingSimulations = await FBStorage.getExistingSimulations(baseName);
-      // let maxTrial = 0;
-      // existingSimulations.forEach((simName: string) => {
-      //   const match = simName.match(/-(\d+)$/);
-      //   if (match) {
-      //     const num = parseInt(match[1], 10);
-      //     if (!isNaN(num) && num > maxTrial) {
-      //       maxTrial = num;
-      //     }
-      //   }
-      // });
-      let maxTrial = Math.random() * 100;
-      setTrialNumber(maxTrial + 1);
-      setSimulationName(`${baseName}-${maxTrial + 1}`);
-    } catch (error) {
-      console.error("Error fetching existing simulations:", error);
-      setTrialNumber(1);
-      setSimulationName(`${baseName}-1`);
-    }
-  };
+  useEffect(() => {
+    setSimulationName(algorithmName + "--" + getTimestampPrefix());
+  }, [algorithmName]);
 
   useEffect(() => {
-    fetchAndSetTrialNumber(algorithmName);
-  }, [algorithmName]);
+    setEnvJPG(EnvImages[environment]);  
+  }, [environment]);
 
   const uploadMetaData = async () => {
     let done = await FBStorage.uploadSimulationMetaData(
       "TEST_ORG",
-      simulationID,
-      simulationName,
-      algorithmFileName // Use the actual uploaded ONNX file name
+      {
+        ID: simulationID,
+        name: simulationName,
+        algorithmFilename: algorithmFileName,
+        dateCreated: new Date().toISOString(),
+        environmentName: environment,
+        runs: 0
+    } // Use the actual uploaded ONNX file name
     )
       .then(() => true)
       .catch((e) => {
@@ -66,7 +55,7 @@ export default function SimulationCreation() {
         return false;
       });
 
-    if (done) router.push("/view_simulations");
+    if (done) router.push("/home");
   };
 
   useEffect(() => {
@@ -86,19 +75,20 @@ export default function SimulationCreation() {
 
       <View style={{ marginVertical: 10 }} />
 
-      {/* Algorithm Name Input (User-Defined) */}
-      <Text style={TextStyles.h6}>Algorithm Name:</Text>
-      <TextInput
-        style={{ ...DefaultStyles.input, width: "50%", backgroundColor: "#fff" }}
-        onChangeText={setAlgorithmName}
-        value={algorithmName}
-        maxLength={50}
-      />
+      {/* User Defined Options Section */}
+      <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: "90%", marginHorizontal: 20}}>
 
-      <View style={{ marginVertical: 15 }} />
-      <Text style={TextStyles.subtitle}>
-        1. Upload your robot algorithm [Supported formats: .onnx] (*Required):
-      </Text>
+        {/* Algorithm Name and File Upload Section */}
+        <View style={{flex: 1, marginRight: 10, alignItems: "flex-end"}}>
+          {/* Algorithm Name Input (User-Defined) */}
+          <Text style={TextStyles.h6}>Algorithm Name:</Text>
+          <TextInput
+            style={{ ...DefaultStyles.input, width: "50%", backgroundColor: "#fff" }}
+            onChangeText={setAlgorithmName}
+            value={algorithmName}
+            placeholder="Enter Algorithm Name"
+            maxLength={50}
+          />
 
       {/* File Upload for Algorithm (Updates algorithmFileName) */}
       <FileUpload
@@ -107,41 +97,65 @@ export default function SimulationCreation() {
           setFilesUploaded(true); // Signal that all files are uploaded
         }}
         onFilePicked={(fileName) => {
-            // Ensure fileName is a valid string before updating state
-          if (fileName && typeof fileName === "string" && fileName.toLowerCase().endsWith(".onnx")) {
+          // Ensure fileName is a valid string before updating state
+          if (AcceptedFileTypes.checkFilename(fileName, FileUploadType.algorithm)) {
             setAlgorithmFileName(fileName); // Store uploaded ONNX file name 
             console.log("Algorithm file name set to:", fileName);
+            setAlgorithmError(""); // Clear any previous error
+            return true;
           } else {
             console.warn("Invalid file name received:", fileName);
-            window.alert("Please upload a valid ONNX file.");
+            setAlgorithmError("Please upload a valid ONNX file.");
+            return false;
           }
         }}
         maxSize={5 * 1024 * 1024} // 5MB
         uploadTrigger={uploadTrigger}
-        fileType={FBStorage.FileUploadType.algorithm}
+        fileType={FileUploadType.algorithm}
         simulationID={simulationID}
       />
+      {algorithmError.length > 0 && <Text style={{ color: "red" }}>{algorithmError}</Text>}
 
-      {/* Uploaded Algorithm File Name (Read-Only) */}
-      {/* <Text style={TextStyles.h6}>Algorithm File Name:</Text>
-      <TextInput
-        style={{ ...DefaultStyles.input, width: "50%", backgroundColor: "#f0f0f0" }}
-        value={algorithmFileName}
-        editable={false} // Display but not editable
-      /> */}
 
+      {/* Model Upload (Optional) */}
       <View style={{ marginVertical: 10 }} />
         <Text style={TextStyles.subtitle}>
           2. Upload your 3D robot model [Default: sphere] (Optional):
         </Text>
       <FileUpload
         onUploadComplete={() => {}}
+        onFilePicked={(filename) => {
+          if (AcceptedFileTypes.checkFilename(filename, FileUploadType.model)) {
+            setModelError(""); // Clear any previous error
+            return true;
+          } else {
+            setModelError("Please upload a valid GLB file.");
+            return false;
+          }
+        }}
         maxSize={5 * 1024 * 1024} // 5MB
         uploadTrigger={uploadTrigger}
-        fileType={FBStorage.FileUploadType.model}
+        fileType={FileUploadType.model}
         simulationID={simulationID}
       />
-      <View style={{ marginVertical: 10 }} />
+      {modelError.length > 0 && <Text style={{ color: "red" }}>{modelError}</Text>}
+        </View>
+        {/* Environment Selection Section */}
+        <View style={{flex: 1, marginLeft: 10, alignItems: "flex-start"}}>
+            <Text style={TextStyles.h6}>Environment:</Text>
+            <DropdownMenu
+              options={Object.values(EnvironmentTypes)}
+              defaultValue={Object.values(EnvironmentTypes)[0]}
+              onSelect={(option) => {
+                setEnvironment(option as EnvironmentTypes);
+              }}
+            />
+            <Image 
+              source={envJPG} 
+              style={{ width: "40%", marginTop: 20 }} 
+            />
+        </View>
+      </View>
 
       {/* Auto-filled Simulation Name (Non-editable) */}
       <Text style={TextStyles.h6}>Simulation Name:</Text>

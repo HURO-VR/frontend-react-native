@@ -83,7 +83,7 @@ public class ModelTester : MonoBehaviour
     void SelectSimulation(Database_Models.SimulationMetaData bundle)
     {
         selectedSimulation = bundle;
-        storage.DownloadFile(simMetaDatas[0].algorithmName, FileType.Algorithm, simMetaDatas[0].ID, (data) =>
+        storage.DownloadFile(simMetaDatas[0].algorithmFilename, FileType.Algorithm, simMetaDatas[0].ID, (data) =>
         {
             modelData = data;
             downloadedModelData = true;
@@ -106,7 +106,7 @@ public class ModelTester : MonoBehaviour
         NNModel model = OnnxDataToNNModel(modelData);
         Debug.Log("Loaded model with data");
         SetMLEnvironment(selectedSimulation.environmentName);
-        SetModel(model, selectedSimulation.algorithmName);
+        SetModel(model, selectedSimulation.algorithmFilename);
         downloadedModelData = false;
     }
 
@@ -136,8 +136,8 @@ public class ModelTester : MonoBehaviour
 
     void InitializeAgent()
     {
-        agent.SetModel(selectedSimulation.algorithmName, model);
-        print($"Testing model: {selectedSimulation.algorithmName}");
+        agent.SetModel(selectedSimulation.algorithmFilename, model);
+        print($"Testing model: {selectedSimulation.algorithmFilename}");
         agent.GetComponent<BehaviorParameters>().BehaviorType = BehaviorType.InferenceOnly;
         agent.maxRuns = RunsPerModel;
         agent.SetTesting(true);
@@ -179,7 +179,7 @@ public class ModelTester : MonoBehaviour
         ONNXModelConverter onnx = new ONNXModelConverter(true, false, true);
         Model model = onnx.Convert(data);
         NNModel nnModel = ModelToNNModel(model);
-        nnModel.name = selectedSimulation.algorithmName;
+        nnModel.name = selectedSimulation.algorithmFilename;
         return nnModel;
     }
 

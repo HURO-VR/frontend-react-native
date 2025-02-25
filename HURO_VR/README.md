@@ -54,3 +54,5 @@ void Example() {
 
 `void SelectSimulation(Database_Models.SimulationMetaData bundle)` - Selects `bundle` as the simulation to run.
 
+### Running Python In Unity
+[Example](https://mikalikes.men/use-python-with-unity-3d-the-definitive-guide/)

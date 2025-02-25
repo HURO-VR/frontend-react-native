@@ -124,7 +124,7 @@ public class Storage : MonoBehaviour
                     switch (pair.Key)
                     {
                         case "algorithmName":
-                            simulationMetaDatas[count].algorithmName = (string)pair.Value;
+                            simulationMetaDatas[count].algorithmFilename = (string)pair.Value;
                             break;
                         case "environmentName":
                             simulationMetaDatas[count].environmentName = (string)pair.Value;
