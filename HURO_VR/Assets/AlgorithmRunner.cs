@@ -60,7 +60,6 @@ public class AlgorithmRunner : MonoBehaviour {
             robots[i] = new();
             Robot robot = robots[i];
             SetRobotData(robot, robot_go);
-            i++;
         }
         return robots;
     }
@@ -72,7 +71,7 @@ public class AlgorithmRunner : MonoBehaviour {
         {
             foreach (var go in robots)
             {
-                if (go != null && robot != null && go.name == robot.name)
+                if (go.name == robot.name)
                 {
                     SetRobotData(robot, go);
                 }
