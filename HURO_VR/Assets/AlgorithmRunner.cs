@@ -60,6 +60,7 @@ public class AlgorithmRunner : MonoBehaviour {
             robots[i] = new();
             Robot robot = robots[i];
             SetRobotData(robot, robot_go);
+            i++;
         }
         return robots;
     }
