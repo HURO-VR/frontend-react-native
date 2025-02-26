@@ -6,14 +6,17 @@ using System;
 
 public class TelemetryRecorder : MonoBehaviour
 {
-    public float recordInterval = 1f; // Time interval (in seconds) to record data
+    public bool recordEveryFrame = true; // Record data every frame
+    public float recordInterval = 1f; // Time interval (in seconds) to record data (if not recording every frame)
     private float timer = 0f;
     private string filePath;
+
+    private List<TelemetryData> telemetryData = new List<TelemetryData>();
 
     void Start()
     {
         // Set the file path for the telemetry data
-        filePath = Path.Combine(Application.dataPath, "Scenes/Maze Scene/TelemetryData.txt");
+        filePath = Path.Combine(Application.persistentDataPath, "telemetry.json");
 
         // Clear the file if it already exists
         if (File.Exists(filePath))
@@ -21,40 +24,79 @@ public class TelemetryRecorder : MonoBehaviour
             File.WriteAllText(filePath, string.Empty);
         }
 
-        // Write the header to the file
-        string header = "Timestamp, Position (X, Y, Z), Rotation (X, Y, Z)";
-        File.AppendAllText(filePath, header + Environment.NewLine);
+        // Initialize the telemetry data list
+        telemetryData = new List<TelemetryData>();
     }
 
     void Update()
     {
-        // Update the timer
-        timer += Time.deltaTime;
-
-        // Check if it's time to record data
-        if (timer >= recordInterval)
+        if (recordEveryFrame)
         {
             RecordTelemetry();
-            timer = 0f; // Reset the timer
+        }
+        else
+        {
+            // Update the timer for interval-based recording
+            timer += Time.deltaTime;
+            if (timer >= recordInterval)
+            {
+                RecordTelemetry();
+                timer = 0f; // Reset the timer
+            }
         }
     }
 
     void RecordTelemetry()
     {
-        // Get the current timestamp
-        string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+        // Create a new telemetry entry
+        TelemetryData entry = new TelemetryData
+        {
+            Timestamp = Time.time,
+            Position = transform.position,
+            Rotation = transform.rotation.eulerAngles,
+            DeltaRotation = CalculateDeltaRotation(transform.rotation)
+        };
 
-        // Get the position and rotation of the GameObject
-        Vector3 position = transform.position;
-        Vector3 rotation = transform.rotation.eulerAngles;
+        // Add to the list
+        telemetryData.Add(entry);
 
-        // Format the data as a string
-        string data = $"{timestamp}, {position.x:F2}, {position.y:F2}, {position.z:F2}, {rotation.x:F2}, {rotation.y:F2}, {rotation.z:F2}";
+        // Log the data for debugging
+        Debug.Log($"Recorded: {JsonUtility.ToJson(entry)}");
+    }
 
-        // Output the data to the Unity Debug Log
-        Debug.Log(data);
+    private Vector3 CalculateDeltaRotation(Quaternion currentRotation)
+    {
+        // Calculate change in rotation (if needed)
+        // You can compare with the previous frame's rotation
+        return Vector3.zero; // Replace with actual calculation
+    }
 
-        // Append the data to the file
-        File.AppendAllText(filePath, data + Environment.NewLine);
+    public string GetTelemetryDataAsJson()
+    {
+        // Convert the list to JSON
+        TelemetryDataWrapper wrapper = new TelemetryDataWrapper { Data = telemetryData };
+        return JsonUtility.ToJson(wrapper, true);
+    }
+
+    public void SaveTelemetryDataToFile()
+    {
+        string jsonData = GetTelemetryDataAsJson();
+        File.WriteAllText(filePath, jsonData);
+        Debug.Log("Telemetry data saved to: " + filePath);
+    }
+
+    [System.Serializable]
+    public class TelemetryData
+    {
+        public float Timestamp;
+        public Vector3 Position;
+        public Vector3 Rotation;
+        public Vector3 DeltaRotation;
+    }
+
+    [System.Serializable]
+    public class TelemetryDataWrapper
+    {
+        public List<TelemetryData> Data;
     }
 }
