@@ -140,7 +140,7 @@ public class Storage : MonoBehaviour
         return await Task.FromResult(simulationMetaDatas);
     }
 
-    public async void UploadMetadat(string path, object data)
+    public async void UploadMetadata<T>(string path, T data)
     {
         DocumentReference docRef = firestore.Document(path);
         try

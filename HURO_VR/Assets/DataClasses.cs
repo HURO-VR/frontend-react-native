@@ -77,7 +77,7 @@ public class Obstacle
         this.isDynamic = false;
 
         Renderer renderer = go.GetComponent<Renderer>();
-        this.radius = Mathf.Max(renderer.bounds.size.z, renderer.bounds.size.x) / 2;
+        this.radius = (renderer.bounds.size.z + renderer.bounds.size.x) / 2;
 
         // If object is close to a square, represent as a circle.
         //bool shouldAbstract = !(renderer.bounds.size.z < renderer.bounds.size.x + squareThreshold && renderer.bounds.size.z > renderer.bounds.size.x - squareThreshold);

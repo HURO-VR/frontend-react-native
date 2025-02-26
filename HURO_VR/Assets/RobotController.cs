@@ -28,6 +28,7 @@ public class RobotController : MonoBehaviour
 
     public void GoalReached()
     {
+        Debug.LogWarning(gameObject.name + " reached goal.");
         goalReached = true;
         body.velocity = Vector3.zero;
         body.isKinematic = true;
