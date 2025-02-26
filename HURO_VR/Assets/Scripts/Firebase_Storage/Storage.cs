@@ -140,6 +140,20 @@ public class Storage : MonoBehaviour
         return await Task.FromResult(simulationMetaDatas);
     }
 
+    public async void UploadMetadat(string path, object data)
+    {
+        DocumentReference docRef = firestore.Document(path);
+        try
+        {
+            await docRef.SetAsync(data);
+            Debug.Log("Data uploaded successfully to " + path);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError("Error uploading data: " + e.Message);
+        }
+    }
+
 
 
 
