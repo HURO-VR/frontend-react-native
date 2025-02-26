@@ -323,7 +323,7 @@ PrefabInstance:
     - target: {fileID: 3613868102660323786, guid: c2e00db6d2dfa42ac8d821db8d493a44, type: 3}
       propertyPath: SceneSettings.RoomPrefabs.Array.data[0]
       value: 
-      objectReference: {fileID: 8445361484322836604, guid: 610068d522bcbf042b69964888a7f1e6, type: 3}
+      objectReference: {fileID: 4681838206798608616, guid: 1d672934adecc554d8cda339e7f090bd, type: 3}
     - target: {fileID: 3613868102660323786, guid: c2e00db6d2dfa42ac8d821db8d493a44, type: 3}
       propertyPath: SceneSettings.RoomPrefabs.Array.data[10]
       value: 
@@ -1355,7 +1355,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3027393191021768787, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
       propertyPath: mrukObstacleLabel
-      value: 65528
+      value: 7064
       objectReference: {fileID: 0}
     - target: {fileID: 6958065787607990278, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
       propertyPath: mrukObstacleLabel
@@ -2238,6 +2238,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 296921910866118287, guid: 4ef9031d650dfd747ab535e661f644ca, type: 3}
+      propertyPath: CheckOverlaps
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 296921910866118287, guid: 4ef9031d650dfd747ab535e661f644ca, type: 3}
       propertyPath: SurfaceClearanceDistance
       value: 0.2

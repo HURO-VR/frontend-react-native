@@ -23,7 +23,14 @@ public class RobotController : MonoBehaviour
 
     public void SetVelocity(float x, float z)
     {
-        if (!goalReached) body.velocity = new Vector3(x, 0, z);
+        if (!goalReached)
+        {
+            body.velocity = new Vector3(x, 0, z);
+            Debug.Log("Set velocity " + x + ", " + z);
+        } else
+        {
+            Debug.LogWarning(gameObject.name + " not responding to further input");
+        }
     }
 
     public void GoalReached()
@@ -52,6 +59,6 @@ public class RobotController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (!goal) InitGoal();
     }
 }

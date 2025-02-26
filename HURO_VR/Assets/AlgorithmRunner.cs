@@ -88,6 +88,7 @@ public class AlgorithmRunner : MonoBehaviour {
 
     private float timer = 0f;
     private float interval = 0.25f; // Run every x seconds
+    int step = 0;
     // Update is called once per frame
     void FixedUpdate () {
         if (!algorithmRunning) return;
