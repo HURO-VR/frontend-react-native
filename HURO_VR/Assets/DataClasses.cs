@@ -50,6 +50,29 @@ public class Robot
         this.max_velocity = robotController.maxVelocity;
         this.radius = renderer.bounds.size.x / 2;
     }
+
+    public void DrawGizmo()
+    {
+        if (radius == 0) return;
+        Gizmos.color = Color.red;
+        int lineSegments = 32;
+        Vector3 previousPoint = Vector3.zero;
+        for (int i = 0; i <= lineSegments; i++)
+        {
+            float angle = i * Mathf.PI * 2 / lineSegments;
+            Vector3 newPoint = new Vector3(
+                position.x + Mathf.Cos(angle) * radius,
+                position.y,
+                position.z + Mathf.Sin(angle) * radius
+            );
+
+            if (i > 0)
+            {
+                Gizmos.DrawLine(previousPoint, newPoint);
+            }
+            previousPoint = newPoint;
+        }
+    }
 }
 
 public class Boundary
@@ -57,6 +80,19 @@ public class Boundary
     public XYZ position;
     public float width;
     public float length;
+
+    public void DrawGizmo()
+    {
+        Vector3 p1 = new Vector3(position.x - width / 2, position.y, position.z - length / 2);
+        Vector3 p2 = new Vector3(position.x + width / 2, position.y, position.z - length / 2);
+        Vector3 p3 = new Vector3(position.x + width / 2, position.y, position.z + length / 2);
+        Vector3 p4 = new Vector3(position.x - width / 2, position.y, position.z + length / 2);
+
+        Gizmos.DrawLine(p1, p2);
+        Gizmos.DrawLine(p2, p3);
+        Gizmos.DrawLine(p3, p4);
+        Gizmos.DrawLine(p4, p1);
+    }
 }
  
 
@@ -77,11 +113,35 @@ public class Obstacle
         this.isDynamic = false;
 
         Renderer renderer = go.GetComponent<Renderer>();
-        this.radius = (renderer.bounds.size.z + renderer.bounds.size.x) / 2;
-
+        this.radius = Mathf.Max(renderer.bounds.size.z, renderer.bounds.size.x) / 2;
         // If object is close to a square, represent as a circle.
         //bool shouldAbstract = !(renderer.bounds.size.z < renderer.bounds.size.x + squareThreshold && renderer.bounds.size.z > renderer.bounds.size.x - squareThreshold);
         //if (shouldAbstract) circleAbstraction = GeneratePerimeterCircles(renderer, ABSTRACTION_RADIUS);
+    }
+
+
+
+    public void DrawGizmo()
+    {
+        if (radius == 0) return;
+        Gizmos.color = Color.red;
+        int lineSegments = 32;
+        Vector3 previousPoint = Vector3.zero;
+        for (int i = 0; i <= lineSegments; i++)
+        {
+            float angle = i * Mathf.PI * 2 / lineSegments;
+            Vector3 newPoint = new Vector3(
+                position.x + Mathf.Cos(angle) * radius,
+                position.y,
+                position.z + Mathf.Sin(angle) * radius
+            );
+
+            if (i > 0)
+            {
+                Gizmos.DrawLine(previousPoint, newPoint);
+            }
+            previousPoint = newPoint;
+        }
     }
 
     static List<Obstacle> GeneratePerimeterCircles(Renderer renderer, float radius)

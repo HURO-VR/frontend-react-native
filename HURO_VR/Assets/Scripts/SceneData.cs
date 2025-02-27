@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Meta.XR.MRUtilityKit;
 using UnityEngine;
+using static Meta.XR.MRUtilityKit.Data;
 
 public class SceneDataManager : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class SceneDataManager : MonoBehaviour
     public SceneData data;
     MRUKRoom mruk;
     public MRUKAnchor.SceneLabels mrukObstacleLabel;
+    bool initalized = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -103,6 +105,10 @@ public class SceneDataManager : MonoBehaviour
 
     public void InitSceneData()
     {
+        data ??= new SceneData();
+        if (!mruk) mruk = FindObjectOfType<MRUKRoom>();
+
+        if (initalized) return;
         data.robots = InitRobotData();
         Debug.Log("Initalized Robots: " + data.robots.Length);
 
@@ -115,10 +121,26 @@ public class SceneDataManager : MonoBehaviour
         data.robot_radius = data.robots[0].radius;
         Debug.Log("Initalized Robot Radius: " + data.robot_radius);
 
+        initalized = true;
+
     }
 
     public void UpdateSceneData()
     {
         UpdateRobotData();
+    }
+
+    public void DrawGizmos()
+    {
+        foreach (var obstacle in data.obstacles)
+        {
+            obstacle.DrawGizmo();
+        }
+
+        data.boundary.DrawGizmo();
+        foreach (var robot in  data.robots)
+        {
+            robot.DrawGizmo();
+        }
     }
 }

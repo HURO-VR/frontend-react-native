@@ -17,10 +17,12 @@ public class AlgorithmRunner : MonoBehaviour {
     bool initAlgorithm = false;
     SceneDataManager sceneData;
     bool algorithmRunning = false;
+    [SerializeField] bool displayGizmos;
 
-    private void Start()
+    private void Awake()
     {
-        sceneData = GetComponent<SceneDataManager>();
+
+        if (!sceneData) sceneData = GetComponent<SceneDataManager>();
     }
 
     void SetImportPaths(ScriptEngine engine)
@@ -36,11 +38,12 @@ public class AlgorithmRunner : MonoBehaviour {
         engine.SetSearchPaths(searchPaths);
     }
 
-    void InitAlgorithm()
+    public void InitAlgorithm()
     {
         Debug.Log("Initializing Main Function at " + "main.py");
         SetImportPaths(engine);
         algorithm = engine.ExecuteFile(Application.dataPath + @"\main.py");
+        if (!sceneData) sceneData = GetComponent<SceneDataManager>();
         sceneData.InitSceneData();
         initAlgorithm = true;
     }
@@ -102,11 +105,25 @@ public class AlgorithmRunner : MonoBehaviour {
         }
     }
 
+
+    private void OnDrawGizmos()
+    {
+        if (displayGizmos && sceneData && sceneData.data != null)
+        {
+            sceneData.DrawGizmos();
+        }
+    }
+
     private void Update()
     {
         if (Input.GetKeyUp(KeyCode.Space))
         {
             StartAlgorithm();
+        }
+
+        if (Input.GetKeyUp(KeyCode.I))
+        {
+            InitAlgorithm();
         }
     }
 }

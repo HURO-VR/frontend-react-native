@@ -514,7 +514,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3613868102660323786, guid: c2e00db6d2dfa42ac8d821db8d493a44, type: 3}
       propertyPath: <SceneLoadedEvent>k__BackingField.m_PersistentCalls.m_Calls.Array.data[4].m_MethodName
-      value: StartAlgorithm
+      value: InitAlgorithm
       objectReference: {fileID: 0}
     - target: {fileID: 3613868102660323786, guid: c2e00db6d2dfa42ac8d821db8d493a44, type: 3}
       propertyPath: <SceneLoadedEvent>k__BackingField.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
@@ -1357,6 +1357,10 @@ PrefabInstance:
       propertyPath: mrukObstacleLabel
       value: 7064
       objectReference: {fileID: 0}
+    - target: {fileID: 5437653416407172566, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
+      propertyPath: displayGizmos
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6958065787607990278, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
       propertyPath: mrukObstacleLabel
       value: 65532
@@ -1745,15 +1749,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400004, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.2524001
+      value: -0.5659723
       objectReference: {fileID: 0}
     - target: {fileID: 400004, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 7.5478477
+      value: 3.69359
       objectReference: {fileID: 0}
     - target: {fileID: 400004, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.12302363
+      value: 0.85587424
       objectReference: {fileID: 0}
     - target: {fileID: 400004, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
       propertyPath: m_LocalRotation.w

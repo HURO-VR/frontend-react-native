@@ -29,7 +29,7 @@ public class RobotController : MonoBehaviour
             Debug.Log("Set velocity " + x + ", " + z);
         } else
         {
-            Debug.LogWarning(gameObject.name + " not responding to further input");
+            Debug.Log(gameObject.name + " not responding to further input");
         }
     }
 
