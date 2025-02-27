@@ -1,5 +1,9 @@
 using System.Collections.Generic;
+using Meta.XR.Guides.Editor;
 using UnityEngine;
+using UnityEngine.UIElements;
+using static IronPython.Modules._ast;
+using static IronPython.Modules.PythonIterTools;
 
 public struct XYZ
 {
@@ -13,12 +17,93 @@ public struct XYZ
         this.y = y;
         this.z = z;
     }
+
+    public override string ToString()
+    {
+        return $"(X: {x}, Y: {y}, Z: {z})";
+    }
 }
+public class Circle
+{
+    public float radius;
+    public XYZ position;
+
+    public Circle(XYZ pos, float radius)
+    {
+        this.position.x = pos.x;
+        this.position.y = pos.y;
+        this.position.z = pos.z;
+        this.radius = radius;
+    }
+}
+
+    public class DataUtils {
+    public static void DrawCircleGizmo(XYZ position, float radius, Color color)
+    {
+        Gizmos.color = color;
+        int lineSegments = 32;
+        Vector3 previousPoint = Vector3.zero;
+        for (int i = 0; i <= lineSegments; i++)
+        {
+            float angle = i * Mathf.PI * 2 / lineSegments;
+            Vector3 newPoint = new Vector3(
+                position.x + Mathf.Cos(angle) * radius,
+                position.y,
+                position.z + Mathf.Sin(angle) * radius
+            );
+
+            if (i > 0)
+            {
+                Gizmos.DrawLine(previousPoint, newPoint);
+            }
+            previousPoint = newPoint;
+        }
+    }
+
+    public static void DrawRectangleGizmo(XYZ position, float width, float length)
+    {
+        Vector3 p1 = new Vector3(position.x - width / 2, position.y, position.z - length / 2);
+        Vector3 p2 = new Vector3(position.x + width / 2, position.y, position.z - length / 2);
+        Vector3 p3 = new Vector3(position.x + width / 2, position.y, position.z + length / 2);
+        Vector3 p4 = new Vector3(position.x - width / 2, position.y, position.z + length / 2);
+
+        Gizmos.DrawLine(p1, p2);
+        Gizmos.DrawLine(p2, p3);
+        Gizmos.DrawLine(p3, p4);
+        Gizmos.DrawLine(p4, p1);
+    }
+
+    public static List<Circle> GenerateCircles(XYZ position, float width, float height)
+    {
+        List<Circle> circles = new List<Circle>();
+
+        float maxRadius = Mathf.Min(width, height) / 2f;
+        int cols = Mathf.Max(1, Mathf.FloorToInt(width / (2 * maxRadius)));
+        int rows = Mathf.Max(1, Mathf.FloorToInt(height / (2 * maxRadius)));
+
+        float adjustedRadius = Mathf.Min(width / (2 * cols), height / (2 * rows));
+
+        for (int i = 0; i < cols; i++)
+        {
+            for (int j = 0; j < rows; j++)
+            {
+                float x = -width / 2 + (2 * i + 1) * adjustedRadius;
+                float z = -height / 2 + (2 * j + 1) * adjustedRadius;
+                XYZ pos = new XYZ(position.x + x, position.y, position.z + z);
+                circles.Add(new Circle(pos, adjustedRadius));
+            }
+        }
+
+        return circles;
+    }
+}
+
 
 public class Robot
 {
     public XYZ position;
     public XYZ goal;
+    public float goal_radius;
     public XYZ curr_velocity;
     public float max_velocity;
     public float radius;
@@ -30,8 +115,11 @@ public class Robot
         Vector3 robot_velocity = go.GetComponent<Rigidbody>().velocity;
         RobotController robotController = go.GetComponent<RobotController>();
         SphereCollider sphereCollider = go.GetComponent<SphereCollider>();
+        
 
-        Transform goal_transform = robotController.goal.transform;
+        Transform goal_transform = robotController.GetGoal().transform;
+        SphereCollider goalCollider = goal_transform.GetComponent<SphereCollider>();
+
         Renderer renderer = robot_transform.GetComponent<Renderer>();
         this.name = go.name;
 
@@ -48,30 +136,15 @@ public class Robot
         this.goal.z = goal_transform.position.z;
 
         this.max_velocity = robotController.maxVelocity;
-        this.radius = renderer.bounds.size.x / 2;
+        this.radius = sphereCollider.radius * robot_transform.localScale.x;
+        this.goal_radius = goalCollider.radius * goal_transform.localScale.x;
     }
 
     public void DrawGizmo()
     {
         if (radius == 0) return;
-        Gizmos.color = Color.red;
-        int lineSegments = 32;
-        Vector3 previousPoint = Vector3.zero;
-        for (int i = 0; i <= lineSegments; i++)
-        {
-            float angle = i * Mathf.PI * 2 / lineSegments;
-            Vector3 newPoint = new Vector3(
-                position.x + Mathf.Cos(angle) * radius,
-                position.y,
-                position.z + Mathf.Sin(angle) * radius
-            );
-
-            if (i > 0)
-            {
-                Gizmos.DrawLine(previousPoint, newPoint);
-            }
-            previousPoint = newPoint;
-        }
+        DataUtils.DrawCircleGizmo(position, radius, Color.red);
+        DataUtils.DrawCircleGizmo(goal, goal_radius, Color.red);
     }
 }
 
@@ -83,130 +156,81 @@ public class Boundary
 
     public void DrawGizmo()
     {
-        Vector3 p1 = new Vector3(position.x - width / 2, position.y, position.z - length / 2);
-        Vector3 p2 = new Vector3(position.x + width / 2, position.y, position.z - length / 2);
-        Vector3 p3 = new Vector3(position.x + width / 2, position.y, position.z + length / 2);
-        Vector3 p4 = new Vector3(position.x - width / 2, position.y, position.z + length / 2);
-
-        Gizmos.DrawLine(p1, p2);
-        Gizmos.DrawLine(p2, p3);
-        Gizmos.DrawLine(p3, p4);
-        Gizmos.DrawLine(p4, p1);
+        DataUtils.DrawRectangleGizmo(position, width, length);
     }
 }
  
 
-public class Obstacle
+public class Obstacle : Circle
 {
     //static float ABSTRACTION_RADIUS = 0.1f;
     //static float squareThreshold = 0.1f;
-    public XYZ position;
-    public float radius;
-    public List<Obstacle> circleAbstraction;
+    public List<Circle> circleAbstraction;
     public bool isDynamic;
 
-    public void SetData(GameObject go)
+    public Obstacle(GameObject go) : base(new XYZ(go.transform.position.x, go.transform.position.y, go.transform.position.z), 0f)
     {
-        this.position.x = go.transform.position.x;
-        this.position.y = go.transform.position.y;
-        this.position.z = go.transform.position.z;
         this.isDynamic = false;
 
         Renderer renderer = go.GetComponent<Renderer>();
-        this.radius = Mathf.Max(renderer.bounds.size.z, renderer.bounds.size.x) / 2;
-        // If object is close to a square, represent as a circle.
-        //bool shouldAbstract = !(renderer.bounds.size.z < renderer.bounds.size.x + squareThreshold && renderer.bounds.size.z > renderer.bounds.size.x - squareThreshold);
-        //if (shouldAbstract) circleAbstraction = GeneratePerimeterCircles(renderer, ABSTRACTION_RADIUS);
+        
+        float length = renderer.bounds.size.z;
+        float width = renderer.bounds.size.x;
+        this.radius = Mathf.Max(width, length) / 2f;
+        circleAbstraction = DataUtils.GenerateCircles(position, width, length);
+        //Debug.Log(go.name + " generated " + circleAbstraction.Count + " circles.");
     }
 
+    public Circle ToCircle()
+    {
+        return new Circle(position, radius);
+    }
 
+    public Circle[] ToCircles()
+    {
+        return circleAbstraction.ToArray();
+    }
 
     public void DrawGizmo()
     {
         if (radius == 0) return;
-        Gizmos.color = Color.red;
-        int lineSegments = 32;
-        Vector3 previousPoint = Vector3.zero;
-        for (int i = 0; i <= lineSegments; i++)
+        if (circleAbstraction != null && circleAbstraction.Count > 0)
         {
-            float angle = i * Mathf.PI * 2 / lineSegments;
-            Vector3 newPoint = new Vector3(
-                position.x + Mathf.Cos(angle) * radius,
-                position.y,
-                position.z + Mathf.Sin(angle) * radius
-            );
-
-            if (i > 0)
+            foreach (var circle in circleAbstraction)
             {
-                Gizmos.DrawLine(previousPoint, newPoint);
+                DataUtils.DrawCircleGizmo(circle.position, circle.radius, Color.red);
             }
-            previousPoint = newPoint;
         }
+        else DataUtils.DrawCircleGizmo(position, radius, Color.red);
     }
 
-    static List<Obstacle> GeneratePerimeterCircles(Renderer renderer, float radius)
-    {
-        List<Obstacle> circles = new List<Obstacle>();
-
-        Vector3 size = renderer.bounds.size;
-        Vector3 center = renderer.bounds.center;
-
-        float halfX = size.x / 2f;
-        float halfZ = size.z / 2f;
-
-        List<XYZ> perimeterPoints = new List<XYZ>();
-
-        // Generate points along the perimeter at intervals of radius * 2 (for spacing)
-        for (float x = -halfX; x <= halfX; x += radius * 2)
-        {
-            perimeterPoints.Add(new XYZ(center.x + x, center.y, center.z + halfZ)); // Top edge
-            perimeterPoints.Add(new XYZ(center.x + x, center.y, center.z - halfZ)); // Bottom edge
-        }
-        for (float z = -halfZ; z <= halfZ; z += radius * 2)
-        {
-            perimeterPoints.Add(new XYZ(center.x + halfX, center.y, center.z + z)); // Right edge
-            perimeterPoints.Add(new XYZ(center.x - halfX, center.y, center.z + z)); // Left edge
-        }
-
-        // Convert to circle representation
-        foreach (var point in perimeterPoints)
-        {
-            Obstacle obstacle = new()
-            {
-                position = point,
-                radius = radius
-            };
-            circles.Add(obstacle);
-        }
-
-        return circles;
-    }
-
-    public static Obstacle[] UnpackAbstractions(Obstacle[] obstacles)
+    public static Circle[] UnpackAbstractions(Obstacle[] obstacles)
     {
         Debug.Log("Unpacking " + obstacles.Length + " obstacles.");
-        List<Obstacle> list = new List<Obstacle>();
+        List<Circle> list = new List<Circle>();
         foreach (var obstacle in obstacles)
         {
-            if (obstacle.circleAbstraction == null)
+            if (obstacle.circleAbstraction != null && obstacle.circleAbstraction.Count > 0)
             {
-                list.Add(obstacle);
+                foreach (var circle in obstacle.circleAbstraction)
+                {
+                    list.Add(circle);
+                }
             }
-            else foreach (var circle in obstacle.circleAbstraction)
+            else
             {
-                list.Add(circle);
+                list.Add(obstacle.ToCircle());
             }
         }
         return list.ToArray();
     }
-
-
 }
 
 public class SceneData
 {
     public float robot_radius;
-    public Obstacle[] obstacles;
+    public Obstacle[] fullObstacles;
+    public Circle[] obstacles;
     public Boundary boundary;
     public Robot[] robots;
 }

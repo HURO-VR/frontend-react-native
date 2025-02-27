@@ -5,7 +5,7 @@ using UnityEngine;
 public class RobotController : MonoBehaviour
 {
 
-    public GameObject goal;
+    GameObject goal;
     public float maxVelocity;
     bool goalReached = false;
     Rigidbody body;
@@ -26,7 +26,6 @@ public class RobotController : MonoBehaviour
         if (!goalReached)
         {
             body.velocity = new Vector3(x, 0, z);
-            Debug.Log("Set velocity " + x + ", " + z);
         } else
         {
             Debug.Log(gameObject.name + " not responding to further input");
@@ -39,6 +38,15 @@ public class RobotController : MonoBehaviour
         goalReached = true;
         body.velocity = Vector3.zero;
         body.isKinematic = true;
+    }
+
+    public GameObject GetGoal()
+    {
+        if (goal == null)
+        {
+            InitGoal();
+        }
+        return goal;
     }
 
     void InitGoal()

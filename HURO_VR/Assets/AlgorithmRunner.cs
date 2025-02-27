@@ -57,6 +57,7 @@ public class AlgorithmRunner : MonoBehaviour {
     {
         sceneData.UpdateSceneData();
         string input = JsonConvert.SerializeObject(sceneData.data);
+        // Debug.Log(input);
         string output = algorithm.main(input);
         var newVelocities = JsonConvert.DeserializeObject<float[][]>(output);
         SetNewVelocities(newVelocities);
@@ -108,7 +109,7 @@ public class AlgorithmRunner : MonoBehaviour {
 
     private void OnDrawGizmos()
     {
-        if (displayGizmos && sceneData && sceneData.data != null)
+        if (displayGizmos && sceneData)
         {
             sceneData.DrawGizmos();
         }
