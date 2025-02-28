@@ -95,6 +95,11 @@ export namespace FBStorage {
       }, {merge: true})
   }
 
+  export async function updateDoc<T>(docID: string, path: string, data: Partial<T>) {
+    return firestoreDocUpload(docID, path, data, {merge: true})
+}
+
+
   export async function getFSDoc(path: string): Promise<any> {
     try {
       let db = getFBFirestore();
@@ -136,6 +141,17 @@ export namespace FBStorage {
   export function subscribeToDoc(docID: string, path: string, onUpdate: (data: DocumentData | undefined) => void) {
     const unsub = onSnapshot(doc(getFirestore(), docID, path), (doc) => {
       onUpdate(doc.data());
+    });
+    return unsub;
+  }
+
+  export function subscribeToCollection(path: string, onUpdate: (data: any[] | undefined) => void) {
+    const unsub = onSnapshot(collection(getFirestore(), path), (col) => {
+      var list: any[] = []
+      col.forEach((doc) => {
+        list.push(doc.data());
+      });
+      if (list.length > 0) onUpdate(list);
     });
     return unsub;
   }
