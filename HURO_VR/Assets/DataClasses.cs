@@ -73,23 +73,44 @@ public class Circle
         Gizmos.DrawLine(p4, p1);
     }
 
-    public static List<Circle> GenerateCircles(XYZ position, float width, float length)
+    static XYZ RotatePoint(XYZ point, XYZ origin, float angleDeg)
+    {
+        float angleRad = Mathf.PI * angleDeg / 180.0f * -1;
+        float cosA = Mathf.Cos(angleRad);
+        float sinA = Mathf.Sin(angleRad);
+
+        // Translate point to origin
+        float translatedX = point.x - origin.x;
+        float translatedY = point.z - origin.z;
+
+        // Rotate the point
+        float rotatedX = translatedX * cosA - translatedY * sinA;
+        float rotatedY = translatedX * sinA + translatedY * cosA;
+
+        // Translate back
+        point.x = rotatedX + origin.x;
+        point.z = rotatedY + origin.z;
+        return point;
+    }
+
+    public static List<Circle> GenerateCircles(XYZ position, float width, float length, float rotation)
     {
         List<Circle> circles = new List<Circle>();
 
         float rad = Mathf.Min(width, length) / 20f;
-        int cols = Mathf.CeilToInt(width / rad);
-        int rows = Mathf.CeilToInt(length / rad);
+        int cols = Mathf.CeilToInt(width / rad / 2);
+        int rows = Mathf.CeilToInt(length / rad / 2);
 
-        for (int i = 1; i < cols; i++)
+        for (int i = 0; i < cols + 1; i++)
         {
-            for (int j = 1; j < rows; j++)
+            for (int j = 0; j < rows + 1; j++)
             {
-                if (i == 1 || i == cols - 1 || j == rows - 1 || j == 1)
+                if (i == 0 || i == cols || j == rows || j == 0)
                 {
-                    float x = (rad * i) - (width / 2);
-                    float z = rad * j - (length / 2);
+                    float x = ((rad * 2) * i) - (width / 2);
+                    float z = ((rad * 2) * j) - (length / 2);
                     XYZ pos = new XYZ(position.x + x, position.y, position.z + z);
+                    pos = RotatePoint(pos, position, rotation);
                     circles.Add(new Circle(pos, rad));
                 }
                 
@@ -179,7 +200,7 @@ public class Obstacle : Circle
         float length = renderer.bounds.size.z;
         float width = renderer.bounds.size.x;
         this.radius = Mathf.Max(width, length) / 2f;
-        circleAbstraction = DataUtils.GenerateCircles(position, width, length);
+        circleAbstraction = DataUtils.GenerateCircles(position, width, length, go.transform.eulerAngles.y);
         if (circleAbstraction.Count > 1) Debug.Log(go.name + " generated " + circleAbstraction.Count + " circles.");
     }
 
