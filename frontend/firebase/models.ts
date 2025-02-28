@@ -1,3 +1,4 @@
+import { StatusBar } from "react-native";
 
 export interface SimulationMetaData {
     name: string; // User defined name for the simulation
@@ -16,6 +17,22 @@ export interface Organization {
     name: string,
     dateCreated: string
 }
+
+export enum RunStatus {
+    failed = "failed",
+    warning = "warning",
+    success = "success"
+}
+
+export interface SimulationRun {
+    user: string,
+    dateCreated: string,
+    status: RunStatus,
+    simID: string,
+    starred: boolean,
+    runID: string,
+    name: string
+}5626
 
 export interface UserMetaData {
     uid: string // User unique identifier. Equal to auth id

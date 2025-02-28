@@ -17,24 +17,12 @@ import { CreateOrganizationForm } from './components/CreateOrganizationForm';
 import UserSelector from './components/UserSelector';
 import { styles } from './styles/styles';
 import { FBAuth } from '@/firebase/auth';
+import DetailedSimulation from './detailedSimulation/[simID]';
 import DropdownMenu from './components/dropdown';
 import { LocalRouteParamsContext } from 'expo-router/build/Route';
 import TextStyles from './styles/textStyles';
 
-const SimulationItem = ({ name, algorithm, runs }: any) => (
-  <View style={_styles.listItem}>
-    <Text style={_styles.itemName}>{name}</Text>
-    <Text style={_styles.itemAlgorithm}>{algorithm}</Text>
-    <Text style={_styles.itemRuns}>{runs}</Text>
-  </View>
-);
 
-const TeamMemberItem = ({ name, runs }: any) => (
-  <View style={_styles.listItem}>
-    <Text style={_styles.itemName}>{name}</Text>
-    <Text style={_styles.itemRuns}>{runs}</Text>
-  </View>
-);
 
 const OrganizationView = () => {
 
@@ -59,6 +47,7 @@ const OrganizationView = () => {
   const [inviteErrorText, setInviteError] = useState("")
   const [isAdmin, setAdmin] = useState(false)
   const [redirect, setRedirect] = useState("" as "/login" | "/create_organization")
+  const [simulation, setSimulation] = useState(undefined as SimulationMetaData | undefined)
 
   const { org_id } = useLocalSearchParams()
 
@@ -111,6 +100,24 @@ const OrganizationView = () => {
   }
   }, [organization])
 
+  const SimulationItem = ({ name, algorithm, runs }: any) => (
+    <TouchableOpacity style={_styles.listItem}
+    onPress={() => {
+      setSimulation(simulations.find(sim => sim.name == name))
+    }}>
+      <Text style={_styles.itemName}>{name}</Text>
+      <Text style={_styles.itemAlgorithm}>{algorithm}</Text>
+      <Text style={_styles.itemRuns}>{runs}</Text>
+    </TouchableOpacity>
+  );
+  
+  const TeamMemberItem = ({ name, runs }: any) => (
+    <View style={_styles.listItem}>
+      <Text style={_styles.itemName}>{name}</Text>
+      <Text style={_styles.itemRuns}>{runs}</Text>
+    </View>
+  );
+
   return (redirect.length == 0 ?
 
     
@@ -135,9 +142,10 @@ const OrganizationView = () => {
       </View>}
 
       {/* Org View */}
-      {user && !loading && <ScrollView style={_styles.content}>
-        <View style={{flexDirection: "row", flex: 1, marginHorizontal: 20}}>
-            {/* First Section */}
+      {organization.id != "" && user && 
+      <ScrollView style={_styles.content}>
+        <View style={{flexDirection: "row", flex: 1}}>
+            {/* All Simulation List Section */}
             <ConditionalView 
               style={{..._styles.section, flex: 2}} 
               isVisible={organization.id != ""}
@@ -163,7 +171,7 @@ const OrganizationView = () => {
               
               <TouchableOpacity style={_styles.addButton}
               onPress={() => {
-                router.push("/create_simulation")
+                router.push({ pathname: "/create_simulation", params: { org_id: organization.id } });
               }}>
                   <Text style={_styles.addButtonText}>New +</Text>
               </TouchableOpacity>
@@ -171,7 +179,7 @@ const OrganizationView = () => {
 
             <View style={{margin: 10}} />
 
-            {/* Second Section */}
+            {/* Team Members Section */}
             <ConditionalView 
               style={_styles.section} 
               isVisible={organization.id != ""}
@@ -222,6 +230,10 @@ const OrganizationView = () => {
           </ConditionalView>
         </View>
 
+        {/* Detailed Sim View */}
+        {simulation?.ID && <View style={{flexDirection: "row"}}>
+              <DetailedSimulation metadata={simulation} viewStyle={{}}/>  
+        </View>}
       {/* Create org Button*/}
       <TouchableOpacity style={{..._styles.addButton, marginLeft: 20}}
         onPress={() => {
@@ -254,7 +266,7 @@ const _styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 16,
+    padding: 16
   },
   section: {
     marginBottom: 24,

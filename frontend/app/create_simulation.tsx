@@ -5,10 +5,11 @@ import { DefaultStyles } from "./styles/DefaultStyles";
 import TextStyles from "./styles/textStyles";
 import { FBStorage } from "@/firebase/storage";
 import { v4 as uuid } from "uuid";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import CustomDropdown from "./components/dropdown";
 import DropdownMenu from "./components/dropdown";
 import { AcceptedFileTypes, FileUploadType, EnvImages, EnvironmentTypes } from "@/firebase/models";
+import { LocalRouteParamsContext } from "expo-router/build/Route";
 
 export default function SimulationCreation() {
   const [uploadTrigger, setUploadTrigger] = useState(false);
@@ -23,7 +24,7 @@ export default function SimulationCreation() {
   const [envJPG, setEnvJPG] = useState(EnvImages[environment]);
 
   const router = useRouter();
-
+  const {org_id } = useLocalSearchParams()
   const getTimestampPrefix = () => {
     const now = new Date();
     return now.toISOString().replace(/[-:T]/g, "").slice(0, 13); // YYYYMMDD-HHMM
@@ -39,7 +40,7 @@ export default function SimulationCreation() {
 
   const uploadMetaData = async () => {
     let done = await FBStorage.uploadSimulationMetaData(
-      "TEST_ORG",
+      org_id as string,
       {
         ID: simulationID,
         name: simulationName,
