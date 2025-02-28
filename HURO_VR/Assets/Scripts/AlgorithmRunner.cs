@@ -36,6 +36,8 @@ public class AlgorithmRunner : MonoBehaviour {
         //Path to the Python standard library
         searchPaths.Add(Application.dataPath + @"\Plugins\IronPy\Lib\");
 
+        searchPaths.Add(Application.dataPath + @"\Resources\Python\");
+
         engine.SetSearchPaths(searchPaths);
     }
 
@@ -43,7 +45,7 @@ public class AlgorithmRunner : MonoBehaviour {
     {
         Debug.Log("Initializing Main Function at " + "main.py");
         SetImportPaths(engine);
-        algorithm = engine.ExecuteFile(Application.dataPath + @"\main.py");
+        algorithm = engine.ExecuteFile(Application.dataPath + @"\Resources\Python\main.py");
         if (!sceneData) sceneData = GetComponent<SceneDataManager>();
         sceneData.InitSceneData();
         initAlgorithm = true;

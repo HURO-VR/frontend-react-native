@@ -91,15 +91,8 @@ public class SceneDataManager : MonoBehaviour
         boundary.position.y = floor.transform.position.y;
         boundary.position.z = floor.transform.position.z;
 
-        List<float> dimensions = new List<float>
-        {
-            renderer.bounds.size.x,
-            renderer.bounds.size.y,
-            renderer.bounds.size.z
-        };
-        boundary.width = Mathf.Max(dimensions.ToArray());
-        dimensions.Remove(boundary.width);
-        boundary.length = Mathf.Max(dimensions.ToArray());
+        boundary.width = renderer.bounds.size.x;
+        boundary.length = renderer.bounds.size.z;
 
         return boundary;
 
