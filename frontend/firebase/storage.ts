@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
-import { FirebaseStorage, getStorage, ref, uploadBytes, UploadResult } from "firebase/storage";
-import { addDoc, collection, doc, DocumentData, getDoc, getDocs, getFirestore, onSnapshot, query, setDoc, SetOptions, where, WhereFilterOp } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, UploadResult } from "firebase/storage";
+import { collection, doc, DocumentData, getDoc, getDocs, getFirestore, onSnapshot, query, setDoc, SetOptions, where, WhereFilterOp } from "firebase/firestore";
 import { FileUploadType, Organization, SimulationMetaData } from "./models";
 import { firebaseConfig } from "./config";
 import { v4 } from "uuid";

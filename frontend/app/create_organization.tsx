@@ -5,7 +5,6 @@ import { UserMetaData } from "@/firebase/models"
 import { FBStorage } from "@/firebase/storage"
 import { FBAuth } from "@/firebase/auth"
 import { Redirect, useRouter } from "expo-router"
-import { red } from "react-native-reanimated/lib/typescript/Colors"
 import { styles } from "./styles/styles"
 
 
@@ -24,9 +23,11 @@ const CreateOrganization = () => {
         <SafeAreaView style={{...styles.container}}>
             {user && <CreateOrganizationForm 
                 user={user} 
-                initialVisibility={true}
-                onSubmit={() => {
-                    router.push("/home")
+                onSubmit={(org) => {
+                    router.push({
+                        pathname: '/home',
+                        params: { org_id:  org.id},
+                    });
                 }}
             />}
         </SafeAreaView> :

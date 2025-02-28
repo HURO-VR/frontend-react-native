@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "./config";
-import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, setPersistence, browserLocalPersistence  } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword  } from "firebase/auth";
 import {UserMetaData} from "./models"
 import { FBStorage } from "./storage";
 
@@ -8,12 +8,7 @@ export class FBAuth {
     static app = initializeApp(firebaseConfig);
     static auth = getAuth()
 
-    static init() {
-        setPersistence(FBAuth.auth, browserLocalPersistence);
-    }
-
     public static isSignedIn(): string | null {
-        this.init()
         if (this.auth.currentUser == null) {
             return null;
         }

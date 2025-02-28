@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   TextInput,
+  Modal,
 } from 'react-native';
 import ConditionalView from './components/ConditionalView';
 import { CreateOrganizationForm } from './components/CreateOrganizationForm';
@@ -17,6 +18,9 @@ import UserSelector from './components/UserSelector';
 import { styles } from './styles/styles';
 import { FBAuth } from '@/firebase/auth';
 import DetailedSimulation from './detailedSimulation/[simID]';
+import DropdownMenu from './components/dropdown';
+import { LocalRouteParamsContext } from 'expo-router/build/Route';
+import TextStyles from './styles/textStyles';
 
 
 
@@ -32,9 +36,9 @@ const OrganizationView = () => {
     id: "",
     dateCreated: ""
   } as Organization)
+  const [allOrgs, setAllOrgs] = useState([] as Organization[])
   const [simulations, setSimulations] = useState([] as SimulationMetaData[])
   const [members, setMembers] = useState([] as UserMetaData[])
-
   const [user, setUser] = useState(null as UserMetaData | null)
   const [loading, setLoading] = useState(true)
   const [invitedUsers, setInvitedUsers] = useState([] as UserMetaData[])
@@ -44,6 +48,8 @@ const OrganizationView = () => {
   const [isAdmin, setAdmin] = useState(false)
   const [redirect, setRedirect] = useState("" as "/login" | "/create_organization")
   const [simulation, setSimulation] = useState(undefined as SimulationMetaData | undefined)
+
+  const { org_id } = useLocalSearchParams()
 
   useEffect(() => {
       if (FBAuth.isSignedIn() == null) setRedirect("/login")
@@ -57,17 +63,29 @@ const OrganizationView = () => {
 
   useEffect(() => {
      if (user && user.organizations.length > 0) {
-        FBStorage.getFSDoc(`organizations/${user.organizations[0]}`).then((org) => {
-          setOrganization(org)
-          setAdmin((org as Organization).admins.find((u) => u == user.uid) != undefined)
+        FBStorage.getCollection(`organizations`, {field: "members", operation: "array-contains", value: user.uid}).then((orgs) => {
+          if (orgs.length == 0) setRedirect("/create_organization")
+          else {
+            let currOrg = orgs[0]
+            if (org_id) currOrg = orgs.find(org => org.id == org_id)
+            setOrganization(currOrg)
+            setAllOrgs(orgs)
+            setAdmin((currOrg as Organization).admins.find((u) => u == user.uid) != undefined)
+          }
         })
-     } else if (user) { // Only navigate after user has loaded in.
-      setRedirect("/create_organization")
+     } else if (org_id) { 
+        FBStorage.getFSDoc(`organizations/${org_id}`).then((org) => {
+          setOrganization(org)
+          setAllOrgs([org])
+     })
+     } else if (user) {
+        setLoading(false)
      }
   }, [user])
 
   useEffect(() => {
     if (organization.id.length > 0) {
+      if (!loading) setLoading(true)
       const promises = []
        promises.push(FBStorage.getAllSimulationsMetaData(organization.id).then((data) => {
           setSimulations(data)
@@ -101,10 +119,27 @@ const OrganizationView = () => {
   );
 
   return (redirect.length == 0 ?
+
+    
     <SafeAreaView style={_styles.container}>
-      <View style={_styles.header}>
-        <Text style={_styles.headerText}>{organization?.name}</Text>
-      </View>
+      <Text style={{...TextStyles.h1, marginTop: 20, color: "white", marginHorizontal: 40, marginBottom: 0}}>Huro VR</Text>
+      <View style={{ height: 1, backgroundColor: '#ccc', width: '60%', marginVertical: 10, marginLeft: 40 }} />
+      {!loading && <View style={{..._styles.header, marginHorizontal: 20, flexDirection: "row", alignItems:"flex-end"}}>
+        {/*<Text style={_styles.headerText}>{organization?.name}</Text>*/}
+          <Text style={{...TextStyles.h3, color: "white", marginRight: 20, fontWeight: 200}}>Organization:</Text>
+          <DropdownMenu 
+            defaultValue={organization?.name} 
+            options={allOrgs.map((org) => org.name)}
+            onSelect={(name) => {
+              if (name != organization.name) setOrganization(allOrgs.find(org => org.name == name)!)
+            }}
+            dropdownStyle={{backgroundColor: "black"}}
+            textStyle={{color: "white"}}
+            containerStyle={{zIndex: 100}}
+            optionStyle={{zIndex: 100}}
+            
+          />
+      </View>}
 
       {/* Org View */}
       {organization.id != "" && user && 
@@ -112,7 +147,7 @@ const OrganizationView = () => {
         <View style={{flexDirection: "row", flex: 1}}>
             {/* All Simulation List Section */}
             <ConditionalView 
-              style={_styles.section} 
+              style={{..._styles.section, flex: 2}} 
               isVisible={organization.id != ""}
             >
               <View style={_styles.sectionHeader}>
@@ -166,10 +201,16 @@ const OrganizationView = () => {
                   />
               ))}
               <View style ={{marginTop: 30}}></View>
-              {!loading && isAdmin && <>
-              <UserSelector users={inviteAbleUsers} selectedUsers={invitedUsers} setSelectedUsers={setInvitedUsers}/>
+              {!loading && isAdmin && <View style={{flexDirection: "row", justifyContent:"center", alignItems: "center"}}>
+              <UserSelector 
+                users={inviteAbleUsers} 
+                selectedUsers={invitedUsers} 
+                setSelectedUsers={setInvitedUsers}
+                dropdownStyle={{backgroundColor: styles.container.backgroundColor}}
+                
+                />
               <Text style={styles.errorText}>{inviteErrorText}</Text>
-              <TouchableOpacity style={_styles.addButton}
+              <TouchableOpacity style={{..._styles.addButton, marginLeft: 5 }}
                 onPress={() => {
                   if (invitedUsers.length == 0) setInviteError("Must invite at least one user.")
                   setInviteLoading(true)
@@ -183,9 +224,9 @@ const OrganizationView = () => {
                 }}
                 disabled={inviteLoading}>
           
-                  <Text style={_styles.addButtonText}>Invite +</Text>
+                  <Text style={_styles.addButtonText}>Add +</Text>
               </TouchableOpacity>
-              </>}
+              </View>}
           </ConditionalView>
         </View>
 
@@ -193,16 +234,26 @@ const OrganizationView = () => {
         {simulation?.ID && <View style={{flexDirection: "row"}}>
               <DetailedSimulation metadata={simulation} viewStyle={{}}/>  
         </View>}
+      {/* Create org Button*/}
+      <TouchableOpacity style={{..._styles.addButton, marginLeft: 20}}
+        onPress={() => {
+          router.push("/create_organization")
+        }}>
+          <Text style={_styles.addButtonText}>New Organization +</Text>
+      </TouchableOpacity>
       </ScrollView>}
 
-    </SafeAreaView> : <Redirect href={redirect} />
+      
+    </SafeAreaView> 
+    
+    : <Redirect href={redirect} />
   );
 };
 
 const _styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: styles.container.backgroundColor,
   },
   header: {
     padding: 16,
