@@ -232,7 +232,7 @@ const OrganizationView = () => {
 
         {/* Detailed Sim View */}
         {simulation?.ID && <View style={{flexDirection: "row"}}>
-              <DetailedSimulation metadata={simulation} viewStyle={{}}/>  
+              <DetailedSimulation metadata={simulation} viewStyle={{}} simID={simulation.ID} orgID={organization.id}/>  
         </View>}
       {/* Create org Button*/}
       <TouchableOpacity style={{..._styles.addButton, marginLeft: 20}}
@@ -306,7 +306,6 @@ const _styles = StyleSheet.create({
   },
   itemRuns: {
     flex: 1,
-    textAlign: 'right',
   },
   addButton: {
     backgroundColor: '#00C853',

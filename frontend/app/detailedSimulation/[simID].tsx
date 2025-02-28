@@ -1,22 +1,29 @@
 import React, { useEffect } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, ViewStyle, StyleProp } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, ViewStyle, StyleProp, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { SimulationMetaData, SimulationRun } from '@/firebase/models';
 import { useLocalSearchParams } from 'expo-router';
 import { FBStorage } from '@/firebase/storage';
+import RobotPathMap from '../components/RobotPathMap';
+import exampleRobotDataList from '../components/exampleRobotData';
+import exampleObstacleDataList from '../components/exampleObstacleData';
 
 interface Props {
   metadata: SimulationMetaData
   viewStyle?: StyleProp<ViewStyle>
-  simID?:string
+  simID:string
+  orgID:string
 }
-const DetailedSimulation = ({metadata, viewStyle, simID}: Props) => {
+const DetailedSimulation = ({metadata, viewStyle, simID, orgID}: Props) => {
 
   const [simRuns, setSimRuns] = React.useState<SimulationRun[]>([]);
+  const [selectedRun, setSelectedRun] = React.useState<SimulationRun | null>(null);
 
   useEffect(() => {
-    FBStorage.getCollection(`organizations/TEST_ORG/simulations/${simID}/runs`).then((data) => {
+    FBStorage.getCollection(`organizations/${orgID}/simulations/${simID}/runs`).then((data) => {
       setSimRuns(data);
+      if (data.length > 0) setSelectedRun(data[0]);
+      FBStorage.subscribeToCollection(`organizations/TEST_ORG/simulations/${simID}/runs`, (data) => setSimRuns(data as SimulationRun[]));
     });
   }, []);
 
@@ -48,72 +55,68 @@ const DetailedSimulation = ({metadata, viewStyle, simID}: Props) => {
       </View>
 
       <View style={styles.content}>
-        {/* Left Panel */}
-        <View style={styles.leftPanel}>
-          <View style={styles.section}>
-            <Text style={styles.panelTitle}>Environment Setup</Text>
-            <Text style={styles.sectionValue}>{metadata?.algorithmFilename}</Text>
-          </View>
 
-          <View style={styles.section}>
-            <Text style={styles.sectionLabel}>3D Model</Text>
-            <Text style={styles.sectionValue}>Sphere.gbl</Text>
-            <View style={styles.spherePreview}>
-              <View style={styles.sphere} />
-            </View>
-          </View>
-
-          <View style={styles.section}>
-            <Text style={styles.sectionLabel}>3D Scene</Text>
-            <View style={styles.grid}>
-              <GridPoint color="red" />
-              <GridPoint color="lightblue" />
-              <GridPoint color="green" />
-              <View style={styles.gridLabels}>
-                <Text style={styles.gridLabel}>Robot Start     1 1 0</Text>
-                <Text style={styles.gridLabel}>Position Goal  -1 -1 0</Text>
-                <Text style={styles.gridLabel}>User Start      0 0 0</Text>
-              </View>
-            </View>
-          </View>
-        </View>
-
-        {/* Middle Panel */}
+        {/* Simulation List Panel */}
         <View style={styles.middlePanel}>
           <Text style={styles.panelTitle}>Simulation Runs</Text>
           <ScrollView>
             {simRuns.map((run) => (
-              <View key={run.runID} style={styles.runItem}>
+              <TouchableOpacity key={run.runID} style={styles.runItem}>
                 <View style={styles.runInfo}>
                   <RenderStatusIcon status={run.status} />
                   <Text style={styles.runText}>{run.name}</Text>
                 </View>
-                {run.starred ? (
-                  <MaterialIcons name="star" size={20} color="#FFB800" />
-                ) : (
-                  <MaterialIcons name="star-border" size={20} color="#666" />
-                )}
-              </View>
+                <TouchableOpacity onPress={() => {
+                  FBStorage.updateDoc(run.runID, `organizations/${orgID}/simulations/${simID}/runs`, { starred: !run.starred });
+                  run.starred = !run.starred;
+                  setSimRuns([...simRuns]);
+                }}>
+                  {run.starred ? (
+                    <MaterialIcons name="star" size={20} color="#FFB800" />
+                  ) : (
+                    <MaterialIcons name="star-border" size={20} color="#666" />
+                  )}
+                </TouchableOpacity>
+              </TouchableOpacity>
             ))}
           </ScrollView>
         </View>
 
-        {/* Right Panel */}
-        <View style={styles.rightPanel}>
-          <Text style={styles.panelTitle}>Simulation Data</Text>
-          <Text style={styles.dataTitle}>Run #3</Text>
-          <View style={styles.dataItem}>
-            <Text>Collisions</Text>
-            <Text style={styles.collisionCount}>9</Text>
+        {/* Data Panel */}
+        <View style={styles.leftPanel}>
+
+        <Text style={styles.panelTitle}>Simulation Data</Text>
+          {selectedRun && <View>
+            <View style={styles.dataItem}>
+              <Text style={styles.dataTitle}>Collisions</Text>
+              <Text style={[styles.collisionCount, {color: selectedRun.data.totalCollisions.length == 0 ? "green" : "red"}]}>{selectedRun.data.totalCollisions.length}</Text>
+            </View>
+            <View style={styles.dataItem}>
+              <Text style={styles.dataTitle}>Deadlock</Text>
+              {!selectedRun?.data.deadlock ? <MaterialIcons name="check-circle" size={20} color="green" /> : <MaterialIcons name="error" size={20} color="red" />}
+            </View>
+            <View style={styles.dataItem}>
+              <Text style={styles.dataTitle}>Time to Complete</Text>
+              <Text>{selectedRun?.data.timeToComplete/1000} seconds</Text>
+            </View>
+          </View>}
+          
+          <View style={styles.section}>
+            <Text style={styles.panelTitle}>Scene Data</Text>
+            <View style={styles.grid}>
+              <RobotPathMap robotDataList={exampleRobotDataList} obstacleDataList={exampleObstacleDataList}/>
+            </View>
           </View>
-          <View style={styles.dataItem}>
-            <Text>Deadlock</Text>
-            <MaterialIcons name="check-circle" size={20} color="green" />
+          <View style={styles.section}>
+            <Text style={styles.panelTitle}>Environment Setup</Text>
+            <Text style={styles.sectionValue}>{metadata?.environmentName}</Text>
           </View>
-          <View style={styles.dataItem}>
-            <Text>Time to Complete</Text>
-            <Text>1:30</Text>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>3D Model</Text>
+            <Text style={styles.sectionValue}>{metadata.modelFilename ? metadata.modelFilename : "Default"}</Text>
           </View>
+
         </View>
       </View>
     </View>
@@ -148,7 +151,7 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   leftPanel: {
-    flex: 1,
+    flex: 3,
     backgroundColor: '#f5f5f5',
     padding: 15,
     borderRadius: 8,
@@ -207,7 +210,7 @@ const styles = StyleSheet.create({
   panelTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 15,
+    marginBottom: 8,
   },
   runItem: {
     flexDirection: 'row',
@@ -227,18 +230,16 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   dataTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 10,
+    marginRight: 15
   },
   dataItem: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 10,
   },
   collisionCount: {
     color: 'red',
+    fontWeight: 'bold',
   },
 });
 
