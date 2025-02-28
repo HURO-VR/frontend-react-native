@@ -73,24 +73,26 @@ public class Circle
         Gizmos.DrawLine(p4, p1);
     }
 
-    public static List<Circle> GenerateCircles(XYZ position, float width, float height)
+    public static List<Circle> GenerateCircles(XYZ position, float width, float length)
     {
         List<Circle> circles = new List<Circle>();
 
-        float maxRadius = Mathf.Min(width, height) / 2f;
-        int cols = Mathf.Max(1, Mathf.FloorToInt(width / (2 * maxRadius)));
-        int rows = Mathf.Max(1, Mathf.FloorToInt(height / (2 * maxRadius)));
+        float rad = Mathf.Min(width, length) / 20f;
+        int cols = Mathf.CeilToInt(width / rad);
+        int rows = Mathf.CeilToInt(length / rad);
 
-        float adjustedRadius = Mathf.Min(width / (2 * cols), height / (2 * rows));
-
-        for (int i = 0; i < cols; i++)
+        for (int i = 1; i < cols; i++)
         {
-            for (int j = 0; j < rows; j++)
+            for (int j = 1; j < rows; j++)
             {
-                float x = -width / 2 + (2 * i + 1) * adjustedRadius;
-                float z = -height / 2 + (2 * j + 1) * adjustedRadius;
-                XYZ pos = new XYZ(position.x + x, position.y, position.z + z);
-                circles.Add(new Circle(pos, adjustedRadius));
+                if (i == 1 || i == cols - 1 || j == rows - 1 || j == 1)
+                {
+                    float x = (rad * i) - (width / 2);
+                    float z = rad * j - (length / 2);
+                    XYZ pos = new XYZ(position.x + x, position.y, position.z + z);
+                    circles.Add(new Circle(pos, rad));
+                }
+                
             }
         }
 
@@ -178,7 +180,7 @@ public class Obstacle : Circle
         float width = renderer.bounds.size.x;
         this.radius = Mathf.Max(width, length) / 2f;
         circleAbstraction = DataUtils.GenerateCircles(position, width, length);
-        //Debug.Log(go.name + " generated " + circleAbstraction.Count + " circles.");
+        if (circleAbstraction.Count > 1) Debug.Log(go.name + " generated " + circleAbstraction.Count + " circles.");
     }
 
     public Circle ToCircle()
@@ -206,7 +208,6 @@ public class Obstacle : Circle
 
     public static Circle[] UnpackAbstractions(Obstacle[] obstacles)
     {
-        Debug.Log("Unpacking " + obstacles.Length + " obstacles.");
         List<Circle> list = new List<Circle>();
         foreach (var obstacle in obstacles)
         {
@@ -222,6 +223,8 @@ public class Obstacle : Circle
                 list.Add(obstacle.ToCircle());
             }
         }
+        Debug.Log("Unpacked " + obstacles.Length + " obstacles into " + list.Count + " circles.");
+
         return list.ToArray();
     }
 }

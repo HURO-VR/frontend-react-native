@@ -93,9 +93,9 @@ public class SceneDataManager : MonoBehaviour
 
         List<float> dimensions = new List<float>
         {
-            renderer.bounds.size.x * floor.transform.localScale.x,
-            renderer.bounds.size.y * floor.transform.localScale.y,
-            renderer.bounds.size.z * floor.transform.localScale.z
+            renderer.bounds.size.x,
+            renderer.bounds.size.y,
+            renderer.bounds.size.z
         };
         boundary.width = Mathf.Max(dimensions.ToArray());
         dimensions.Remove(boundary.width);
