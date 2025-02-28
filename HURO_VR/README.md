@@ -22,10 +22,11 @@
 ### MR scene
 
 _Scene:_ MixedReality
+
 *Running:* Initialize algorithm by pressing the `I` key. This will label the scene. Go to `Scene View` to see drawn gizmos that represent the algorithm's view of the scene.
 Press `Space` to start running the algorithm.
 
-*Test Scene:* Choose the MR room you'd like to test under `MRUK` gameObject > `Scene Settings` > `Room Prefabs` > `Room Index`
+*Test Scene:* Choose the MR room you'd like to test under `MRUK` gameObject > `Scene Settings` > `Room Prefabs` > `Room Index`.
 This will choose `Room Index` room from `Room Prefabs`. You can find more rooms in `Resources/Training_Environments/Prefabs`. These rooms are designed to simulate a room scan (Meta Scene recognition).
 
 
