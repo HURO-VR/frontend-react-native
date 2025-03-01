@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
-using IronPython.Hosting;
 using UnityEngine;
 using Newtonsoft.Json;
-using System.IO;
+using System;
+using TMPro;
 using Microsoft.Scripting.Hosting;
-using Unity.VisualScripting;
-using UnityEngine.XR.OpenXR.Input;
+using System.Runtime.CompilerServices;
+using IronPython.Hosting;
+using IronPython.Runtime;
 
 
 
@@ -13,17 +14,51 @@ using UnityEngine.XR.OpenXR.Input;
 public class AlgorithmRunner : MonoBehaviour {
 
 
-    private readonly ScriptEngine engine = Python.CreateEngine();
+    private ScriptEngine engine;
     private dynamic algorithm;
     bool initAlgorithm = false;
     SceneDataManager sceneData;
     bool algorithmRunning = false;
     [SerializeField] bool displayGizmos;
+    AudioLibrary audioLibrary;
+    [SerializeField] TextMeshProUGUI debugLogs;
+
+    void CreateEngine()
+    {
+        ScriptRuntimeSetup setup = null;
+        ScriptRuntime runtime = null;
+
+        ExceptionWrapper(() => setup = new ScriptRuntimeSetup());
+        ExceptionWrapper(() => setup.LanguageSetups.Add(Python.CreateLanguageSetup(null)));
+        ExceptionWrapper(() => runtime = new ScriptRuntime(setup));
+        ExceptionWrapper(() => engine = runtime.GetEngineByTypeName(typeof(PythonContext).AssemblyQualifiedName));
+    }
+
+    void ExceptionWrapper(Action func, [CallerFilePath] string file = "", [CallerLineNumber] int line = 0)
+    {
+        try
+        {
+            func();
+        }
+        catch (Exception ex)
+        {
+            DebugLogs(ex.Message, file, line);
+        }
+    }
 
     private void Awake()
     {
-
-        if (!sceneData) sceneData = GetComponent<SceneDataManager>();
+        try
+        {
+            if (!sceneData) sceneData = GetComponent<SceneDataManager>();
+            audioLibrary = FindAnyObjectByType<AudioLibrary>();
+            this.CreateEngine();
+        }
+        catch (Exception e)
+        {
+            DebugLogs(e.ToString());
+        }
+        
     }
 
     void SetImportPaths(ScriptEngine engine)
@@ -53,6 +88,14 @@ public class AlgorithmRunner : MonoBehaviour {
 
     public void StartAlgorithm()
     {
+        if (audioLibrary) audioLibrary.PlayAudio(AudioLibrary.AudioType.StartSimulation);
+        algorithmRunning = true;
+    }
+
+    public void StartAlgorithm(bool start)
+    {
+        if (!start) return;
+        if (audioLibrary) audioLibrary.PlayAudio(AudioLibrary.AudioType.StartSimulation);
         algorithmRunning = true;
     }
 
@@ -95,7 +138,6 @@ public class AlgorithmRunner : MonoBehaviour {
 
     private float timer = 0f;
     private float interval = 0.25f; // Run every x seconds
-    int step = 0;
     // Update is called once per frame
     void FixedUpdate () {
         if (!algorithmRunning) return;
@@ -104,9 +146,25 @@ public class AlgorithmRunner : MonoBehaviour {
         if (timer >= interval)
         {
             timer = 0f; // Reset timer
-            if (!initAlgorithm) InitAlgorithm();
-            RunRVOAlgorithm();
+            try
+            {
+                if (!initAlgorithm) InitAlgorithm();
+                RunRVOAlgorithm();
+            } catch (Exception e)
+            {
+                DebugLogs(e.ToString());
+                algorithmRunning = false;
+                DebugLogs("Stopping Simulation");
+            }
+
+
         }
+    }
+
+    private void DebugLogs(string message, [CallerFilePath] string file = "", [CallerLineNumber] int line = 0)
+    {
+        debugLogs.text += "\n\n" + message;
+        Debug.Log($"HURO {file} @line:{line}: " + message);
     }
 
 
@@ -120,7 +178,7 @@ public class AlgorithmRunner : MonoBehaviour {
 
     private void Update()
     {
-        if (Input.GetKeyUp(KeyCode.Space))
+        if (Input.GetKeyUp(KeyCode.Space) || OVRInput.GetDown(OVRInput.RawButton.A))
         {
             StartAlgorithm();
         }
