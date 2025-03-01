@@ -7,6 +7,7 @@ using Microsoft.Scripting.Hosting;
 using System.Runtime.CompilerServices;
 using IronPython.Hosting;
 using IronPython.Runtime;
+using UnityEngine.EventSystems;
 
 
 
@@ -22,29 +23,7 @@ public class AlgorithmRunner : MonoBehaviour {
     [SerializeField] bool displayGizmos;
     AudioLibrary audioLibrary;
     [SerializeField] TextMeshProUGUI debugLogs;
-
-    void CreateEngine()
-    {
-        ScriptRuntimeSetup setup = null;
-        ScriptRuntime runtime = null;
-
-        ExceptionWrapper(() => setup = new ScriptRuntimeSetup());
-        ExceptionWrapper(() => setup.LanguageSetups.Add(Python.CreateLanguageSetup(null)));
-        ExceptionWrapper(() => runtime = new ScriptRuntime(setup));
-        ExceptionWrapper(() => engine = runtime.GetEngineByTypeName(typeof(PythonContext).AssemblyQualifiedName));
-    }
-
-    void ExceptionWrapper(Action func, [CallerFilePath] string file = "", [CallerLineNumber] int line = 0)
-    {
-        try
-        {
-            func();
-        }
-        catch (Exception ex)
-        {
-            DebugLogs(ex.Message, file, line);
-        }
-    }
+    StreamingAssetsToPersistent pyFiles;
 
     private void Awake()
     {
@@ -52,7 +31,8 @@ public class AlgorithmRunner : MonoBehaviour {
         {
             if (!sceneData) sceneData = GetComponent<SceneDataManager>();
             audioLibrary = FindAnyObjectByType<AudioLibrary>();
-            this.CreateEngine();
+            engine = Python.CreateEngine();
+            pyFiles = FindAnyObjectByType<StreamingAssetsToPersistent>();
         }
         catch (Exception e)
         {
@@ -66,12 +46,12 @@ public class AlgorithmRunner : MonoBehaviour {
         ICollection<string> searchPaths = engine.GetSearchPaths();
 
         //Path to the folder of filename
-        searchPaths.Add(Application.dataPath);
+        searchPaths.Add(Application.persistentDataPath);
 
         //Path to the Python standard library
-        searchPaths.Add(Application.dataPath + @"\Plugins\IronPy\Lib\");
+        searchPaths.Add(Application.persistentDataPath + @"/Python/Lib/");
 
-        searchPaths.Add(Application.dataPath + @"\Resources\Python\");
+        searchPaths.Add(Application.persistentDataPath + @"/Python/");
 
         engine.SetSearchPaths(searchPaths);
     }
@@ -80,7 +60,7 @@ public class AlgorithmRunner : MonoBehaviour {
     {
         Debug.Log("Initializing Main Function at " + "main.py");
         SetImportPaths(engine);
-        algorithm = engine.ExecuteFile(Application.dataPath + @"\Resources\Python\main.py");
+        algorithm = engine.ExecuteFile(Application.persistentDataPath + @"/Python/main.py");
         if (!sceneData) sceneData = GetComponent<SceneDataManager>();
         sceneData.InitSceneData();
         initAlgorithm = true;
@@ -92,11 +72,11 @@ public class AlgorithmRunner : MonoBehaviour {
         algorithmRunning = true;
     }
 
-    public void StartAlgorithm(bool start)
+    public void ToggleAlgorithm()
     {
-        if (!start) return;
-        if (audioLibrary) audioLibrary.PlayAudio(AudioLibrary.AudioType.StartSimulation);
-        algorithmRunning = true;
+        bool start = !algorithmRunning;
+        if (audioLibrary && start) audioLibrary.PlayAudio(AudioLibrary.AudioType.StartSimulation);
+        algorithmRunning = start;
     }
 
     void RunRVOAlgorithm()
@@ -140,7 +120,7 @@ public class AlgorithmRunner : MonoBehaviour {
     private float interval = 0.25f; // Run every x seconds
     // Update is called once per frame
     void FixedUpdate () {
-        if (!algorithmRunning) return;
+        if (!algorithmRunning || !pyFiles.IsFinishedLoading()) return;
 
         timer += Time.fixedDeltaTime; // Accumulate time
         if (timer >= interval)

@@ -10,10 +10,12 @@ public class StreamingAssetsToPersistent : MonoBehaviour
     [Header("List functions to call when loading is finished")]
     public UnityEvent OnLoadingFinished;
     bool finishedLoading = false;
+    AudioLibrary library;
 
     private void Start()
     {
         StartCoroutine(CopyAllFiles());
+        library = FindAnyObjectByType<AudioLibrary>();
     }
 
     private IEnumerator CopyAllFiles()
@@ -38,7 +40,9 @@ public class StreamingAssetsToPersistent : MonoBehaviour
                 filesToCopy.Add(relativePath);
             }
         }
+
         int copied = 0;
+        int failed = 0;
         foreach (string relativePath in filesToCopy)
         {
             string sourcePath = Path.Combine(sourceRoot, relativePath);
@@ -60,11 +64,12 @@ public class StreamingAssetsToPersistent : MonoBehaviour
                     {
                         if (request.downloadHandler.data != null) File.WriteAllBytes(destinationPath, request.downloadHandler.data);
                         copied++;
-                        Debug.Log($"Copied {copied / filesToCopy.Count * 100}%");
+                        //Debug.Log($"Copied {copied / filesToCopy.Count * 100}%");
                     }
                     else
                     {
-                        Debug.LogError($"Failed to copy {relativePath}: {request.error}");
+                        failed++;
+                        //Debug.LogError($"Failed to copy {relativePath}: {request.error}");
                     }
                 }
             }
@@ -72,7 +77,8 @@ public class StreamingAssetsToPersistent : MonoBehaviour
 
         OnLoadingFinished?.Invoke();
         finishedLoading = true;
-        Debug.Log("Complete file transfer");
+        if (library) library.PlayAudio(AudioLibrary.AudioType.FileInit);
+        Debug.Log($"Complete file transfer: {copied} files. Failed: {failed}");
     }
 
     public bool IsFinishedLoading()
