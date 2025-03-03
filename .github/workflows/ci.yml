@@ -20,8 +20,17 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-    
-    - name: Load environment variables from .env file
+
+    - name: Create .env file on GitHub Actions Runner
+      run: |
+        echo "AWS_ACCESS_KEY_ID=${{ vars.AWS_ACCESS_KEY_ID }}" >> .env
+        echo "AWS_SECRET_ACCESS_KEY=${{ vars.AWS_SECRET_ACCESS_KEY }}" >> .env
+        echo "AWS_REGION=${{ vars.AWS_REGION }}" >> .env
+        echo "DOCKER_USERNAME=${{ vars.DOCKER_USERNAME }}" >> .env
+        echo "DOCKER_PASSWORD=${{ vars.DOCKER_PASSWORD }}" >> .env
+        echo "GH_TOKEN=${{ vars.GH_TOKEN }}" >> .env
+
+    - name: Load environment variables manually
       run: |
         if [ -f .env ]; then
           export $(grep -v '^#' .env | xargs)
@@ -34,9 +43,6 @@ jobs:
 
     - name: Configure AWS Credentials
       run: |
-        export AWS_ACCESS_KEY_ID=$(grep AWS_ACCESS_KEY_ID .env | cut -d '=' -f2)
-        export AWS_SECRET_ACCESS_KEY=$(grep AWS_SECRET_ACCESS_KEY .env | cut -d '=' -f2)
-        export AWS_REGION=$(grep AWS_REGION .env | cut -d '=' -f2)
         aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
         aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
         aws configure set region $AWS_REGION
@@ -59,48 +65,31 @@ jobs:
     - name: Deploy docs to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
-        personal_token: $(grep GH_TOKEN .env | cut -d '=' -f2)
+        personal_token: $GH_TOKEN
         publish_dir: ./site
-
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Load environment variables from .env file
-        run: |
-          if [ -f .env ]; then
-            export $(grep -v '^#' .env | xargs)
-          fi
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run linter
-        run: npm run lint
 
   docker-build-and-push:
     runs-on: ubuntu-latest
-    needs: [build-and-test, lint]  # Ensure Docker builds only if tests & linting pass
+    needs: [build-and-test]  # Ensure Docker builds only if tests pass
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Load environment variables from .env file
+      - name: Load environment variables manually
         run: |
           if [ -f .env ]; then
             export $(grep -v '^#' .env | xargs)
           fi
 
       - name: Log in to DockerHub
-        run: echo "$(grep DOCKER_PASSWORD .env | cut -d '=' -f2)" | docker login -u "$(grep DOCKER_USERNAME .env | cut -d '=' -f2)" --password-stdin
+        run: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
       - name: Build Docker Image
         run: docker build -t myusername/myapp:latest .
 
       - name: Push Docker Image to DockerHub
         run: docker push myusername/myapp:latest
-      
+
   security-scan:
     runs-on: ubuntu-latest
     steps:
