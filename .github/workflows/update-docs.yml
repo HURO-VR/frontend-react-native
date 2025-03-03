@@ -38,16 +38,16 @@ jobs:
           fi
 
           # Save stats to a temporary file with badges
-          echo "## 📊 Project Stats (Updated: $(date))" > stats_section.md
+          echo "### Project statistics (updated: $(date))" > stats_section.md
           echo "" >> stats_section.md
           echo "| Metric            | Count |" >> stats_section.md
           echo "|-------------------|-------|" >> stats_section.md
-          echo "| Open Issues    | **$TOTAL_ISSUES** |" >> stats_section.md
-          echo "| Open PRs      | **$TOTAL_PRS** |" >> stats_section.md
-          echo "| Contributors   | **$TOTAL_CONTRIBUTORS** |" >> stats_section.md
-          echo "| Stars         | **$TOTAL_STARS** |" >> stats_section.md
-          echo "| Forks         | **$TOTAL_FORKS** |" >> stats_section.md
-          echo "| Last Commit   | **$LAST_COMMIT_DATE** |" >> stats_section.md
+          echo "| 1. Open Issues    | **$TOTAL_ISSUES** |" >> stats_section.md
+          echo "| 2. Open PRs      | **$TOTAL_PRS** |" >> stats_section.md
+          echo "| 3. Contributors   | **$TOTAL_CONTRIBUTORS** |" >> stats_section.md
+          echo "| 4. Stars         | **$TOTAL_STARS** |" >> stats_section.md
+          echo "| 5. Forks         | **$TOTAL_FORKS** |" >> stats_section.md
+          echo "| 6. Last Commit   | **$LAST_COMMIT_DATE** |" >> stats_section.md
           echo "" >> stats_section.md
           echo "### 📌 CI/CD Status" >> stats_section.md
           echo "$CI_BADGE" >> stats_section.md
