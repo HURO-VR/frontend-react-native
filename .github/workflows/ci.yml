@@ -21,23 +21,25 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
     
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node }}
-
     - name: Load environment variables from .env file
       run: |
         if [ -f .env ]; then
           export $(grep -v '^#' .env | xargs)
         fi
 
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v2
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
+        node-version: ${{ matrix.node }}
+
+    - name: Configure AWS Credentials
+      run: |
+        export AWS_ACCESS_KEY_ID=$(grep AWS_ACCESS_KEY_ID .env | cut -d '=' -f2)
+        export AWS_SECRET_ACCESS_KEY=$(grep AWS_SECRET_ACCESS_KEY .env | cut -d '=' -f2)
+        export AWS_REGION=$(grep AWS_REGION .env | cut -d '=' -f2)
+        aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+        aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+        aws configure set region $AWS_REGION
 
     - name: Deploy to AWS S3
       run: aws s3 sync ./dist s3://my-website-bucket
@@ -57,7 +59,7 @@ jobs:
     - name: Deploy docs to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        personal_token: $(grep GH_TOKEN .env | cut -d '=' -f2)
         publish_dir: ./site
 
   lint:
@@ -91,7 +93,7 @@ jobs:
           fi
 
       - name: Log in to DockerHub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+        run: echo "$(grep DOCKER_PASSWORD .env | cut -d '=' -f2)" | docker login -u "$(grep DOCKER_USERNAME .env | cut -d '=' -f2)" --password-stdin
 
       - name: Build Docker Image
         run: docker build -t myusername/myapp:latest .
