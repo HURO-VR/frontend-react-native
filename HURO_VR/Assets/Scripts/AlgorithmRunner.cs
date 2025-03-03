@@ -23,7 +23,6 @@ public class AlgorithmRunner : MonoBehaviour {
     [SerializeField] bool displayGizmos;
     AudioLibrary audioLibrary;
     [SerializeField] TextMeshProUGUI debugLogs;
-    StreamingAssetsToPersistent pyFiles;
 
     private void Awake()
     {
@@ -32,7 +31,6 @@ public class AlgorithmRunner : MonoBehaviour {
             if (!sceneData) sceneData = GetComponent<SceneDataManager>();
             audioLibrary = FindAnyObjectByType<AudioLibrary>();
             engine = Python.CreateEngine();
-            pyFiles = FindAnyObjectByType<StreamingAssetsToPersistent>();
         }
         catch (Exception e)
         {
@@ -46,12 +44,12 @@ public class AlgorithmRunner : MonoBehaviour {
         ICollection<string> searchPaths = engine.GetSearchPaths();
 
         //Path to the folder of filename
-        searchPaths.Add(Application.persistentDataPath);
+        searchPaths.Add(Application.streamingAssetsPath);
 
         //Path to the Python standard library
-        searchPaths.Add(Application.persistentDataPath + @"/Python/Lib/");
+        searchPaths.Add(Application.streamingAssetsPath + @"/Python/Lib/");
 
-        searchPaths.Add(Application.persistentDataPath + @"/Python/");
+        searchPaths.Add(Application.streamingAssetsPath + @"/Python/");
 
         engine.SetSearchPaths(searchPaths);
     }
@@ -60,7 +58,7 @@ public class AlgorithmRunner : MonoBehaviour {
     {
         Debug.Log("Initializing Main Function at " + "main.py");
         SetImportPaths(engine);
-        algorithm = engine.ExecuteFile(Application.persistentDataPath + @"/Python/main.py");
+        algorithm = engine.ExecuteFile(Application.streamingAssetsPath + @"/Python/main.py");
         if (!sceneData) sceneData = GetComponent<SceneDataManager>();
         sceneData.InitSceneData();
         initAlgorithm = true;
@@ -68,8 +66,9 @@ public class AlgorithmRunner : MonoBehaviour {
 
     public void StartAlgorithm()
     {
-        if (audioLibrary) audioLibrary.PlayAudio(AudioLibrary.AudioType.StartSimulation);
+        if (audioLibrary && !algorithmRunning) audioLibrary.PlayAudio(AudioLibrary.AudioType.StartSimulation);
         algorithmRunning = true;
+        Debug.Log("HURO: Starting simulation");
     }
 
     public void ToggleAlgorithm()
@@ -120,7 +119,7 @@ public class AlgorithmRunner : MonoBehaviour {
     private float interval = 0.25f; // Run every x seconds
     // Update is called once per frame
     void FixedUpdate () {
-        if (!algorithmRunning || !pyFiles.IsFinishedLoading()) return;
+        if (!algorithmRunning) return;
 
         timer += Time.fixedDeltaTime; // Accumulate time
         if (timer >= interval)
@@ -144,7 +143,7 @@ public class AlgorithmRunner : MonoBehaviour {
     private void DebugLogs(string message, [CallerFilePath] string file = "", [CallerLineNumber] int line = 0)
     {
         debugLogs.text += "\n\n" + message;
-        Debug.Log($"HURO {file} @line:{line}: " + message);
+        Debug.Log($"HURO: {file} @line:{line}: " + message);
     }
 
 
