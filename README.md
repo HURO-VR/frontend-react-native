@@ -1,3 +1,7 @@
+# HURO
+
+[![HitCount](https://hits.dwyl.com/StanfordCS194/win25-Team26.svg?style=flat-square)](http://hits.dwyl.com/StanfordCS194/win25-Team26)
+![Build Status](https://github.com/StanfordCS194/win25-Team26/actions/workflows/c-cpp.yml/badge.svg)
 
 ### References
 

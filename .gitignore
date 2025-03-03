@@ -250,3 +250,4 @@ HURO_VR/Assets/Plugins/tvOS/Firebase/libFirebaseCppStorage.a.meta
 HURO_VR/Assets/Resources/BillingMode.json
 HURO_VR/Assets/Resources/BillingMode.json.meta
 .DS_Store
+.env
