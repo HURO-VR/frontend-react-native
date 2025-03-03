@@ -70,8 +70,6 @@ public class Storage : MonoBehaviour
 
     public void DownloadFile(string filename, FileType fileType, string simulationID, Action<byte[]> OnDownload)
     {
-        string branch = "simulations";
-
         // Trust that's .json
         // Create 
         string runsID = "TEST_RUN_ID";

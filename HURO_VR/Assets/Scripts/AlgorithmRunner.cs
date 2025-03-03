@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
-using IronPython.Hosting;
 using UnityEngine;
 using Newtonsoft.Json;
-using System.IO;
+using System;
+using TMPro;
 using Microsoft.Scripting.Hosting;
-using Unity.VisualScripting;
-using UnityEngine.XR.OpenXR.Input;
+using System.Runtime.CompilerServices;
+using IronPython.Hosting;
+using IronPython.Runtime;
+using UnityEngine.EventSystems;
 
 
 
@@ -13,17 +15,28 @@ using UnityEngine.XR.OpenXR.Input;
 public class AlgorithmRunner : MonoBehaviour {
 
 
-    private readonly ScriptEngine engine = Python.CreateEngine();
+    private ScriptEngine engine;
     private dynamic algorithm;
     bool initAlgorithm = false;
     SceneDataManager sceneData;
     bool algorithmRunning = false;
     [SerializeField] bool displayGizmos;
+    AudioLibrary audioLibrary;
+    [SerializeField] TextMeshProUGUI debugLogs;
 
     private void Awake()
     {
-
-        if (!sceneData) sceneData = GetComponent<SceneDataManager>();
+        try
+        {
+            if (!sceneData) sceneData = GetComponent<SceneDataManager>();
+            audioLibrary = FindAnyObjectByType<AudioLibrary>();
+            engine = Python.CreateEngine();
+        }
+        catch (Exception e)
+        {
+            DebugLogs(e.ToString());
+        }
+        
     }
 
     void SetImportPaths(ScriptEngine engine)
@@ -31,12 +44,12 @@ public class AlgorithmRunner : MonoBehaviour {
         ICollection<string> searchPaths = engine.GetSearchPaths();
 
         //Path to the folder of filename
-        searchPaths.Add(Application.dataPath);
+        searchPaths.Add(Application.streamingAssetsPath + @"/Python/");
 
         //Path to the Python standard library
-        searchPaths.Add(Application.dataPath + @"\Plugins\IronPy\Lib\");
+        searchPaths.Add(Application.dataPath + @"/Plugins/IronPy/Lib/");
 
-        searchPaths.Add(Application.dataPath + @"\Resources\Python\");
+        
 
         engine.SetSearchPaths(searchPaths);
     }
@@ -45,7 +58,7 @@ public class AlgorithmRunner : MonoBehaviour {
     {
         Debug.Log("Initializing Main Function at " + "main.py");
         SetImportPaths(engine);
-        algorithm = engine.ExecuteFile(Application.dataPath + @"\Resources\Python\main.py");
+        algorithm = engine.ExecuteFile(Application.streamingAssetsPath + @"/Python/main.py");
         if (!sceneData) sceneData = GetComponent<SceneDataManager>();
         sceneData.InitSceneData();
         initAlgorithm = true;
@@ -53,7 +66,16 @@ public class AlgorithmRunner : MonoBehaviour {
 
     public void StartAlgorithm()
     {
+        if (audioLibrary && !algorithmRunning) audioLibrary.PlayAudio(AudioLibrary.AudioType.StartSimulation);
         algorithmRunning = true;
+        Debug.Log("HURO: Starting simulation");
+    }
+
+    public void ToggleAlgorithm()
+    {
+        bool start = !algorithmRunning;
+        if (audioLibrary && start) audioLibrary.PlayAudio(AudioLibrary.AudioType.StartSimulation);
+        algorithmRunning = start;
     }
 
     void RunRVOAlgorithm()
@@ -95,7 +117,6 @@ public class AlgorithmRunner : MonoBehaviour {
 
     private float timer = 0f;
     private float interval = 0.25f; // Run every x seconds
-    int step = 0;
     // Update is called once per frame
     void FixedUpdate () {
         if (!algorithmRunning) return;
@@ -104,9 +125,25 @@ public class AlgorithmRunner : MonoBehaviour {
         if (timer >= interval)
         {
             timer = 0f; // Reset timer
-            if (!initAlgorithm) InitAlgorithm();
-            RunRVOAlgorithm();
+            try
+            {
+                if (!initAlgorithm) InitAlgorithm();
+                RunRVOAlgorithm();
+            } catch (Exception e)
+            {
+                DebugLogs(e.ToString());
+                algorithmRunning = false;
+                DebugLogs("Stopping Simulation");
+            }
+
+
         }
+    }
+
+    private void DebugLogs(string message, [CallerFilePath] string file = "", [CallerLineNumber] int line = 0)
+    {
+        debugLogs.text += "\n\n" + message;
+        Debug.Log($"HURO: {file} @line:{line}: " + message);
     }
 
 
@@ -120,7 +157,7 @@ public class AlgorithmRunner : MonoBehaviour {
 
     private void Update()
     {
-        if (Input.GetKeyUp(KeyCode.Space))
+        if (Input.GetKeyUp(KeyCode.Space) || OVRInput.GetDown(OVRInput.RawButton.A))
         {
             StartAlgorithm();
         }
