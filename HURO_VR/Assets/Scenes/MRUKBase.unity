@@ -323,7 +323,7 @@ MonoBehaviour:
         - m_Target: {fileID: 1996370582}
           m_TargetAssemblyTypeName: AlgorithmRunner, Assembly-CSharp
           m_MethodName: ToggleAlgorithm
-          m_Mode: 6
+          m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -5320,9 +5320,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86a44d3d9c03cca46b5f0a9e0e7552f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OnLoadingFinished:
-    m_PersistentCalls:
-      m_Calls: []
+  copyOnStart: 1
+  overwriteExistingFiles: 1
+  fileExtensionsToSkip:
+  - .meta
 --- !u!4 &1528395205
 Transform:
   m_ObjectHideFlags: 0
@@ -15004,6 +15005,34 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7686753078774123595, guid: 1d05ad45c9d5ec9488b0d53fc9a503ce, type: 3}
+      propertyPath: audioClips.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7686753078774123595, guid: 1d05ad45c9d5ec9488b0d53fc9a503ce, type: 3}
+      propertyPath: audioClips.Array.data[2].clip
+      value: 
+      objectReference: {fileID: 8300000, guid: 96b2d873bab1da543aeb7369b755e5b1, type: 3}
+    - target: {fileID: 7686753078774123595, guid: 1d05ad45c9d5ec9488b0d53fc9a503ce, type: 3}
+      propertyPath: audioClips.Array.data[2].type
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7686753078774123595, guid: 1d05ad45c9d5ec9488b0d53fc9a503ce, type: 3}
+      propertyPath: audioClips.Array.data[3].clip
+      value: 
+      objectReference: {fileID: 8300000, guid: a0d5c23c740b54c48a866730e9317586, type: 3}
+    - target: {fileID: 7686753078774123595, guid: 1d05ad45c9d5ec9488b0d53fc9a503ce, type: 3}
+      propertyPath: audioClips.Array.data[3].type
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7686753078774123595, guid: 1d05ad45c9d5ec9488b0d53fc9a503ce, type: 3}
+      propertyPath: audioClips.Array.data[2].volume
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7686753078774123595, guid: 1d05ad45c9d5ec9488b0d53fc9a503ce, type: 3}
+      propertyPath: audioClips.Array.data[3].volume
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -17722,7 +17751,7 @@ MonoBehaviour:
       - m_Target: {fileID: 1996370582}
         m_TargetAssemblyTypeName: AlgorithmRunner, Assembly-CSharp
         m_MethodName: StartAlgorithm
-        m_Mode: 0
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

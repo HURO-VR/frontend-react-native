@@ -8,11 +8,14 @@ public class AudioLibrary : MonoBehaviour
     {
         // User Feedback
         StartSimulation,
-        FileInit,
+        FileInitFinished,
+        FileInitStarted,
+        SmallBeep,
         None
     }
 
     //public static AudioLibrary Instance;
+
 
     [System.Serializable]
     public struct AudioClipEntry
