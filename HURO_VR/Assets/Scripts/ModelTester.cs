@@ -1,12 +1,8 @@
 using Unity.MLAgents;
 using UnityEngine;
-using System.Collections.Generic;
-using UnityEditor.Build;
-using System.Threading;
 using Unity.MLAgents.Policies;
 using UnityEditor;
 using Unity.Barracuda;
-using UnityEditor.Experimental.GraphView;
 using Unity.Barracuda.ONNX;
 using System.IO;
 
@@ -183,14 +179,6 @@ public class ModelTester : MonoBehaviour
         return nnModel;
     }
 
-    [MenuItem("Tools/Stop Play Mode")]
-    public static void StopPlay()
-    {
-        if (EditorApplication.isPlaying)
-        {
-            EditorApplication.isPlaying = false;
-        }
-    }
 }
 
 public class AgentWrapper : Agent
