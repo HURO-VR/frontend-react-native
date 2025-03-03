@@ -74,8 +74,7 @@ jobs:
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
+          git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN || env.GH_TOKEN }}@github.com/${{ github.repository }}.git
           git add README.md
-          git commit -m "Auto-update README with latest project stats & CI/
-          CD status [skip ci]" || echo "No changes to commit"
-          git branch --set-upstream-to=origin/${GITHUB_REF#refs/heads/} || echo "Upstream already set"
-          git push
+          git commit -m "Auto-update README with latest project stats & CI/CD status [skip ci]" || echo "No changes to commit"
+          git push origin HEAD:${GITHUB_REF#refs/heads/}
