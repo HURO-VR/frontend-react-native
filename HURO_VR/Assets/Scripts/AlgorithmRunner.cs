@@ -44,12 +44,12 @@ public class AlgorithmRunner : MonoBehaviour {
         ICollection<string> searchPaths = engine.GetSearchPaths();
 
         //Path to the folder of filename
-        searchPaths.Add(Application.streamingAssetsPath);
+        searchPaths.Add(Application.streamingAssetsPath + @"/Python/");
 
         //Path to the Python standard library
-        searchPaths.Add(Application.streamingAssetsPath + @"/Python/Lib/");
+        searchPaths.Add(Application.dataPath + @"/Plugins/IronPy/Lib/");
 
-        searchPaths.Add(Application.streamingAssetsPath + @"/Python/");
+        
 
         engine.SetSearchPaths(searchPaths);
     }
