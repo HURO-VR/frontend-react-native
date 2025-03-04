@@ -29,3 +29,16 @@ vencentv (Vencent Vang)
 
 ### 📌 CI/CD Status
 ![CI](https://img.shields.io/badge/CI-Unknown-lightgrey?style=flat-square)
+### Project statistics (updated: Tue Mar  4 00:15:29 UTC 2025)
+
+| Metric            | Count |
+|-------------------|-------|
+| 1. Open Issues    | **3** |
+| 2. Open PRs      | **3** |
+| 3. Contributors   | **3** |
+| 4. Stars         | **null** |
+| 5. Forks         | **null** |
+| 6. Last Commit   | **null** |
+
+### 📌 CI/CD Status
+![CI](https://img.shields.io/badge/CI-Unknown-lightgrey?style=flat-square)
