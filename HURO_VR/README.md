@@ -14,8 +14,26 @@
 
 6. Locate `Assets/Firebase/Editor/Firebase.Editor.dll.meta` and uncheck `Validate References` in the inspector.
 
+7. Install `iOS Build Support` in editor modules.
+
 
 ## Documentation
+
+### MR scene
+
+_Scene:_ MixedReality
+
+*Running:* 
+
+1. Choose the MR room you'd like to test under `MRUK` gameObject > `Scene Settings` > `Room Prefabs` > `Room Index`.
+This will choose `Room Index` room from `Room Prefabs`. You can find more rooms in `Resources/Training_Environments/Prefabs`. These rooms are designed to simulate a room scan (Meta Scene recognition).
+
+2. Press play. Currently Robot and Goal are placed randomly in the scene. Ideally we'd have a minimum distance they must be apart by.
+
+3. Initialize algorithm by pressing the `I` key. This will label the scene. Go to `Scene View` to see drawn gizmos that represent the algorithm's view of the scene.
+
+4. Press `Space` to start running the algorithm.
+
 
 ### Storage Class
 
@@ -54,3 +72,13 @@ void Example() {
 
 `void SelectSimulation(Database_Models.SimulationMetaData bundle)` - Selects `bundle` as the simulation to run.
 
+### Running Python In Unity
+[Example](https://mikalikes.men/use-python-with-unity-3d-the-definitive-guide/)
+
+### Access GCP Cloud Compute
+
+*Access VM:* `gcloud compute ssh --zone "us-central1-c" "huro-compute-engine" --project "canvas-spark-452121-q7"`
+
+*Copy files from local machine to VM*: `gcloud compute scp <path_to_local_file> huro-compute-engine:/<path_in_vm> --zone "us-central1-c"`
+
+Use flag `--recurse` to upload folders.

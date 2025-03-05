@@ -1,3 +1,4 @@
+import { StatusBar } from "react-native";
 
 export interface SimulationMetaData {
     name: string; // User defined name for the simulation
@@ -6,6 +7,7 @@ export interface SimulationMetaData {
     algorithmFilename: string; // The algorithm used for the simulation
     environmentName: string; // The environment used for the simulation. Stored in "Resources/Training_Environments" in Unity
     runs: number; // Number of times the simulation has been run.
+    modelFilename?: string; // Model Filename
 }
 
 export interface Organization {
@@ -15,6 +17,52 @@ export interface Organization {
     admins: string[] // User IDs
     name: string,
     dateCreated: string
+}
+
+export enum RunStatus {
+    failed = "failed",
+    warning = "warning",
+    success = "success"
+}
+
+export interface XYZ {
+    x: number,
+    y: number,
+    z: number
+}
+
+export interface RobotData {
+    robotStart: XYZ, // Robot starting position
+    robotEnd: XYZ, // Robot ending position
+    robotPath: XYZ[], // Array of robot path points
+    name: string, // Robot ID
+    timeToComplete: number, // Time in milliseconds
+    collisions: XYZ[], // Array of collision points
+    goalPosition: XYZ, // Goal position
+    goalReached: boolean, // True if the robot reached the goal
+}
+
+export interface ObstacleData {
+    position: XYZ, // Obstacle position
+    radius: number, // Obstacle size
+};
+
+export interface SimulationRunData {
+    timeToComplete: number, // Time in milliseconds
+    totalCollisions: XYZ[], // Array of collision points
+    deadlock: boolean, // True if the simulation ended in a deadlock
+    robotData: RobotData[], // Array of robot IDs
+    obstacleData: ObstacleData[], // Array of obstacle data
+}
+export interface SimulationRun {
+    uid: string,
+    dateCreated: string,
+    status: RunStatus,
+    simID: string,
+    starred: boolean,
+    runID: string,
+    name: string,
+    data: SimulationRunData
 }
 
 export interface UserMetaData {

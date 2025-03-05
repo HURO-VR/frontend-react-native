@@ -1,18 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using Firebase.Extensions;
 using Firebase.Storage;
 using Firebase.Firestore;
-using Unity.Barracuda;
-using Unity.VisualScripting;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Networking;
-using System.Drawing;
 using System.Threading.Tasks;
-using System.IO;
 
 public class FileType
 {
@@ -76,8 +70,10 @@ public class Storage : MonoBehaviour
 
     public void DownloadFile(string filename, FileType fileType, string simulationID, Action<byte[]> OnDownload)
     {
-        string branch = "simulations";
-        string path = $"organizations/{org_name}/{branch}/{simulationID}/{fileType}/{filename}";
+        // Trust that's .json
+        // Create 
+        string runsID = "TEST_RUN_ID";
+        string path = $"organizations/{org_name}/simulations/{simulationID}/runs/{runsID}/{filename}"; 
         Debug.Log("Downloading from path " + path);
         StorageReference reference = storage.GetReference(path);
 
@@ -140,13 +136,54 @@ public class Storage : MonoBehaviour
                             break;
                     }  
                 }
+                
                 count++;
             };
         });
         return await Task.FromResult(simulationMetaDatas);
     }
 
+    public async void UploadMetadata<T>(string path, T data)
+    {
+        DocumentReference docRef = firestore.Document(path);
+        try
+        {
+            await docRef.SetAsync(data);
+            Debug.Log("Data uploaded successfully to " + path);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError("Error uploading data: " + e.Message);
+        }
+    }
 
+    public void UploadJsonFile(string jsonData, string filename, FileType fileType, string simulationID, Action<bool, string> OnUploadComplete)
+    {
+        string branch = "simulations";
+        string path = $"organizations/{org_name}/{branch}/{simulationID}/{fileType}/{filename}";
+        Debug.Log("Uploading to path: " + path);
+
+        // Convert JSON string to byte array
+        byte[] fileBytes = System.Text.Encoding.UTF8.GetBytes(jsonData);
+
+        // Create a reference to the file location in Firebase Storage
+        StorageReference reference = storage.GetReference(path);
+
+        // Upload the file
+        reference.PutBytesAsync(fileBytes).ContinueWithOnMainThread(task =>
+        {
+            if (task.IsFaulted || task.IsCanceled)
+            {
+                Debug.LogError("Upload failed: " + task.Exception);
+                OnUploadComplete(false, "Upload failed.");
+            }
+            else
+            {
+                Debug.Log("Upload successful!");
+                OnUploadComplete(true, "Upload successful!");
+            }
+        });
+    }
 
 
     public void SetOrganization(string org)

@@ -5,12 +5,13 @@ interface SimulationListEntryProps {
     title: string;
     algorithmName: string;
     dateCreated: string;
+    onPress?: () => void;
 }
 
-export const SimulationListEntry = ({ title, algorithmName, dateCreated }: SimulationListEntryProps) => {
+export const SimulationListEntry = ({ title, algorithmName, dateCreated, onPress }: SimulationListEntryProps) => {
     return (
         <TouchableOpacity style={{ padding: 20 }} onPress={() => {
-            
+            if (onPress) onPress();
         }}>
             <Text style={TextStyles.subtitle}>Simulation Name:</Text>
             <Text style={{
