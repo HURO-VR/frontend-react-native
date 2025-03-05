@@ -55,7 +55,7 @@ jobs:
       - name: Update README.md
         run: |
           # Define start and end markers
-          START_MARKER="~~"
+          START_MARKER="-.-.-"
           END_MARKER="## Environment Setup:"
 
           # Extract content before START_MARKER

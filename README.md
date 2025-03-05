@@ -16,58 +16,8 @@ tashakim (Tasha Kim)
 nikitax1 (Nikita X-One)
 vencentv (Vencent Vang)
 
-### Project statistics (updated: Mon Mar  3 22:27:15 UTC 2025)
+~~
 
-| Metric            | Count |
-|-------------------|-------|
-| 1. Open Issues    | **3** |
-| 2. Open PRs      | **3** |
-| 3. Contributors   | **3** |
-| 4. Stars         | **null** |
-| 5. Forks         | **null** |
-| 6. Last Commit   | **null** |
-
-### 📌 CI/CD Status
-![CI](https://img.shields.io/badge/CI-Unknown-lightgrey?style=flat-square)
-### Project statistics (updated: Tue Mar  4 00:15:29 UTC 2025)
-
-| Metric            | Count |
-|-------------------|-------|
-| 1. Open Issues    | **3** |
-| 2. Open PRs      | **3** |
-| 3. Contributors   | **3** |
-| 4. Stars         | **null** |
-| 5. Forks         | **null** |
-| 6. Last Commit   | **null** |
-
-### 📌 CI/CD Status
-![CI](https://img.shields.io/badge/CI-Unknown-lightgrey?style=flat-square)
-### Project statistics (updated: Wed Mar  5 00:15:37 UTC 2025)
-
-| Metric            | Count |
-|-------------------|-------|
-| 1. Open Issues    | **3** |
-| 2. Open PRs      | **3** |
-| 3. Contributors   | **3** |
-| 4. Stars         | **null** |
-| 5. Forks         | **null** |
-| 6. Last Commit   | **null** |
-
-### 📌 CI/CD Status
-![CI](https://img.shields.io/badge/CI-Unknown-lightgrey?style=flat-square)
-### Project statistics (updated: Wed Mar  5 03:53:26 UTC 2025)
-
-| Metric            | Count |
-|-------------------|-------|
-| 1. Open Issues    | **3** |
-| 2. Open PRs      | **3** |
-| 3. Contributors   | **3** |
-| 4. Stars         | **null** |
-| 5. Forks         | **null** |
-| 6. Last Commit   | **null** |
-
-### 📌 CI/CD Status
-![CI](https://img.shields.io/badge/CI-Unknown-lightgrey?style=flat-square)
 ### Project statistics (updated: Wed Mar  5 04:57:45 UTC 2025)
 
 | Metric            | Count |
