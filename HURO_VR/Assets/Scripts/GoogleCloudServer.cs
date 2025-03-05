@@ -73,7 +73,7 @@ public class RemoteScriptExecutor : MonoBehaviour
 
             if (cmd.ExitStatus == 0)
             {
-                Log($"Command executed successfully: {commandToExecute}");
+                //Log($"Command executed successfully: {commandToExecute}");
                 string result = cmd.Result.Trim();
                 OnScriptExecutionComplete?.Invoke(result); 
                 return result;
