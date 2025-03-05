@@ -83,7 +83,7 @@ public class GoogleCloudServer : MonoBehaviour
             }
             else
             {
-                Debug.LogError($"Command failed. Command: {commandToExecute}, Error: {cmd.Error}");
+                Debug.LogError($"Command failed. Command:{commandToExecute.Substring(0, 20)} Error: {cmd.Error}");
                 return string.Empty;
             }
         }
