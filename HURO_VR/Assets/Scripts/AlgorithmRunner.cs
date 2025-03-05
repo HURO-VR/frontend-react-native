@@ -8,10 +8,13 @@ using System.Runtime.CompilerServices;
 using IronPython.Hosting;
 using IronPython.Runtime;
 using UnityEngine.EventSystems;
+using System.Threading.Tasks;
 
 
 
 [RequireComponent(typeof(SceneDataManager))]
+[RequireComponent(typeof(RemoteScriptExecutor))]
+
 public class AlgorithmRunner : MonoBehaviour {
 
 
@@ -23,6 +26,9 @@ public class AlgorithmRunner : MonoBehaviour {
     [SerializeField] bool displayGizmos;
     AudioLibrary audioLibrary;
     [SerializeField] TextMeshProUGUI debugLogs;
+    [SerializeField] bool runOnServer;
+    bool hitServerAgain = true;
+    RemoteScriptExecutor remoteScriptExecutor;
 
     private void Awake()
     {
@@ -31,6 +37,7 @@ public class AlgorithmRunner : MonoBehaviour {
             if (!sceneData) sceneData = GetComponent<SceneDataManager>();
             audioLibrary = FindAnyObjectByType<AudioLibrary>();
             engine = Python.CreateEngine();
+            remoteScriptExecutor = GetComponent<RemoteScriptExecutor>();
         }
         catch (Exception e)
         {
@@ -61,6 +68,7 @@ public class AlgorithmRunner : MonoBehaviour {
         algorithm = engine.ExecuteFile(Application.streamingAssetsPath + @"/Python/main.py");
         if (!sceneData) sceneData = GetComponent<SceneDataManager>();
         sceneData.InitSceneData();
+        remoteScriptExecutor.OpenSSHConnection();
         initAlgorithm = true;
     }
 
@@ -76,16 +84,42 @@ public class AlgorithmRunner : MonoBehaviour {
         bool start = !algorithmRunning;
         if (audioLibrary && start) audioLibrary.PlayAudio(AudioLibrary.AudioType.StartSimulation);
         algorithmRunning = start;
+        if (!start) PauseAlgorithm();
     }
 
-    void RunRVOAlgorithm()
+    void PauseAlgorithm()
     {
-        sceneData.UpdateSceneData();
-        string input = JsonConvert.SerializeObject(sceneData.data);
-        // Debug.Log(input);
-        string output = algorithm.main(input);
+        algorithmRunning = false;
+        GameObject[] robots = GameObject.FindGameObjectsWithTag("Robot");
+        foreach (GameObject robot in robots)
+        {
+            Rigidbody rigidbody = robot.GetComponent<Rigidbody>();
+            if (rigidbody != null)
+            {
+                rigidbody.velocity = Vector3.zero;
+            }
+        }
+    }
+
+    void RunAlgorithm(string input)
+    {
+        string output =  algorithm.main(input);
+        OnScriptComplete(output);
+    }
+
+    void OnScriptComplete(string output)
+    {
         var newVelocities = JsonConvert.DeserializeObject<float[][]>(output);
         SetNewVelocities(newVelocities);
+        if (runOnServer) hitServerAgain = true;
+    }
+
+    private void RunAlgorithmOnServer(string param)
+    {
+        remoteScriptExecutor.OnScriptExecutionComplete += OnScriptComplete;
+        //remoteScriptExecutor.EstablishSshConnection();
+        remoteScriptExecutor.ExecuteCommand(param);
+        
     }
 
     void SetNewVelocities(float[][] newVelocities)
@@ -128,11 +162,20 @@ public class AlgorithmRunner : MonoBehaviour {
             try
             {
                 if (!initAlgorithm) InitAlgorithm();
-                RunRVOAlgorithm();
+                if ((runOnServer && hitServerAgain) || !runOnServer) {
+                    sceneData.UpdateSceneData();
+                    string input = JsonConvert.SerializeObject(sceneData.data);
+                    if (runOnServer && hitServerAgain) {
+                        hitServerAgain = false;
+                        Debug.Log("Calling Run Algorithim On Server");
+                        RunAlgorithmOnServer(input); 
+                    }
+                    else if (!runOnServer) RunAlgorithm(input);
+                }
             } catch (Exception e)
             {
                 DebugLogs(e.ToString());
-                algorithmRunning = false;
+                PauseAlgorithm();
                 DebugLogs("Stopping Simulation");
             }
 
@@ -166,5 +209,10 @@ public class AlgorithmRunner : MonoBehaviour {
         {
             InitAlgorithm();
         }
+    }
+
+    private void OnDestroy()
+    {
+        remoteScriptExecutor.CloseSSHConnection();
     }
 }
