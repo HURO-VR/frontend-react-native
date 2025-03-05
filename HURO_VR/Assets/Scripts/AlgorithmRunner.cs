@@ -65,14 +65,15 @@ public class AlgorithmRunner : MonoBehaviour {
 
     public void InitAlgorithm()
     {
-        algorithm = engine.ExecuteFile(Application.streamingAssetsPath + @"/Python/main.py");
+        
         if (runOnServer) remoteScriptExecutor.OpenSSHConnection();
         else
         {
             engine = Python.CreateEngine();
             SetImportPaths(engine);
+            algorithm = engine.ExecuteFile(Application.streamingAssetsPath + @"/Python/main.py");
         }
-  
+
         if (!sceneData) sceneData = GetComponent<SceneDataManager>();
         sceneData.InitSceneData();
         
