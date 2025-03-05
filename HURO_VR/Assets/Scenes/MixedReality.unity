@@ -523,7 +523,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3613868102660323786, guid: c2e00db6d2dfa42ac8d821db8d493a44, type: 3}
       propertyPath: SceneSettings.RoomIndex
-      value: 10
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3613868102660323786, guid: c2e00db6d2dfa42ac8d821db8d493a44, type: 3}
       propertyPath: SceneSettings.DataSource
@@ -4125,6 +4125,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Python_Runner
       objectReference: {fileID: 0}
+    - target: {fileID: 2008155595104895519, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
+      propertyPath: username
+      value: accou
+      objectReference: {fileID: 0}
     - target: {fileID: 3027393191021768787, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
       propertyPath: mrukObstacleLabel
       value: 7064
@@ -4133,6 +4137,10 @@ PrefabInstance:
       propertyPath: debugLogs
       value: 
       objectReference: {fileID: 6201027460669257670}
+    - target: {fileID: 5437653416407172566, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
+      propertyPath: runOnServer
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5437653416407172566, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
       propertyPath: displayGizmos
       value: 1

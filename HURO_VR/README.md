@@ -74,3 +74,11 @@ void Example() {
 
 ### Running Python In Unity
 [Example](https://mikalikes.men/use-python-with-unity-3d-the-definitive-guide/)
+
+### Access GCP Cloud Compute
+
+*Access VM:* `gcloud compute ssh --zone "us-central1-c" "huro-compute-engine" --project "canvas-spark-452121-q7"`
+
+*Copy files from local machine to VM*: `gcloud compute scp <path_to_local_file> huro-compute-engine:/<path_in_vm> --zone "us-central1-c"`
+
+Use flag `--recurse` to upload folders.

@@ -1,9 +1,13 @@
 import json
 from RVO import RVO_update, compute_V_des
 from StringToObject import StringToObject
+import argparse
 
-def main(scene_data_str):
-    scene_data = StringToObject(scene_data_str)
+def main():
+    parser = argparse.ArgumentParser(description="Calculate square velocity.")
+    parser.add_argument("json_str", type=str, help="object data")
+    args = parser.parse_args()
+    scene_data = StringToObject(args.json_str)
     #------------------------------
     #define workspace model
     ws_model = dict()
@@ -37,4 +41,8 @@ def main(scene_data_str):
     
     # compute the optimal vel to avoid collision
     new_velocities = RVO_update(robot_positions, V_des, currVelocity, ws_model)
+    print(json.dumps(new_velocities))
     return json.dumps(new_velocities)
+
+if __name__ == "__main__":
+    main()
