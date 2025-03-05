@@ -38,6 +38,7 @@ jobs:
           fi
 
           # Save stats to a temporary file with badges
+          echo "-.-.-" >> stats_section.md
           echo "### Project statistics (updated: $(date))" > stats_section.md
           echo "" >> stats_section.md
           echo "| Metric            | Count |" >> stats_section.md
