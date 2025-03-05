@@ -34,3 +34,4 @@ vencentv (Vencent Vang)
 
 ### 📌 CI/CD Status
 ![CI](https://img.shields.io/badge/CI-Unknown-lightgrey?style=flat-square)
+## Environment Setup:
