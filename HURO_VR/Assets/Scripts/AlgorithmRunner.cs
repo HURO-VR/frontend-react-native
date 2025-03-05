@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 
 [RequireComponent(typeof(SceneDataManager))]
-[RequireComponent(typeof(RemoteScriptExecutor))]
+[RequireComponent(typeof(GoogleCloudServer))]
 
 public class AlgorithmRunner : MonoBehaviour {
 
@@ -28,16 +28,18 @@ public class AlgorithmRunner : MonoBehaviour {
     [SerializeField] TextMeshProUGUI debugLogs;
     [SerializeField] bool runOnServer;
     bool hitServerAgain = true;
-    RemoteScriptExecutor remoteScriptExecutor;
+    GoogleCloudServer remoteScriptExecutor;
 
     private void Awake()
     {
+        #if !UNITY_EDITOR
+        runOnServer = true;
+        #endif
         try
         {
             if (!sceneData) sceneData = GetComponent<SceneDataManager>();
             audioLibrary = FindAnyObjectByType<AudioLibrary>();
-            engine = Python.CreateEngine();
-            remoteScriptExecutor = GetComponent<RemoteScriptExecutor>();
+            remoteScriptExecutor = GetComponent<GoogleCloudServer>();
         }
         catch (Exception e)
         {
@@ -63,12 +65,17 @@ public class AlgorithmRunner : MonoBehaviour {
 
     public void InitAlgorithm()
     {
-        Debug.Log("Initializing Main Function at " + "main.py");
-        SetImportPaths(engine);
         algorithm = engine.ExecuteFile(Application.streamingAssetsPath + @"/Python/main.py");
+        if (runOnServer) remoteScriptExecutor.OpenSSHConnection();
+        else
+        {
+            engine = Python.CreateEngine();
+            SetImportPaths(engine);
+        }
+  
         if (!sceneData) sceneData = GetComponent<SceneDataManager>();
         sceneData.InitSceneData();
-        remoteScriptExecutor.OpenSSHConnection();
+        
         initAlgorithm = true;
     }
 
@@ -213,6 +220,6 @@ public class AlgorithmRunner : MonoBehaviour {
 
     private void OnDestroy()
     {
-        remoteScriptExecutor.CloseSSHConnection();
+        remoteScriptExecutor?.CloseSSHConnection();
     }
 }

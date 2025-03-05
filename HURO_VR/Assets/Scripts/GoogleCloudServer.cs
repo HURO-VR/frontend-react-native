@@ -6,16 +6,15 @@ using Newtonsoft.Json;
 using System.Diagnostics;
 using Debug = UnityEngine.Debug;
 
-public class RemoteScriptExecutor : MonoBehaviour
+public class GoogleCloudServer : MonoBehaviour
 {
     [Header("SSH Connection Settings")]
-    [Tooltip("External IP address of the SSH server")]
-    public string externalIp = "104.154.36.87";
+    string serverIP = "104.154.36.87";
 
     [Tooltip("SSH Username")]
-    public string username = "michaelmarcotte";
+    public string username;
 
-    string privateKeyPath = Application.streamingAssetsPath + "/gcp-vm-key";
+    string privateKeyPath = "/gcp-vm-key";
 
     string remoteScriptPath = "/home/accou/Python_Scripts/Python/main.py";
 
@@ -28,6 +27,10 @@ public class RemoteScriptExecutor : MonoBehaviour
     public event ScriptExecutionCompleted OnScriptExecutionComplete;
     SshClient client;
 
+    private void Awake()
+    {
+        privateKeyPath = Application.persistentDataPath + privateKeyPath;
+    }
     // Callback for logging
     private void Log(string message)
     {
@@ -47,7 +50,7 @@ public class RemoteScriptExecutor : MonoBehaviour
     {
         var privateKeyFile = new PrivateKeyFile(privateKeyPath);
         var authMethod = new PrivateKeyAuthenticationMethod(username, privateKeyFile);
-        var connectionInfo = new ConnectionInfo(externalIp, username, authMethod);
+        var connectionInfo = new ConnectionInfo(serverIP, username, authMethod);
         // Create SSH connection
         client = new SshClient(connectionInfo);
         // Connect to the SSH server
@@ -94,7 +97,7 @@ public class RemoteScriptExecutor : MonoBehaviour
         // Load the private key
         var privateKeyFile = new PrivateKeyFile(privateKeyPath);
         var authMethod = new PrivateKeyAuthenticationMethod(username, privateKeyFile);
-        var connectionInfo = new ConnectionInfo(externalIp, username, authMethod);
+        var connectionInfo = new ConnectionInfo(serverIP, username, authMethod);
 
 
         // Create SSH connection
