@@ -7,14 +7,13 @@ public class PathTracer : MonoBehaviour
     private LineRenderer _line;
     private List<Vector3> _positions = new List<Vector3>();
 
-    // How often to record a position (in seconds)
+    // how often we record a position
     public float recordInterval = 0.1f;
     private float _timer = 0f;
 
     void Awake()
     {
         _line = GetComponent<LineRenderer>();
-        // Optionally, customize the line here: width, color, etc.
         _line.startWidth = 0.3f;
         _line.endWidth = 0.3f;
         _line.startColor = Color.red;
