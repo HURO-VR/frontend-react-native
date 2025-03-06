@@ -33,9 +33,11 @@ public class AlgorithmRunner : MonoBehaviour {
 
     private void Awake()
     {
-        #if !UNITY_EDITOR
-        runOnServer = true;
+        // Ensure server is enabled at Runtime on Quest.
+        #if UNITY_ANDROID
+            runOnServer = true;
         #endif
+
         try
         {
             if (!sceneData) sceneData = GetComponent<SceneDataManager>();
@@ -59,8 +61,6 @@ public class AlgorithmRunner : MonoBehaviour {
 
         //Path to the Python standard library
         searchPaths.Add(Application.dataPath + @"/Plugins/IronPy/Lib/");
-
-        
 
         engine.SetSearchPaths(searchPaths);
     }
