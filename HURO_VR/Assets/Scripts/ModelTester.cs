@@ -27,7 +27,7 @@ public class ModelTester : MonoBehaviour
     public void Awake()
     {
         storage = FindAnyObjectByType<Storage>();
-        if (storage == null )
+        if (storage == null)
         {
             storage = gameObject.AddComponent<Storage>();
         }
@@ -204,7 +204,7 @@ public class AgentWrapper : Agent
         numSuccesses++;
     }
 
-    public void LogRun ()
+    public void LogRun()
     {
         numRuns++;
     }
