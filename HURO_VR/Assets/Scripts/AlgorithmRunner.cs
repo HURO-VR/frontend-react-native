@@ -29,6 +29,7 @@ public class AlgorithmRunner : MonoBehaviour {
     [SerializeField] bool runOnServer;
     bool hitServerAgain = true;
     GoogleCloudServer remoteScriptExecutor;
+    StreamingAssetsManager fileTransfer;
 
     private void Awake()
     {
@@ -40,6 +41,7 @@ public class AlgorithmRunner : MonoBehaviour {
             if (!sceneData) sceneData = GetComponent<SceneDataManager>();
             audioLibrary = FindAnyObjectByType<AudioLibrary>();
             remoteScriptExecutor = GetComponent<GoogleCloudServer>();
+            fileTransfer = FindAnyObjectByType<StreamingAssetsManager>();
         }
         catch (Exception e)
         {
@@ -66,7 +68,9 @@ public class AlgorithmRunner : MonoBehaviour {
     public void InitAlgorithm()
     {
         
-        if (runOnServer) remoteScriptExecutor.OpenSSHConnection();
+        if (runOnServer) { 
+            remoteScriptExecutor.OpenSSHConnection(); 
+        }
         else
         {
             engine = Python.CreateEngine();
@@ -90,9 +94,9 @@ public class AlgorithmRunner : MonoBehaviour {
     public void ToggleAlgorithm()
     {
         bool start = !algorithmRunning;
-        if (audioLibrary && start) audioLibrary.PlayAudio(AudioLibrary.AudioType.StartSimulation);
-        algorithmRunning = start;
-        if (!start) PauseAlgorithm();
+        Debug.Log("Toggle with " + start);
+        if (start) StartAlgorithm();
+        else PauseAlgorithm();
     }
 
     void PauseAlgorithm()
@@ -117,10 +121,17 @@ public class AlgorithmRunner : MonoBehaviour {
 
     void OnScriptComplete(string output)
     {
-        var newVelocities = JsonConvert.DeserializeObject<float[][]>(output);
-        SetNewVelocities(newVelocities);
-        if (runOnServer) hitServerAgain = true;
+        if (output.Length == 0)
+        {
+            Debug.LogWarning("SSH Command did not output any data.");
+        } else
+        {
+            var newVelocities = JsonConvert.DeserializeObject<float[][]>(output);
+            SetNewVelocities(newVelocities);
+            if (runOnServer) hitServerAgain = true;
+        }
     }
+
 
     private void RunAlgorithmOnServer(string param)
     {
@@ -160,8 +171,9 @@ public class AlgorithmRunner : MonoBehaviour {
     private float timer = 0f;
     private float interval = 0.25f; // Run every x seconds
     // Update is called once per frame
-    void FixedUpdate () {
-        if (!algorithmRunning) return;
+    void Update () {
+        DetectKeyBoardActivation();
+        if (!algorithmRunning || !fileTransfer.IsCopyingComplete()) return;
 
         timer += Time.fixedDeltaTime; // Accumulate time
         if (timer >= interval)
@@ -186,8 +198,6 @@ public class AlgorithmRunner : MonoBehaviour {
                 PauseAlgorithm();
                 DebugLogs("Stopping Simulation");
             }
-
-
         }
     }
 
@@ -206,11 +216,11 @@ public class AlgorithmRunner : MonoBehaviour {
         }
     }
 
-    private void Update()
+    private void DetectKeyBoardActivation()
     {
-        if (Input.GetKeyUp(KeyCode.Space) || OVRInput.GetDown(OVRInput.RawButton.A))
+        if (Input.GetKeyUp(KeyCode.Space))
         {
-            StartAlgorithm();
+            ToggleAlgorithm();
         }
 
         if (Input.GetKeyUp(KeyCode.I))

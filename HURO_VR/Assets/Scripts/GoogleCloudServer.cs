@@ -16,7 +16,7 @@ public class GoogleCloudServer : MonoBehaviour
 
     string privateKeyPath = "/gcp-vm-key";
 
-    string remoteScriptPath = "/home/accou/Python_Scripts/Python/main.py";
+    string remoteScriptPath = null;
 
     [Header("Logging")]
     [Tooltip("Enable detailed logging")]
@@ -38,6 +38,12 @@ public class GoogleCloudServer : MonoBehaviour
         {
             Debug.Log($"[RemoteScriptExecutor] {message}");
         }
+    }
+
+    public void SetSimulationID(string simulationID)
+    {
+        //  remoteScriptPath = "/home/accou/Python_Scripts/{simulationID}/main.py";
+        remoteScriptPath = "/home/accou/Python_Scripts/Python/main.py";
     }
 
     // Public method to trigger SSH script execution
@@ -69,6 +75,11 @@ public class GoogleCloudServer : MonoBehaviour
 
     public string ExecuteCommand(string param)
     {
+        if (remoteScriptPath == null)
+        {
+            Debug.LogWarning("Must set Simulation ID before Executing Script.");
+            return "[]";
+        }
         string commandToExecute = $"python3 {remoteScriptPath} '{param}'";
         using (var cmd = client.CreateCommand(commandToExecute))
         {
@@ -133,6 +144,7 @@ public class GoogleCloudServer : MonoBehaviour
     // Helper method to execute SSH commands and return output
     private string ExecuteCommand(SshClient client, string command)
     {
+        
         using (var cmd = client.CreateCommand(command))
         {
             cmd.Execute();

@@ -27,6 +27,7 @@ public class StreamingAssetsManager : MonoBehaviour
         library = FindAnyObjectByType<AudioLibrary>();
         if (copyOnStart)
         {
+            Debug.Log("HURO: Start file copy");
             StartCoroutine(CopyAllFilesFromStreamingAssets());
         }
     }
@@ -59,7 +60,7 @@ public class StreamingAssetsManager : MonoBehaviour
 
         isCopyingComplete = true;
         if (skippedFiles < copiedFiles) library?.PlayAudio(AudioLibrary.AudioType.FileInitFinished);
-        Debug.Log($"Completed copying {copiedFiles}/{totalFiles} files to {Application.persistentDataPath}");
+        Debug.Log($"HURO: Completed copying {copiedFiles}/{totalFiles} files to {Application.persistentDataPath}");
     }
 
     private IEnumerator ReadManifestFile()
