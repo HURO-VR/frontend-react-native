@@ -102,7 +102,7 @@ public class Storage : MonoBehaviour
 
 
 
-    public async Task<Database_Models.SimulationMetaData[]> GetAllSimulationBundles()
+    public async Task GetAllSimulationBundles(Action<Database_Models.SimulationMetaData[]> OnComplete)
     {
         Database_Models.SimulationMetaData[] simulationMetaDatas = new Database_Models.SimulationMetaData[0];
         Query simulationQuery = firestore.Collection($"organizations/{org_name}/simulations");
@@ -140,7 +140,7 @@ public class Storage : MonoBehaviour
                 count++;
             };
         });
-        return await Task.FromResult(simulationMetaDatas);
+        OnComplete(await Task.FromResult(simulationMetaDatas));
     }
 
     public async void UploadMetadata<T>(string path, T data)
