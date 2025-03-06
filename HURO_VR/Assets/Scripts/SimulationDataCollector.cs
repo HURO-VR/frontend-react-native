@@ -2,12 +2,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
 
-public class SimulationDataCollector : MonoBehaviour
+public static class SimulationDataCollector
 {
-    public SimulationRun simulationRun { get; private set; }
-    private float simulationStartTime;
+    public static SimulationRun simulationRun { get; private set; }
+    private static float simulationStartTime;
 
-    public void InitializeSimulation()
+    public static void InitializeSimulation()
     {
         simulationRun = new SimulationRun
         {
@@ -29,7 +29,7 @@ public class SimulationDataCollector : MonoBehaviour
         simulationStartTime = Time.time * 1000; // Convert to milliseconds
     }
 
-    List<RobotData> InitAllRobotData()
+    static List<RobotData> InitAllRobotData()
     {
         GameObject[] robot_gos = GameObject.FindGameObjectsWithTag("Robot");
         List<RobotData> robots = new List<RobotData>();
@@ -41,7 +41,7 @@ public class SimulationDataCollector : MonoBehaviour
         return robots;
     }
 
-    RobotData InitRobotData(GameObject robot_go)
+    static RobotData InitRobotData(GameObject robot_go)
     {
         RobotController robotController = robot_go.GetComponent<RobotController>();
 
@@ -50,13 +50,13 @@ public class SimulationDataCollector : MonoBehaviour
             name = robot_go.name,
             robotStart = Vector3ToXYZ(robot_go.transform.position),
             robotPath = new List<XYZ>(),
-            goalPosition = Vector3ToXYZ(robotController.goal.transform.position),
+            goalPosition = Vector3ToXYZ(robotController.GetGoal().transform.position),
             collisions = new List<XYZ>(),
             goalReached = false
         };
     }
 
-    List<ObstacleData> InitObstacles()
+    static List<ObstacleData> InitObstacles()
     {
         GameObject[] gos = GameObject.FindGameObjectsWithTag("Obstacle");
         List<ObstacleData> obstacles = new List<ObstacleData>();
@@ -72,7 +72,7 @@ public class SimulationDataCollector : MonoBehaviour
         return obstacles;
     }
 
-    public void UpdateRobotData()
+    public static void UpdateRobotData()
     {
         GameObject[] robots = GameObject.FindGameObjectsWithTag("Robot");
 
@@ -94,25 +94,38 @@ public class SimulationDataCollector : MonoBehaviour
         }
     }
 
-    public void DetectCollisions()
+    //public void DetectCollisions()
+    //{
+    //    GameObject[] robots = GameObject.FindGameObjectsWithTag("Robot");
+    //    for (int i = 0; i < robots.Length; i++)
+    //    {
+    //        for (int j = i + 1; j < robots.Length; j++)
+    //        {
+    //            if (Vector3.Distance(robots[i].transform.position, robots[j].transform.position) < 1.0f)
+    //            {
+    //                XYZ collisionPoint = Vector3ToXYZ((robots[i].transform.position + robots[j].transform.position) / 2);
+    //                simulationRun.data.totalCollisions.Add(collisionPoint);
+    //                simulationRun.data.robotData[i].collisions.Add(collisionPoint);
+    //                simulationRun.data.robotData[j].collisions.Add(collisionPoint);
+    //            }
+    //        }
+    //    }
+    //}
+
+    public static void AddCollision(Robot robot, Collision collision)
     {
-        GameObject[] robots = GameObject.FindGameObjectsWithTag("Robot");
-        for (int i = 0; i < robots.Length; i++)
+        XYZ collisionPoint = Vector3ToXYZ(collision.contacts[0].point);
+        simulationRun.data.totalCollisions.Add(collisionPoint);
+        foreach (var ro in simulationRun.data.robotData)
         {
-            for (int j = i + 1; j < robots.Length; j++)
+            if (ro.name == robot.name)
             {
-                if (Vector3.Distance(robots[i].transform.position, robots[j].transform.position) < 1.0f)
-                {
-                    XYZ collisionPoint = Vector3ToXYZ((robots[i].transform.position + robots[j].transform.position) / 2);
-                    simulationRun.data.totalCollisions.Add(collisionPoint);
-                    simulationRun.data.robotData[i].collisions.Add(collisionPoint);
-                    simulationRun.data.robotData[j].collisions.Add(collisionPoint);
-                }
+                ro.collisions.Add(collisionPoint);
             }
         }
     }
 
-    public bool CheckAllRobotsReachedGoal()
+    public static bool CheckAllRobotsReachedGoal()
     {
         foreach (var robot in simulationRun.data.robotData)
         {
@@ -124,19 +137,19 @@ public class SimulationDataCollector : MonoBehaviour
         return true;
     }
 
-    public void EndSimulation()
+    public static void EndSimulation()
     {
         simulationRun.data.timeToComplete = (int)((Time.time * 1000) - simulationStartTime);
         simulationRun.data.deadlock = !CheckAllRobotsReachedGoal();
-        Debug.Log("Simulation Ended. Data: " + JsonConvert.SerializeObject(simulationRun, Formatting.Indented));
+        Debug.Log("HURO: Simulation Ended. Data: " + JsonConvert.SerializeObject(simulationRun, Formatting.Indented));
     }
 
-    private XYZ Vector3ToXYZ(Vector3 v)
+    private static XYZ Vector3ToXYZ(Vector3 v)
     {
         return new XYZ { x = v.x, y = v.y, z = v.z };
     }
 
-    private Vector3 XYZToVector3(XYZ xyz)
+    private static Vector3 XYZToVector3(XYZ xyz)
     {
         return new Vector3(xyz.x, xyz.y, xyz.z);
     }
