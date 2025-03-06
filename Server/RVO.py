@@ -1,8 +1,7 @@
 from math import sqrt
-from numpy_funcs import arange
+from numpy import arange
 from math import cos, sin, atan2, asin
 from math import pi as PI
-
 
 def distance(pose1, pose2):
     """ compute Euclidean distance for 2D """

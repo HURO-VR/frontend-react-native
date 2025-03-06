@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 
 [RequireComponent(typeof(SceneDataManager))]
-[RequireComponent(typeof(RemoteScriptExecutor))]
+[RequireComponent(typeof(GoogleCloudServer))]
 
 public class AlgorithmRunner : MonoBehaviour {
 
@@ -28,16 +28,22 @@ public class AlgorithmRunner : MonoBehaviour {
     [SerializeField] TextMeshProUGUI debugLogs;
     [SerializeField] bool runOnServer;
     bool hitServerAgain = true;
-    RemoteScriptExecutor remoteScriptExecutor;
+    GoogleCloudServer remoteScriptExecutor;
+    StreamingAssetsManager fileTransfer;
 
     private void Awake()
     {
+        // Ensure server is enabled at Runtime on Quest.
+        #if UNITY_ANDROID
+            runOnServer = true;
+        #endif
+
         try
         {
             if (!sceneData) sceneData = GetComponent<SceneDataManager>();
             audioLibrary = FindAnyObjectByType<AudioLibrary>();
-            engine = Python.CreateEngine();
-            remoteScriptExecutor = GetComponent<RemoteScriptExecutor>();
+            remoteScriptExecutor = GetComponent<GoogleCloudServer>();
+            fileTransfer = FindAnyObjectByType<StreamingAssetsManager>();
         }
         catch (Exception e)
         {
@@ -56,19 +62,25 @@ public class AlgorithmRunner : MonoBehaviour {
         //Path to the Python standard library
         searchPaths.Add(Application.dataPath + @"/Plugins/IronPy/Lib/");
 
-        
-
         engine.SetSearchPaths(searchPaths);
     }
 
     public void InitAlgorithm()
     {
-        Debug.Log("Initializing Main Function at " + "main.py");
-        SetImportPaths(engine);
-        algorithm = engine.ExecuteFile(Application.streamingAssetsPath + @"/Python/main.py");
+        
+        if (runOnServer) { 
+            remoteScriptExecutor.OpenSSHConnection(); 
+        }
+        else
+        {
+            engine = Python.CreateEngine();
+            SetImportPaths(engine);
+            algorithm = engine.ExecuteFile(Application.streamingAssetsPath + @"/Python/main.py");
+        }
+
         if (!sceneData) sceneData = GetComponent<SceneDataManager>();
         sceneData.InitSceneData();
-        remoteScriptExecutor.OpenSSHConnection();
+        
         initAlgorithm = true;
     }
 
@@ -82,9 +94,9 @@ public class AlgorithmRunner : MonoBehaviour {
     public void ToggleAlgorithm()
     {
         bool start = !algorithmRunning;
-        if (audioLibrary && start) audioLibrary.PlayAudio(AudioLibrary.AudioType.StartSimulation);
-        algorithmRunning = start;
-        if (!start) PauseAlgorithm();
+        Debug.Log("Toggle with " + start);
+        if (start) StartAlgorithm();
+        else PauseAlgorithm();
     }
 
     void PauseAlgorithm()
@@ -109,10 +121,17 @@ public class AlgorithmRunner : MonoBehaviour {
 
     void OnScriptComplete(string output)
     {
-        var newVelocities = JsonConvert.DeserializeObject<float[][]>(output);
-        SetNewVelocities(newVelocities);
-        if (runOnServer) hitServerAgain = true;
+        if (output.Length == 0)
+        {
+            Debug.LogWarning("SSH Command did not output any data.");
+        } else
+        {
+            var newVelocities = JsonConvert.DeserializeObject<float[][]>(output);
+            SetNewVelocities(newVelocities);
+            if (runOnServer) hitServerAgain = true;
+        }
     }
+
 
     private void RunAlgorithmOnServer(string param)
     {
@@ -152,8 +171,9 @@ public class AlgorithmRunner : MonoBehaviour {
     private float timer = 0f;
     private float interval = 0.25f; // Run every x seconds
     // Update is called once per frame
-    void FixedUpdate () {
-        if (!algorithmRunning) return;
+    void Update () {
+        DetectKeyBoardActivation();
+        if (!algorithmRunning || !fileTransfer.IsCopyingComplete()) return;
 
         timer += Time.fixedDeltaTime; // Accumulate time
         if (timer >= interval)
@@ -178,8 +198,6 @@ public class AlgorithmRunner : MonoBehaviour {
                 PauseAlgorithm();
                 DebugLogs("Stopping Simulation");
             }
-
-
         }
     }
 
@@ -198,11 +216,11 @@ public class AlgorithmRunner : MonoBehaviour {
         }
     }
 
-    private void Update()
+    private void DetectKeyBoardActivation()
     {
-        if (Input.GetKeyUp(KeyCode.Space) || OVRInput.GetDown(OVRInput.RawButton.A))
+        if (Input.GetKeyUp(KeyCode.Space))
         {
-            StartAlgorithm();
+            ToggleAlgorithm();
         }
 
         if (Input.GetKeyUp(KeyCode.I))
@@ -213,6 +231,6 @@ public class AlgorithmRunner : MonoBehaviour {
 
     private void OnDestroy()
     {
-        remoteScriptExecutor.CloseSSHConnection();
+        remoteScriptExecutor?.CloseSSHConnection();
     }
 }

@@ -6,18 +6,17 @@ using Newtonsoft.Json;
 using System.Diagnostics;
 using Debug = UnityEngine.Debug;
 
-public class RemoteScriptExecutor : MonoBehaviour
+public class GoogleCloudServer : MonoBehaviour
 {
     [Header("SSH Connection Settings")]
-    [Tooltip("External IP address of the SSH server")]
-    public string externalIp = "104.154.36.87";
+    string serverIP = "104.154.36.87";
 
     [Tooltip("SSH Username")]
-    public string username = "michaelmarcotte";
+    public string username;
 
-    string privateKeyPath = Application.streamingAssetsPath + "/gcp-vm-key";
+    string privateKeyPath = "/gcp-vm-key";
 
-    string remoteScriptPath = "/home/accou/Python_Scripts/Python/main.py";
+    string remoteScriptPath = null;
 
     [Header("Logging")]
     [Tooltip("Enable detailed logging")]
@@ -28,6 +27,10 @@ public class RemoteScriptExecutor : MonoBehaviour
     public event ScriptExecutionCompleted OnScriptExecutionComplete;
     SshClient client;
 
+    private void Awake()
+    {
+        privateKeyPath = Application.persistentDataPath + privateKeyPath;
+    }
     // Callback for logging
     private void Log(string message)
     {
@@ -35,6 +38,12 @@ public class RemoteScriptExecutor : MonoBehaviour
         {
             Debug.Log($"[RemoteScriptExecutor] {message}");
         }
+    }
+
+    public void SetSimulationID(string simulationID)
+    {
+        //  remoteScriptPath = "/home/accou/Python_Scripts/{simulationID}/main.py";
+        remoteScriptPath = "/home/accou/Python_Scripts/Python/main.py";
     }
 
     // Public method to trigger SSH script execution
@@ -47,7 +56,7 @@ public class RemoteScriptExecutor : MonoBehaviour
     {
         var privateKeyFile = new PrivateKeyFile(privateKeyPath);
         var authMethod = new PrivateKeyAuthenticationMethod(username, privateKeyFile);
-        var connectionInfo = new ConnectionInfo(externalIp, username, authMethod);
+        var connectionInfo = new ConnectionInfo(serverIP, username, authMethod);
         // Create SSH connection
         client = new SshClient(connectionInfo);
         // Connect to the SSH server
@@ -66,6 +75,11 @@ public class RemoteScriptExecutor : MonoBehaviour
 
     public string ExecuteCommand(string param)
     {
+        if (remoteScriptPath == null)
+        {
+            Debug.LogWarning("Must set Simulation ID before Executing Script.");
+            return "[]";
+        }
         string commandToExecute = $"python3 {remoteScriptPath} '{param}'";
         using (var cmd = client.CreateCommand(commandToExecute))
         {
@@ -73,14 +87,14 @@ public class RemoteScriptExecutor : MonoBehaviour
 
             if (cmd.ExitStatus == 0)
             {
-                Log($"Command executed successfully: {commandToExecute}");
+                //Log($"Command executed successfully: {commandToExecute}");
                 string result = cmd.Result.Trim();
                 OnScriptExecutionComplete?.Invoke(result); 
                 return result;
             }
             else
             {
-                Debug.LogError($"Command failed. Command: {commandToExecute}, Error: {cmd.Error}");
+                Debug.LogError($"Command failed. Command:{commandToExecute.Substring(0, 20)} Error: {cmd.Error}");
                 return string.Empty;
             }
         }
@@ -94,7 +108,7 @@ public class RemoteScriptExecutor : MonoBehaviour
         // Load the private key
         var privateKeyFile = new PrivateKeyFile(privateKeyPath);
         var authMethod = new PrivateKeyAuthenticationMethod(username, privateKeyFile);
-        var connectionInfo = new ConnectionInfo(externalIp, username, authMethod);
+        var connectionInfo = new ConnectionInfo(serverIP, username, authMethod);
 
 
         // Create SSH connection
@@ -130,6 +144,7 @@ public class RemoteScriptExecutor : MonoBehaviour
     // Helper method to execute SSH commands and return output
     private string ExecuteCommand(SshClient client, string command)
     {
+        
         using (var cmd = client.CreateCommand(command))
         {
             cmd.Execute();

@@ -196,7 +196,7 @@ public class Obstacle : Circle
         float length = renderer.bounds.size.z;
         float width = renderer.bounds.size.x;
         this.radius = Mathf.Max(width, length) / 2f;
-        if (!(width < length + .2f || width > length - .2f)) circleAbstraction = DataUtils.GenerateCircles(position, width, length, go.transform.eulerAngles.y);
+        if (!(width < length + .2f && width > length - .2f)) circleAbstraction = DataUtils.GenerateCircles(position, width, length, go.transform.eulerAngles.y);
         if (circleAbstraction != null && circleAbstraction.Count > 1) Debug.Log(go.name + " generated " + circleAbstraction.Count + " circles.");
     }
 
