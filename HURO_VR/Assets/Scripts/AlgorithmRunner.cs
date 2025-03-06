@@ -10,6 +10,7 @@ using IronPython.Runtime;
 using UnityEngine.EventSystems;
 using System.Threading.Tasks;
 using static Community.CsharpSqlite.Sqlite3;
+using Meta.XR.MRUtilityKit;
 
 
 
@@ -32,6 +33,7 @@ public class AlgorithmRunner : MonoBehaviour {
     GoogleCloudServer remoteScriptExecutor;
     StreamingAssetsManager fileTransfer;
     SessionController sessionController;
+    [SerializeField] List<FindSpawnPositions> spawners;
 
     private void Awake()
     {
@@ -183,6 +185,7 @@ public class AlgorithmRunner : MonoBehaviour {
         PauseAlgorithm();
         sessionController?.UploadSimulationRunData(SimulationDataCollector.simulationRun);
         audioLibrary.PlayAudio(AudioLibrary.AudioType.EndSimulation);
+        RandomizeObjectLocations();
     }
 
     private float timer = 0f;
@@ -205,6 +208,18 @@ public class AlgorithmRunner : MonoBehaviour {
         return reachedGoals;
         return (timeout || reachedGoals || deadlock);
         
+    }
+
+    public void RandomizeObjectLocations()
+    {
+        foreach (var spawner in spawners)
+        {
+            for (int i = 0; i < spawner.transform.childCount; i++)
+            {
+                Destroy(spawner.transform.GetChild(i).gameObject);
+            }
+            spawner.StartSpawn();
+        }
     }
 
     void IncrementTime()
@@ -271,6 +286,11 @@ public class AlgorithmRunner : MonoBehaviour {
         if (Input.GetKeyUp(KeyCode.I))
         {
             InitAlgorithm();
+        }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            RandomizeObjectLocations();
         }
     }
 
