@@ -6,9 +6,7 @@ using TMPro;
 using Microsoft.Scripting.Hosting;
 using System.Runtime.CompilerServices;
 using IronPython.Hosting;
-using IronPython.Runtime;
-using UnityEngine.EventSystems;
-using System.Threading.Tasks;
+using Meta.XR.MRUtilityKit;
 
 
 
@@ -30,6 +28,9 @@ public class AlgorithmRunner : MonoBehaviour {
     bool hitServerAgain = true;
     GoogleCloudServer remoteScriptExecutor;
     StreamingAssetsManager fileTransfer;
+    SessionController sessionController;
+    [SerializeField] List<FindSpawnPositions> spawners;
+    bool restart = false;
 
     private void Awake()
     {
@@ -44,12 +45,18 @@ public class AlgorithmRunner : MonoBehaviour {
             audioLibrary = FindAnyObjectByType<AudioLibrary>();
             remoteScriptExecutor = GetComponent<GoogleCloudServer>();
             fileTransfer = FindAnyObjectByType<StreamingAssetsManager>();
+            sessionController = FindAnyObjectByType<SessionController>();
         }
         catch (Exception e)
         {
             DebugLogs(e.ToString());
         }
         
+    }
+
+    public bool IsRunning()
+    {
+        return algorithmRunning;
     }
 
     void SetImportPaths(ScriptEngine engine)
@@ -67,7 +74,7 @@ public class AlgorithmRunner : MonoBehaviour {
 
     public void InitAlgorithm()
     {
-        
+        SimulationDataCollector.InitializeSimulation();
         if (runOnServer) { 
             remoteScriptExecutor.OpenSSHConnection(); 
         }
@@ -88,6 +95,7 @@ public class AlgorithmRunner : MonoBehaviour {
     {
         if (audioLibrary && !algorithmRunning) audioLibrary.PlayAudio(AudioLibrary.AudioType.StartSimulation);
         algorithmRunning = true;
+        if (restart) RandomizeObjectLocations();
         Debug.Log("HURO: Starting simulation");
     }
 
@@ -111,9 +119,10 @@ public class AlgorithmRunner : MonoBehaviour {
                 rigidbody.velocity = Vector3.zero;
             }
         }
+        timer = 0f;
     }
 
-    void RunAlgorithm(string input)
+    void RunAlgorithmLocally(string input)
     {
         string output =  algorithm.main(input);
         OnScriptComplete(output);
@@ -168,14 +177,62 @@ public class AlgorithmRunner : MonoBehaviour {
         }
     }
 
+    void EndSimulation()
+    {
+        SimulationDataCollector.EndSimulation();
+        PauseAlgorithm();
+        sessionController?.UploadSimulationRunData(SimulationDataCollector.simulationRun);
+        audioLibrary.PlayAudio(AudioLibrary.AudioType.EndSimulation);
+        restart = true;
+    }
+
     private float timer = 0f;
-    private float interval = 0.25f; // Run every x seconds
+    private float totalTime = 0f;
+
+    [Tooltip("Runs the algorithm every X seconds.")]
+    [SerializeField] float interval = 0.25f; // Run every x seconds
+    [SerializeField] float simulationTimeout = 30f;
+
+    bool ShouldTerminate()
+    {
+        bool timeout = totalTime > simulationTimeout;
+        bool reachedGoals = SimulationDataCollector.CheckAllRobotsReachedGoal();
+        bool deadlock = true;
+        RobotController[] robots = FindObjectsByType<RobotController>(FindObjectsSortMode.InstanceID);
+        foreach (var robot in robots)
+        {
+            if (!robot.stuck) deadlock = false;
+        }
+        return (timeout || reachedGoals || deadlock);
+        
+    }
+
+    public void RandomizeObjectLocations()
+    {
+        foreach (var spawner in spawners)
+        {
+            for (int i = 0; i < spawner.transform.childCount; i++)
+            {
+                Destroy(spawner.transform.GetChild(i).gameObject);
+            }
+            spawner.StartSpawn();
+        }
+        restart = false;
+    }
+
+    void IncrementTime()
+    {
+        timer += Time.deltaTime; // Accumulate time
+        totalTime += Time.deltaTime;
+    }
+
     // Update is called once per frame
     void Update () {
         DetectKeyBoardActivation();
         if (!algorithmRunning || !fileTransfer.IsCopyingComplete()) return;
+        IncrementTime();
+        if (ShouldTerminate()) EndSimulation();
 
-        timer += Time.fixedDeltaTime; // Accumulate time
         if (timer >= interval)
         {
             timer = 0f; // Reset timer
@@ -184,13 +241,14 @@ public class AlgorithmRunner : MonoBehaviour {
                 if (!initAlgorithm) InitAlgorithm();
                 if ((runOnServer && hitServerAgain) || !runOnServer) {
                     sceneData.UpdateSceneData();
+                    SimulationDataCollector.UpdateRobotData();
                     string input = JsonConvert.SerializeObject(sceneData.data);
                     if (runOnServer && hitServerAgain) {
                         hitServerAgain = false;
                         Debug.Log("Calling Run Algorithim On Server");
                         RunAlgorithmOnServer(input); 
                     }
-                    else if (!runOnServer) RunAlgorithm(input);
+                    else if (!runOnServer) RunAlgorithmLocally(input);
                 }
             } catch (Exception e)
             {
@@ -226,6 +284,11 @@ public class AlgorithmRunner : MonoBehaviour {
         if (Input.GetKeyUp(KeyCode.I))
         {
             InitAlgorithm();
+        }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            RandomizeObjectLocations();
         }
     }
 

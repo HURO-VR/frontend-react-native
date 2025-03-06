@@ -5,8 +5,6 @@ import { SimulationMetaData, SimulationRun } from '@/firebase/models';
 import { useLocalSearchParams } from 'expo-router';
 import { FBStorage } from '@/firebase/storage';
 import RobotPathMap from '../components/RobotPathMap';
-import exampleRobotDataList from '../components/exampleRobotData';
-import exampleObstacleDataList from '../components/exampleObstacleData';
 
 interface Props {
   metadata: SimulationMetaData
@@ -84,9 +82,10 @@ const DetailedSimulation = ({metadata, viewStyle, simID, orgID}: Props) => {
 
         {/* Data Panel */}
         <View style={styles.leftPanel}>
-
         <Text style={styles.panelTitle}>Simulation Data</Text>
-          {selectedRun && <View>
+        {selectedRun && <>
+        
+          <View>
             <View style={styles.dataItem}>
               <Text style={styles.dataTitle}>Collisions</Text>
               <Text style={[styles.collisionCount, {color: selectedRun.data.totalCollisions.length == 0 ? "green" : "red"}]}>{selectedRun.data.totalCollisions.length}</Text>
@@ -99,12 +98,12 @@ const DetailedSimulation = ({metadata, viewStyle, simID, orgID}: Props) => {
               <Text style={styles.dataTitle}>Time to Complete</Text>
               <Text>{selectedRun?.data.timeToComplete/1000} seconds</Text>
             </View>
-          </View>}
+          </View>
           
           <View style={styles.section}>
             <Text style={styles.panelTitle}>Scene Data</Text>
             <View style={styles.grid}>
-              <RobotPathMap robotDataList={exampleRobotDataList} obstacleDataList={exampleObstacleDataList}/>
+              <RobotPathMap robotDataList={selectedRun.data.robotData} obstacleDataList={selectedRun.data.obstacleData}/>
             </View>
           </View>
           <View style={styles.section}>
@@ -116,7 +115,7 @@ const DetailedSimulation = ({metadata, viewStyle, simID, orgID}: Props) => {
             <Text style={styles.sectionLabel}>3D Model</Text>
             <Text style={styles.sectionValue}>{metadata.modelFilename ? metadata.modelFilename : "Default"}</Text>
           </View>
-
+            </>}
         </View>
       </View>
     </View>

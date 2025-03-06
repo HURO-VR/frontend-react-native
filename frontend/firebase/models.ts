@@ -73,6 +73,7 @@ export interface UserMetaData {
 }
 
 export enum EnvironmentTypes {
+    mixedReality = "mixed-reality",
     emptyRoom = "empty-room",
     // Add more environments here
 }
@@ -89,7 +90,8 @@ export enum FileUploadType {
 
 export namespace AcceptedFileTypes {
     export enum Algorithm {
-        onnx = '.onnx'
+        onnx = '.onnx',
+        py = '.py'
     }
 
     export enum Model {
@@ -100,6 +102,7 @@ export namespace AcceptedFileTypes {
         switch (type) {
             case FileUploadType.algorithm:
                 for (let item in AcceptedFileTypes.Algorithm) {
+                    console.log(item)
                     if (filename.endsWith(item)) return true;
                 }
             case FileUploadType.model:

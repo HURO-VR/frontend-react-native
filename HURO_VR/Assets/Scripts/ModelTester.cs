@@ -116,9 +116,13 @@ public class ModelTester : MonoBehaviour
     async void InitSimulationMetaData()
     {
         Debug.Log("Getting sim bundles");
-        simMetaDatas = await storage.GetAllSimulationBundles();
-        Debug.Log("Returned " + simMetaDatas.Length + " bundles");
-        recievedMetaData = true;
+        await storage.GetAllSimulationBundles((data) =>
+        {
+            simMetaDatas = data;
+            Debug.Log("Returned " + simMetaDatas.Length + " bundles");
+            recievedMetaData = true;
+        });
+        
     }
 
 

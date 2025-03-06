@@ -31,7 +31,7 @@ export default function SimulationCreation() {
   };
 
   useEffect(() => {
-    setSimulationName(algorithmName + "--" + getTimestampPrefix());
+    setSimulationName(algorithmName);
   }, [algorithmName]);
 
   useEffect(() => {

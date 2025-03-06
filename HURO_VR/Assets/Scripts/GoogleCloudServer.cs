@@ -16,7 +16,8 @@ public class GoogleCloudServer : MonoBehaviour
 
     string privateKeyPath = "/gcp-vm-key";
 
-    string remoteScriptPath = null;
+    // Default to RVO Algorithm
+    string remoteScriptPath = "/home/accou/Python_Scripts/Python/main.py"; 
 
     [Header("Logging")]
     [Tooltip("Enable detailed logging")]
@@ -42,8 +43,7 @@ public class GoogleCloudServer : MonoBehaviour
 
     public void SetSimulationID(string simulationID)
     {
-        //  remoteScriptPath = "/home/accou/Python_Scripts/{simulationID}/main.py";
-        remoteScriptPath = "/home/accou/Python_Scripts/Python/main.py";
+        remoteScriptPath = $"/home/accou/Python_Scripts/{simulationID}/main.py";
     }
 
     // Public method to trigger SSH script execution
