@@ -203,6 +203,11 @@ public class AlgorithmRunner : MonoBehaviour {
         {
             if (!robot.stuck) deadlock = false;
         }
+        if (timeout || deadlock)
+        {
+            if (deadlock) SimulationDataCollector.LogFailed("Deadlock - Robots were not moving.");
+            if (timeout) SimulationDataCollector.LogFailed($"Timeout - Robots failed to reach the goals in {simulationTimeout} seconds.");
+        }
         return (timeout || reachedGoals || deadlock);
         
     }
@@ -253,7 +258,8 @@ public class AlgorithmRunner : MonoBehaviour {
             } catch (Exception e)
             {
                 DebugLogs(e.ToString());
-                PauseAlgorithm();
+                SimulationDataCollector.LogWarning(e.ToString());
+                EndSimulation();
                 DebugLogs("Stopping Simulation");
             }
         }
