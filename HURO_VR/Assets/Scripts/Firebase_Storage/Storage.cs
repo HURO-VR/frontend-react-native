@@ -146,7 +146,7 @@ public class Storage : MonoBehaviour
 
     public async void GetFirestoreCollection(string path, Action<List<DocumentSnapshot>> OnComplete)
     {
-        Query simulationQuery = firestore.Collection($"organizations/{org_name}/simulations");
+        Query simulationQuery = firestore.Collection(path);
         await simulationQuery.GetSnapshotAsync().ContinueWithOnMainThread((task) => {
             QuerySnapshot snapshot = task.Result;
             List<DocumentSnapshot> data = new();

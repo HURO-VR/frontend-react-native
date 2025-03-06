@@ -6,10 +6,6 @@ using TMPro;
 using Microsoft.Scripting.Hosting;
 using System.Runtime.CompilerServices;
 using IronPython.Hosting;
-using IronPython.Runtime;
-using UnityEngine.EventSystems;
-using System.Threading.Tasks;
-using static Community.CsharpSqlite.Sqlite3;
 using Meta.XR.MRUtilityKit;
 
 
@@ -34,6 +30,7 @@ public class AlgorithmRunner : MonoBehaviour {
     StreamingAssetsManager fileTransfer;
     SessionController sessionController;
     [SerializeField] List<FindSpawnPositions> spawners;
+    bool restart = false;
 
     private void Awake()
     {
@@ -98,6 +95,7 @@ public class AlgorithmRunner : MonoBehaviour {
     {
         if (audioLibrary && !algorithmRunning) audioLibrary.PlayAudio(AudioLibrary.AudioType.StartSimulation);
         algorithmRunning = true;
+        if (restart) RandomizeObjectLocations();
         Debug.Log("HURO: Starting simulation");
     }
 
@@ -185,7 +183,7 @@ public class AlgorithmRunner : MonoBehaviour {
         PauseAlgorithm();
         sessionController?.UploadSimulationRunData(SimulationDataCollector.simulationRun);
         audioLibrary.PlayAudio(AudioLibrary.AudioType.EndSimulation);
-        RandomizeObjectLocations();
+        restart = true;
     }
 
     private float timer = 0f;
@@ -203,9 +201,8 @@ public class AlgorithmRunner : MonoBehaviour {
         RobotController[] robots = FindObjectsByType<RobotController>(FindObjectsSortMode.InstanceID);
         foreach (var robot in robots)
         {
-            if (robot.stuck) deadlock = false;
+            if (!robot.stuck) deadlock = false;
         }
-        return reachedGoals;
         return (timeout || reachedGoals || deadlock);
         
     }
@@ -220,6 +217,7 @@ public class AlgorithmRunner : MonoBehaviour {
             }
             spawner.StartSpawn();
         }
+        restart = false;
     }
 
     void IncrementTime()

@@ -37,6 +37,11 @@ public class SimulationRun
     public string runID { get; set; }
     public string name { get; set; }
     public SimulationRunData data { get; set; }
+
+    public Dictionary<string, object> ToDictionary()
+    {
+        return SimulationRunConverter.ToDictionary(this);
+    }
 }
 
 public class RunStatus

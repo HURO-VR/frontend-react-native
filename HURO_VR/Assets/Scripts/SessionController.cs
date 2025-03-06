@@ -68,8 +68,7 @@ public class SessionController : MonoBehaviour
         data.uid = userID;
         data.simID = selectedSimulation.ID;
         data.name = $"Run {numberRuns + 1}";
-        object json = JsonConvert.DeserializeObject(JsonConvert.SerializeObject(data));
-        db.UploadMetadata($"organizations/{Organization_ID}/simulations/{selectedSimulation.ID}/runs/{data.runID}", json);
+        db.UploadMetadata($"organizations/{Organization_ID}/simulations/{selectedSimulation.ID}/runs/{data.runID}", data.ToDictionary());
     }
 
 
