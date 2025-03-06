@@ -6,18 +6,16 @@ public static class SimulationDataCollector
 {
     public static SimulationRun simulationRun { get; private set; }
     private static float simulationStartTime;
-
+    private static bool initalized = false;
     public static void InitializeSimulation()
     {
         simulationRun = new SimulationRun
         {
-            uid = System.Guid.NewGuid().ToString(),
             dateCreated = System.DateTime.UtcNow.ToString("o"),
             status = RunStatus.success,
-            simID = "Sim_" + System.Guid.NewGuid().ToString(),
             starred = false,
             runID = "Run_" + System.Guid.NewGuid().ToString(),
-            name = "Simulation Run",
+            name = $"Run ..", // Set in Session Controller
             data = new SimulationRunData
             {
                 robotData = InitAllRobotData(),
@@ -27,8 +25,93 @@ public static class SimulationDataCollector
             }
         };
         simulationStartTime = Time.time * 1000; // Convert to milliseconds
+        initalized = true;
+        Debug.Log("HURO: Initalized Data Collector");
     }
 
+
+    public static void UpdateRobotData()
+    {
+        GameObject[] robots = GameObject.FindGameObjectsWithTag("Robot");
+
+        foreach (var robotData in simulationRun.data.robotData)
+        {
+            foreach (var go in robots)
+            {
+                if (go.name == robotData.name)
+                {
+                    RobotController robotController = go.GetComponent<RobotController>();
+                    robotData.robotPath.Add(Vector3ToXYZ(go.transform.position));
+
+                    if (robotController.IsGoalReached() && !robotData.goalReached)
+                    {
+                        robotData.goalReached = true;
+                        robotData.robotEnd = Vector3ToXYZ(go.transform.position);
+                    }
+                }
+            }
+        }
+    }
+
+    //public void DetectCollisions()
+    //{
+    //    GameObject[] robots = GameObject.FindGameObjectsWithTag("Robot");
+    //    for (int i = 0; i < robots.Length; i++)
+    //    {
+    //        for (int j = i + 1; j < robots.Length; j++)
+    //        {
+    //            if (Vector3.Distance(robots[i].transform.position, robots[j].transform.position) < 1.0f)
+    //            {
+    //                XYZ collisionPoint = Vector3ToXYZ((robots[i].transform.position + robots[j].transform.position) / 2);
+    //                simulationRun.data.totalCollisions.Add(collisionPoint);
+    //                simulationRun.data.robotData[i].collisions.Add(collisionPoint);
+    //                simulationRun.data.robotData[j].collisions.Add(collisionPoint);
+    //            }
+    //        }
+    //    }
+    //}
+
+    public static void AddCollision(GameObject robot, Collision collision)
+    {
+        if (!initalized)
+        {
+            return;
+        }
+        XYZ collisionPoint = Vector3ToXYZ(collision.contacts[0].point);
+        simulationRun.data.totalCollisions.Add(collisionPoint);
+        foreach (var ro in simulationRun.data.robotData)
+        {
+            if (ro.name == robot.name)
+            {
+                ro.collisions.Add(collisionPoint);
+            }
+        }
+    }
+
+    public static void EndSimulation()
+    {
+        if (!initalized) {
+            Debug.LogWarning("unitialized sim data");
+            return; 
+        }
+        simulationRun.data.timeToComplete = (int)((Time.time * 1000) - simulationStartTime);
+        simulationRun.data.deadlock = !CheckAllRobotsReachedGoal();
+        Debug.Log("HURO: Simulation Ended. Data: " + JsonConvert.SerializeObject(simulationRun, Formatting.Indented));
+        initalized = false;
+    }
+
+    public static bool CheckAllRobotsReachedGoal()
+    {
+        if (!initalized) return false;
+        foreach (var robot in simulationRun.data.robotData)
+        {
+            if (!robot.goalReached)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
     static List<RobotData> InitAllRobotData()
     {
         GameObject[] robot_gos = GameObject.FindGameObjectsWithTag("Robot");
@@ -72,77 +155,6 @@ public static class SimulationDataCollector
         return obstacles;
     }
 
-    public static void UpdateRobotData()
-    {
-        GameObject[] robots = GameObject.FindGameObjectsWithTag("Robot");
-
-        foreach (var robotData in simulationRun.data.robotData)
-        {
-            foreach (var go in robots)
-            {
-                if (go.name == robotData.name)
-                {
-                    robotData.robotPath.Add(Vector3ToXYZ(go.transform.position));
-
-                    if (!robotData.goalReached && Vector3.Distance(go.transform.position, XYZToVector3(robotData.goalPosition)) < 0.5f)
-                    {
-                        robotData.goalReached = true;
-                        robotData.robotEnd = Vector3ToXYZ(go.transform.position);
-                    }
-                }
-            }
-        }
-    }
-
-    //public void DetectCollisions()
-    //{
-    //    GameObject[] robots = GameObject.FindGameObjectsWithTag("Robot");
-    //    for (int i = 0; i < robots.Length; i++)
-    //    {
-    //        for (int j = i + 1; j < robots.Length; j++)
-    //        {
-    //            if (Vector3.Distance(robots[i].transform.position, robots[j].transform.position) < 1.0f)
-    //            {
-    //                XYZ collisionPoint = Vector3ToXYZ((robots[i].transform.position + robots[j].transform.position) / 2);
-    //                simulationRun.data.totalCollisions.Add(collisionPoint);
-    //                simulationRun.data.robotData[i].collisions.Add(collisionPoint);
-    //                simulationRun.data.robotData[j].collisions.Add(collisionPoint);
-    //            }
-    //        }
-    //    }
-    //}
-
-    public static void AddCollision(Robot robot, Collision collision)
-    {
-        XYZ collisionPoint = Vector3ToXYZ(collision.contacts[0].point);
-        simulationRun.data.totalCollisions.Add(collisionPoint);
-        foreach (var ro in simulationRun.data.robotData)
-        {
-            if (ro.name == robot.name)
-            {
-                ro.collisions.Add(collisionPoint);
-            }
-        }
-    }
-
-    public static bool CheckAllRobotsReachedGoal()
-    {
-        foreach (var robot in simulationRun.data.robotData)
-        {
-            if (!robot.goalReached)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static void EndSimulation()
-    {
-        simulationRun.data.timeToComplete = (int)((Time.time * 1000) - simulationStartTime);
-        simulationRun.data.deadlock = !CheckAllRobotsReachedGoal();
-        Debug.Log("HURO: Simulation Ended. Data: " + JsonConvert.SerializeObject(simulationRun, Formatting.Indented));
-    }
 
     private static XYZ Vector3ToXYZ(Vector3 v)
     {

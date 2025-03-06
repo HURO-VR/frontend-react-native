@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
 
@@ -7,13 +8,14 @@ public class SessionController : MonoBehaviour
 {
     public Database_Models.SimulationMetaData[] simulationMetaData = null;
     string Organization_ID = DemoCredentials.organizationID;
+    string userID = DemoCredentials.nikitaID;
     Database_Models.SimulationMetaData selectedSimulation;
+    int numberRuns = 1;
     [SerializeField] Transform simulationsMenuParent;
     [SerializeField] GameObject simulationItem;
     [SerializeField] TMP_Dropdown simulationDropdown;
-
     Storage db;
-    // Start is called before the first frame update
+
     void Awake()
     {
         db = FindAnyObjectByType<Storage>();
@@ -35,6 +37,9 @@ public class SessionController : MonoBehaviour
             }
             simulationDropdown.ClearOptions();
             simulationDropdown.AddOptions(options);
+            if (selectedSimulation.ID == null || selectedSimulation.ID.Length == 0) SetSelectedSimulation(0);
+
+            Debug.Log($"HURO: Loaded {data?.Length} bundles into menu.");
 
         });
     }
@@ -47,8 +52,24 @@ public class SessionController : MonoBehaviour
 
     public void SetSelectedSimulation(int index)
     {
-        if (index < simulationMetaData?.Length) selectedSimulation = simulationMetaData[index];
-        else Debug.LogWarning($"HURO: Simulation out of range of {simulationMetaData.Length} simulations");
+        Debug.Log($"HURO: Selecting {index} simulation");
+        if (index < simulationMetaData?.Length) { 
+            selectedSimulation = simulationMetaData[index];
+            db.GetFirestoreCollection($"organizations/{Organization_ID}/simulations/{selectedSimulation.ID}/runs", (data) =>
+            {
+                numberRuns = data.Count;
+            });
+        }
+        else Debug.LogWarning($"HURO: Simulation {index} out of range of {simulationMetaData.Length} simulations");
+    }
+
+    public void UploadSimulationRunData(SimulationRun data)
+    {
+        data.uid = userID;
+        data.simID = selectedSimulation.ID;
+        data.name = $"Run {numberRuns + 1}";
+        object json = JsonConvert.DeserializeObject(JsonConvert.SerializeObject(data));
+        db.UploadMetadata($"organizations/{Organization_ID}/simulations/{selectedSimulation.ID}/runs/{data.runID}", json);
     }
 
 

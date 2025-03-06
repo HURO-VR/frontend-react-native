@@ -9,6 +9,8 @@ public class RobotController : MonoBehaviour
     public float maxVelocity;
     bool goalReached = false;
     Rigidbody body;
+    public bool stuck = false;
+    public AlgorithmRunner algorithmRunner;
 
     // Start is called before the first frame update
     void Start()
@@ -17,6 +19,7 @@ public class RobotController : MonoBehaviour
         {
             InitGoal(); 
         }
+        algorithmRunner = FindFirstObjectByType<AlgorithmRunner>();
         body = GetComponent<Rigidbody>();
         if (maxVelocity == 0) maxVelocity = 2;
     }
@@ -64,9 +67,43 @@ public class RobotController : MonoBehaviour
         Debug.LogWarning("Robot " + gameObject.name + " does not have goal.");
     }
 
+    public bool IsGoalReached()
+    {
+        return goalReached;
+    }
+
+    float timer = 0;
+    [SerializeField] float deadlockLimit = 5f;
+
+    public void SetDeadlockTimer(float deadlockLimit)
+    {
+        this.deadlockLimit = deadlockLimit;
+    }
+
+    bool IsStuck()
+    {
+        if (!algorithmRunner.IsRunning()) return false;
+        return body.velocity.magnitude < 0.1f;
+
+    }
+
     // Update is called once per frame
     void Update()
     {
         if (!goal) InitGoal();
+        if (IsStuck())
+        {
+            timer += Time.deltaTime;
+            if (timer > deadlockLimit) stuck = true;
+        } else
+        {
+            stuck = false;
+            timer = 0;
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        SimulationDataCollector.AddCollision(gameObject, collision);
     }
 }

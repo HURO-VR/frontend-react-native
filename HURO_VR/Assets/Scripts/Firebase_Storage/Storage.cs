@@ -7,6 +7,7 @@ using Firebase.Firestore;
 using UnityEngine;
 using UnityEngine.Networking;
 using System.Threading.Tasks;
+using static Database_Models;
 
 public class FileType
 {
@@ -142,6 +143,21 @@ public class Storage : MonoBehaviour
         });
         OnComplete(await Task.FromResult(simulationMetaDatas));
     }
+
+    public async void GetFirestoreCollection(string path, Action<List<DocumentSnapshot>> OnComplete)
+    {
+        Query simulationQuery = firestore.Collection($"organizations/{org_name}/simulations");
+        await simulationQuery.GetSnapshotAsync().ContinueWithOnMainThread((task) => {
+            QuerySnapshot snapshot = task.Result;
+            List<DocumentSnapshot> data = new();
+            foreach (DocumentSnapshot documentSnapshot in snapshot.Documents)
+            {
+                data.Add(documentSnapshot);
+            }
+            OnComplete(data);
+        });
+    }
+
 
     public async void UploadMetadata<T>(string path, T data)
     {
