@@ -71,6 +71,18 @@ public static class SimulationDataCollector
     //    }
     //}
 
+    public static void LogWarning(string message)
+    {
+        simulationRun.errorMessage = message;
+        simulationRun.status = RunStatus.Warning;
+    }
+
+    public static void LogFailed(string message)
+    {
+        simulationRun.errorMessage = message;
+        simulationRun.status = RunStatus.Failed;
+    }
+
     public static void AddCollision(GameObject robot, Collision collision)
     {
         if (!initalized)

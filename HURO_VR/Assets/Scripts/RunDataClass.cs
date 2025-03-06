@@ -36,6 +36,8 @@ public class SimulationRun
     public bool starred { get; set; }
     public string runID { get; set; }
     public string name { get; set; }
+
+    public string errorMessage { get; set; }
     public SimulationRunData data { get; set; }
 
     public Dictionary<string, object> ToDictionary()

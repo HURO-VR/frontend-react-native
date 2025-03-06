@@ -59,7 +59,9 @@ const DetailedSimulation = ({metadata, viewStyle, simID, orgID}: Props) => {
           <Text style={styles.panelTitle}>Simulation Runs</Text>
           <ScrollView>
             {simRuns.map((run) => (
-              <TouchableOpacity key={run.runID} style={styles.runItem}>
+              <TouchableOpacity key={run.runID} style={styles.runItem} onPress={() => {
+                setSelectedRun(run)
+              }}>
                 <View style={styles.runInfo}>
                   <RenderStatusIcon status={run.status} />
                   <Text style={styles.runText}>{run.name}</Text>
