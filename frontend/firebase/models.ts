@@ -63,6 +63,7 @@ export interface SimulationRun {
     runID: string,
     name: string,
     data: SimulationRunData
+    errorMessage: string
 }
 
 export interface UserMetaData {
