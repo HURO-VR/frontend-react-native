@@ -91,8 +91,9 @@ public class AlgorithmRunner : MonoBehaviour {
         initAlgorithm = true;
     }
 
-    public void StartAlgorithm()
+    public void StartAlgorithm(bool start = true)
     {
+        if (!start) return; // This will be false when being called from the menu.
         if (audioLibrary && !algorithmRunning) audioLibrary.PlayAudio(AudioLibrary.AudioType.StartSimulation);
         algorithmRunning = true;
         if (restart) RandomizeObjectLocations();
@@ -177,13 +178,16 @@ public class AlgorithmRunner : MonoBehaviour {
         }
     }
 
-    void EndSimulation()
+    public void EndSimulation(bool stop = true)
     {
-        SimulationDataCollector.EndSimulation();
-        PauseAlgorithm();
-        sessionController?.UploadSimulationRunData(SimulationDataCollector.simulationRun);
-        audioLibrary.PlayAudio(AudioLibrary.AudioType.EndSimulation);
-        restart = true;
+        if (algorithmRunning && stop)
+        {
+            SimulationDataCollector.EndSimulation();
+            PauseAlgorithm();
+            sessionController?.UploadSimulationRunData(SimulationDataCollector.simulationRun);
+            audioLibrary.PlayAudio(AudioLibrary.AudioType.EndSimulation);
+            restart = true;
+        }
     }
 
     private float timer = 0f;
