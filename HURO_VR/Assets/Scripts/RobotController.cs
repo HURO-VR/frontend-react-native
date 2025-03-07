@@ -104,6 +104,6 @@ public class RobotController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        SimulationDataCollector.AddCollision(gameObject, collision);
+        if (!collision.gameObject.name.ToLower().Contains("floor")) SimulationDataCollector.AddCollision(gameObject, collision);
     }
 }

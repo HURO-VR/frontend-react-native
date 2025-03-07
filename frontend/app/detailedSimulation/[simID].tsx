@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, ViewStyle, StyleProp, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { SimulationMetaData, SimulationRun } from '@/firebase/models';
+import { RunStatus, SimulationMetaData, SimulationRun } from '@/firebase/models';
 import { useLocalSearchParams } from 'expo-router';
 import { FBStorage } from '@/firebase/storage';
 import RobotPathMap from '../components/RobotPathMap';
+import SceneVisualization from '../components/SceneVisualization';
 
 interface Props {
   metadata: SimulationMetaData
@@ -21,7 +22,7 @@ const DetailedSimulation = ({metadata, viewStyle, simID, orgID}: Props) => {
     FBStorage.getCollection(`organizations/${orgID}/simulations/${simID}/runs`).then((data) => {
       setSimRuns(data);
       if (data.length > 0) setSelectedRun(data[0]);
-      FBStorage.subscribeToCollection(`organizations/TEST_ORG/simulations/${simID}/runs`, (data) => setSimRuns(data as SimulationRun[]));
+      FBStorage.subscribeToCollection(`organizations/${orgID}/simulations/${simID}/runs`, (data) => setSimRuns(data as SimulationRun[]));
     });
   }, []);
 
@@ -57,7 +58,7 @@ const DetailedSimulation = ({metadata, viewStyle, simID, orgID}: Props) => {
         {/* Simulation List Panel */}
         <View style={styles.middlePanel}>
           <Text style={styles.panelTitle}>Simulation Runs</Text>
-          <ScrollView>
+          {simRuns.length > 0  ? <ScrollView>
             {simRuns.map((run) => (
               <TouchableOpacity key={run.runID} style={styles.runItem} onPress={() => {
                 setSelectedRun(run)
@@ -65,6 +66,7 @@ const DetailedSimulation = ({metadata, viewStyle, simID, orgID}: Props) => {
                 <View style={styles.runInfo}>
                   <RenderStatusIcon status={run.status} />
                   <Text style={styles.runText}>{run.name}</Text>
+                  {run.errorMessage && <Text style={{marginLeft: 20}}>{run.errorMessage.substring(0, 10)}...</Text>}
                 </View>
                 <TouchableOpacity onPress={() => {
                   FBStorage.updateDoc(run.runID, `organizations/${orgID}/simulations/${simID}/runs`, { starred: !run.starred });
@@ -79,7 +81,7 @@ const DetailedSimulation = ({metadata, viewStyle, simID, orgID}: Props) => {
                 </TouchableOpacity>
               </TouchableOpacity>
             ))}
-          </ScrollView>
+          </ScrollView> : <Text>No Runs</Text>}
         </View>
 
         {/* Data Panel */}
@@ -88,6 +90,11 @@ const DetailedSimulation = ({metadata, viewStyle, simID, orgID}: Props) => {
         {selectedRun && <>
         
           <View>
+          <View style={styles.dataItem}>
+              <Text style={styles.dataTitle}>Date:</Text>
+              <Text>{selectedRun.dateCreated.substring(0, 19)}</Text>
+            </View>
+            {selectedRun.status != RunStatus.warning ? <>
             <View style={styles.dataItem}>
               <Text style={styles.dataTitle}>Collisions</Text>
               <Text style={[styles.collisionCount, {color: selectedRun.data.totalCollisions.length == 0 ? "green" : "red"}]}>{selectedRun.data.totalCollisions.length}</Text>
@@ -100,12 +107,13 @@ const DetailedSimulation = ({metadata, viewStyle, simID, orgID}: Props) => {
               <Text style={styles.dataTitle}>Time to Complete</Text>
               <Text>{selectedRun?.data.timeToComplete/1000} seconds</Text>
             </View>
+            </> : <Text>{selectedRun.errorMessage}</Text>}
           </View>
           
           <View style={styles.section}>
             <Text style={styles.panelTitle}>Scene Data</Text>
             <View style={styles.grid}>
-              <RobotPathMap robotDataList={selectedRun.data.robotData} obstacleDataList={selectedRun.data.obstacleData}/>
+              <SceneVisualization simulationRun={selectedRun}/>
             </View>
           </View>
           <View style={styles.section}>
