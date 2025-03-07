@@ -13,7 +13,8 @@ public static class SimulationRunConverter
             { "starred", simRun.starred },
             { "runID", simRun.runID },
             { "name", simRun.name },
-            { "data", simRun.data != null ? SimulationRunDataToDictionary(simRun.data) : null }
+            { "data", simRun.data != null ? SimulationRunDataToDictionary(simRun.data) : null },
+            { "errorMessage", simRun.errorMessage}
         };
     }
 

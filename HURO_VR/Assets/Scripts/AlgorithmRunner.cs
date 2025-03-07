@@ -74,7 +74,6 @@ public class AlgorithmRunner : MonoBehaviour {
 
     public void InitAlgorithm()
     {
-        SimulationDataCollector.InitializeSimulation();
         if (runOnServer) { 
             remoteScriptExecutor.OpenSSHConnection(); 
         }
@@ -87,7 +86,8 @@ public class AlgorithmRunner : MonoBehaviour {
 
         if (!sceneData) sceneData = GetComponent<SceneDataManager>();
         sceneData.InitSceneData();
-        
+        SimulationDataCollector.InitializeSimulation(sceneData.data);
+
         initAlgorithm = true;
     }
 
@@ -207,17 +207,20 @@ public class AlgorithmRunner : MonoBehaviour {
         {
             if (!robot.stuck) deadlock = false;
         }
-        if (timeout || deadlock)
-        {
-            if (deadlock) SimulationDataCollector.LogFailed("Deadlock - Robots were not moving.");
-            if (timeout) SimulationDataCollector.LogFailed($"Timeout - Robots failed to reach the goals in {simulationTimeout} seconds.");
-        }
+
+        if (deadlock) SimulationDataCollector.LogFailed("Deadlock - Robots were not moving.");
+        if (timeout) SimulationDataCollector.LogFailed($"Timeout - Robots failed to reach the goals in {simulationTimeout} seconds.");
+        
         return (timeout || reachedGoals || deadlock);
         
     }
 
     public void RandomizeObjectLocations()
     {
+        if (algorithmRunning) {
+            Debug.LogWarning("May not randomize locatons in middle of simulation.");
+            return; 
+        }
         foreach (var spawner in spawners)
         {
             for (int i = 0; i < spawner.transform.childCount; i++)
@@ -235,37 +238,51 @@ public class AlgorithmRunner : MonoBehaviour {
         totalTime += Time.deltaTime;
     }
 
+    bool ShouldStep()
+    {
+        return timer >= interval;
+    }
+
     // Update is called once per frame
     void Update () {
         DetectKeyBoardActivation();
         if (!algorithmRunning || !fileTransfer.IsCopyingComplete()) return;
+        else if (!initAlgorithm) InitAlgorithm();
         IncrementTime();
         if (ShouldTerminate()) EndSimulation();
-
-        if (timer >= interval)
+        if (ShouldStep())
         {
-            timer = 0f; // Reset timer
-            try
+            sceneData.UpdateSceneData();
+            AlgorithmStep();
+        }
+        SimulationDataCollector.UpdateRobotData();
+
+    }
+
+    void AlgorithmStep()
+    {
+        timer = 0f; // Reset timer
+        try
+        {
+            if ((runOnServer && hitServerAgain) || !runOnServer)
             {
-                if (!initAlgorithm) InitAlgorithm();
-                if ((runOnServer && hitServerAgain) || !runOnServer) {
-                    sceneData.UpdateSceneData();
-                    SimulationDataCollector.UpdateRobotData();
-                    string input = JsonConvert.SerializeObject(sceneData.data);
-                    if (runOnServer && hitServerAgain) {
-                        hitServerAgain = false;
-                        Debug.Log("Calling Run Algorithim On Server");
-                        RunAlgorithmOnServer(input); 
-                    }
-                    else if (!runOnServer) RunAlgorithmLocally(input);
+                
+                string input = JsonConvert.SerializeObject(sceneData.data);
+                if (runOnServer && hitServerAgain)
+                {
+                    hitServerAgain = false;
+                    Debug.Log("Calling Run Algorithim On Server");
+                    RunAlgorithmOnServer(input);
                 }
-            } catch (Exception e)
-            {
-                DebugLogs(e.ToString());
-                SimulationDataCollector.LogWarning(e.ToString());
-                EndSimulation();
-                DebugLogs("Stopping Simulation");
+                else if (!runOnServer) RunAlgorithmLocally(input);
             }
+        }
+        catch (Exception e)
+        {
+            DebugLogs(e.ToString());
+            SimulationDataCollector.LogWarning(e.ToString());
+            EndSimulation();
+            DebugLogs("Stopping Simulation");
         }
     }
 

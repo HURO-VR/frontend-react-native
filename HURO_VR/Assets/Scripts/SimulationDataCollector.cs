@@ -7,19 +7,19 @@ public static class SimulationDataCollector
     public static SimulationRun simulationRun { get; private set; }
     private static float simulationStartTime;
     private static bool initalized = false;
-    public static void InitializeSimulation()
+    public static void InitializeSimulation(SceneData sceneData)
     {
         simulationRun = new SimulationRun
         {
             dateCreated = System.DateTime.UtcNow.ToString("o"),
             status = RunStatus.success,
             starred = false,
-            runID = "Run_" + System.Guid.NewGuid().ToString(),
+            runID = System.Guid.NewGuid().ToString(),
             name = $"Run ..", // Set in Session Controller
             data = new SimulationRunData
             {
                 robotData = InitAllRobotData(),
-                obstacleData = InitObstacles(),
+                obstacleData = InitObstacles(sceneData),
                 totalCollisions = new List<XYZ>(),
                 deadlock = false
             }
@@ -46,7 +46,8 @@ public static class SimulationDataCollector
                     if (robotController.IsGoalReached() && !robotData.goalReached)
                     {
                         robotData.goalReached = true;
-                        robotData.robotEnd = Vector3ToXYZ(go.transform.position);
+                        robotData.robotEnd = robotData.goalPosition;
+                        robotData.robotPath.Add(robotData.goalPosition);
                     }
                 }
             }
@@ -106,6 +107,13 @@ public static class SimulationDataCollector
             Debug.LogWarning("unitialized sim data");
             return; 
         }
+        foreach (var ro in simulationRun.data.robotData)
+        {
+            if (!ro.goalReached)
+            {
+                ro.robotEnd = ro.robotPath[ro.robotPath.Count - 1];
+            }
+        }
         simulationRun.data.timeToComplete = (int)((Time.time * 1000) - simulationStartTime);
         simulationRun.data.deadlock = !CheckAllRobotsReachedGoal();
         Debug.Log("HURO: Simulation Ended. Data: " + JsonConvert.SerializeObject(simulationRun, Formatting.Indented));
@@ -151,17 +159,16 @@ public static class SimulationDataCollector
         };
     }
 
-    static List<ObstacleData> InitObstacles()
+    static List<ObstacleData> InitObstacles(SceneData sceneData)
     {
-        GameObject[] gos = GameObject.FindGameObjectsWithTag("Obstacle");
-        List<ObstacleData> obstacles = new List<ObstacleData>();
 
-        foreach (GameObject go in gos)
+        List<ObstacleData> obstacles = new List<ObstacleData>();
+        foreach (Circle go in sceneData.obstacles)
         {
             obstacles.Add(new ObstacleData
             {
-                position = Vector3ToXYZ(go.transform.position),
-                radius = go.GetComponent<Renderer>().bounds.extents.x
+                position = go.position,
+                radius = go.radius
             });
         }
         return obstacles;
