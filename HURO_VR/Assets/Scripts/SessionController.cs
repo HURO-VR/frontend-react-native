@@ -37,7 +37,7 @@ public class SessionController : MonoBehaviour
             }
             simulationDropdown.ClearOptions();
             simulationDropdown.AddOptions(options);
-            if (selectedSimulation.ID == null || selectedSimulation.ID.Length == 0) SetSelectedSimulation(0);
+            if (selectedSimulation.ID == null || selectedSimulation.ID.Length == 0) SetSelectedSimulation(options.FindIndex(name => name == "RVO"));
 
             Debug.Log($"HURO: Loaded {data?.Length} bundles into menu.");
 
