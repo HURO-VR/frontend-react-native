@@ -18,13 +18,22 @@ const DetailedSimulation = ({metadata, viewStyle, simID, orgID}: Props) => {
   const [simRuns, setSimRuns] = React.useState<SimulationRun[]>([]);
   const [selectedRun, setSelectedRun] = React.useState<SimulationRun | null>(null);
 
-  useEffect(() => {
+  const loadSimRuns = () => {
     FBStorage.getCollection(`organizations/${orgID}/simulations/${simID}/runs`).then((data) => {
       setSimRuns(data);
       if (data.length > 0) setSelectedRun(data[0]);
       FBStorage.subscribeToCollection(`organizations/${orgID}/simulations/${simID}/runs`, (data) => setSimRuns(data as SimulationRun[]));
     });
+  }
+  useEffect(() => {
+    loadSimRuns();
   }, []);
+
+  useEffect(() => {
+    setSimRuns([]);
+    setSelectedRun(null);
+    loadSimRuns();
+}, [simID])
 
   const RenderStatusIcon = ({ status }: any) => {
     switch (status) {

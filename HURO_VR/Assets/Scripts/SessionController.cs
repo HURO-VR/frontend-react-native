@@ -37,7 +37,7 @@ public class SessionController : MonoBehaviour
             }
             simulationDropdown.ClearOptions();
             simulationDropdown.AddOptions(options);
-            if (selectedSimulation.ID == null || selectedSimulation.ID.Length == 0) SetSelectedSimulation(0);
+            if (selectedSimulation.ID == null || selectedSimulation.ID.Length == 0) SetSelectedSimulation(options.FindIndex(name => name == "RVO"));
 
             Debug.Log($"HURO: Loaded {data?.Length} bundles into menu.");
 
@@ -70,6 +70,7 @@ public class SessionController : MonoBehaviour
         data.name = $"Run {numberRuns + 1}";
         data.runID = data.name + "_" + data.runID;
         db.UploadMetadata($"organizations/{Organization_ID}/simulations/{selectedSimulation.ID}/runs/{data.runID}", data.ToDictionary());
+        Debug.Log("Uploaded data collection");
     }
 
 
