@@ -70,6 +70,7 @@ public class SessionController : MonoBehaviour
         data.name = $"Run {numberRuns + 1}";
         data.runID = data.name + "_" + data.runID;
         db.UploadMetadata($"organizations/{Organization_ID}/simulations/{selectedSimulation.ID}/runs/{data.runID}", data.ToDictionary());
+        Debug.Log("Uploaded data collection");
     }
 
 
