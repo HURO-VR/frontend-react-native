@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(SphereCollider))]
 public class RobotController : MonoBehaviour
 {
 
@@ -9,9 +10,16 @@ public class RobotController : MonoBehaviour
     public float maxVelocity;
     bool goalReached = false;
     Rigidbody body;
-    public bool stuck = false;
-    public AlgorithmRunner algorithmRunner;
+    public bool stuck { get; private set; }
+    AlgorithmRunner algorithmRunner;
 
+
+    private void Awake()
+    {
+        stuck = false;
+        algorithmRunner = FindAnyObjectByType<AlgorithmRunner>();
+        body = GetComponent<Rigidbody>();
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -19,8 +27,6 @@ public class RobotController : MonoBehaviour
         {
             InitGoal(); 
         }
-        algorithmRunner = FindFirstObjectByType<AlgorithmRunner>();
-        body = GetComponent<Rigidbody>();
         if (maxVelocity == 0) maxVelocity = 2;
     }
 

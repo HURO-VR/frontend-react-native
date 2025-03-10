@@ -90,7 +90,7 @@ public static class SimulationDataCollector
         {
             return;
         }
-        XYZ collisionPoint = Vector3ToXYZ(collision.contacts[0].point);
+        XYZ collisionPoint = Vector3ToXYZ(robot.transform.position);
         simulationRun.data.totalCollisions.Add(collisionPoint);
         foreach (var ro in simulationRun.data.robotData)
         {

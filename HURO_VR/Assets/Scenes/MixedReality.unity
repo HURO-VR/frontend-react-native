@@ -4188,7 +4188,7 @@ PrefabInstance:
       objectReference: {fileID: 6201027460669257670}
     - target: {fileID: 5437653416407172566, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
       propertyPath: runOnServer
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5437653416407172566, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
       propertyPath: displayGizmos
@@ -5175,6 +5175,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 296921910866118287, guid: 4ef9031d650dfd747ab535e661f644ca, type: 3}
+      propertyPath: SpawnObject
+      value: 
+      objectReference: {fileID: 100228, guid: abc8971302fd46d439355bbfabc7a898, type: 3}
     - target: {fileID: 296921910866118287, guid: 4ef9031d650dfd747ab535e661f644ca, type: 3}
       propertyPath: CheckOverlaps
       value: 1
