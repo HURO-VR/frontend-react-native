@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
@@ -22,22 +23,21 @@ public class SessionController : MonoBehaviour
         db.SetOrganization(Organization_ID);
     }
 
+    int RECT_TRANSFORM_HEIGHT = 20;
     private void Start()
     {
         _ = db.GetAllSimulationBundles((data) =>
         {
             simulationMetaData = data;
             List<string> options = new List<string>();
-            foreach (var item in simulationMetaData)
+            var reversed = simulationMetaData.Reverse(); // Earliest Simulation at top of list.
+            foreach (var item in reversed)
             {
-                GameObject entry = Instantiate(simulationItem);
-                SetItemName(entry, item.name);
-                entry.transform.SetParent(simulationsMenuParent);
                 options.Add(item.name);
             }
             simulationDropdown.ClearOptions();
             simulationDropdown.AddOptions(options);
-            if (selectedSimulation.ID == null || selectedSimulation.ID.Length == 0) SetSelectedSimulation(options.FindIndex(name => name == "RVO"));
+            if (selectedSimulation.ID == null || selectedSimulation.ID.Length == 0) SetSelectedSimulation(0);
 
             Debug.Log($"HURO: Loaded {data?.Length} bundles into menu.");
 
@@ -46,11 +46,14 @@ public class SessionController : MonoBehaviour
 
     void SetItemName(GameObject item, string name)
     {
-        string text = item.GetComponent<TextMeshProUGUI>()?.text;
-        if (text != null) text = name;
+        TextMeshProUGUI text = item.GetComponentInChildren<TextMeshProUGUI>();
+        if (text != null) {
+            Debug.Log($"Set menu name to {name}");
+            text.text = name; 
+        }
     }
 
-    public void SetSelectedSimulation(int index)
+    public void SetSelectedSimulation(int index = 0)
     {
         Debug.Log($"HURO: Selecting {index} simulation");
         if (index < simulationMetaData?.Length) { 
