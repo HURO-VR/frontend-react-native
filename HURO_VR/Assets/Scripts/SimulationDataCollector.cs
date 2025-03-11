@@ -175,12 +175,12 @@ public static class SimulationDataCollector
     }
 
 
-    private static XYZ Vector3ToXYZ(Vector3 v)
+    public static XYZ Vector3ToXYZ(Vector3 v)
     {
         return new XYZ { x = v.x, y = v.y, z = v.z };
     }
 
-    private static Vector3 XYZToVector3(XYZ xyz)
+    public static Vector3 XYZToVector3(XYZ xyz)
     {
         return new Vector3(xyz.x, xyz.y, xyz.z);
     }

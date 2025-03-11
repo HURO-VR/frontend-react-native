@@ -139,9 +139,28 @@ public class SceneDataManager : MonoBehaviour
 
     }
 
+
+    private void UpdateObstacleData()
+    {
+        foreach (Obstacle obstacle in data.fullObstacles)
+        {
+            if (obstacle.isDynamic)
+            {
+                obstacle.position = SimulationDataCollector.Vector3ToXYZ(obstacle.go.transform.position);
+                if (obstacle.circleAbstraction != null)
+                {
+                    obstacle.LoadCircleAbstraction();
+                }
+            }
+        }
+        data.obstacles = Obstacle.UnpackAbstractions(data.fullObstacles);
+    }
+
+
     public void UpdateSceneData()
     {
         UpdateRobotData();
+        UpdateObstacleData();
     }
 
     public void DrawGizmos()

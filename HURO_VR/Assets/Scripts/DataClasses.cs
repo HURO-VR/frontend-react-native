@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static IronPython.Modules._ast;
+using UnityEngine.UIElements;
 
 public struct XYZ
 {
@@ -185,19 +187,26 @@ public class Obstacle : Circle
     //static float ABSTRACTION_RADIUS = 0.1f;
     //static float squareThreshold = 0.1f;
     public List<Circle> circleAbstraction;
+    public float width;
+    public float length;
     public bool isDynamic;
+    public GameObject go;
 
     public Obstacle(GameObject go) : base(new XYZ(go.transform.position.x, go.transform.position.y, go.transform.position.z), 0f)
     {
-        this.isDynamic = false;
-
+        this.isDynamic = go.name.ToLower().Contains("user");
         Renderer renderer = go.GetComponent<Renderer>();
-        
         float length = renderer.bounds.size.z;
         float width = renderer.bounds.size.x;
         this.radius = Mathf.Max(width, length) / 2f;
-        if (!(width < length + .2f && width > length - .2f)) circleAbstraction = DataUtils.GenerateCircles(position, width, length, go.transform.eulerAngles.y);
-        if (circleAbstraction != null && circleAbstraction.Count > 1) Debug.Log(go.name + " generated " + circleAbstraction.Count + " circles.");
+        LoadCircleAbstraction();
+        if (circleAbstraction != null) Debug.Log(go.name + " generated " + circleAbstraction.Count + " circles.");
+        this.go = go;
+    }
+    public void LoadCircleAbstraction()
+    {
+        if (!(width < length + .2f && width > length - .2f)) 
+            circleAbstraction = DataUtils.GenerateCircles(position, width, length, go.transform.eulerAngles.y);
     }
 
     public Circle ToCircle()
