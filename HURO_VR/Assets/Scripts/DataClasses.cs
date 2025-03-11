@@ -262,4 +262,22 @@ public class SceneData
     public Circle[] obstacles;
     public Boundary boundary;
     public Robot[] robots;
+    private SceneDataOutput output;
+
+    public SceneDataOutput LoadOutput()
+    {
+        output.robot_radius = robot_radius;
+        output.robots = robots;
+        output.boundary = boundary;
+        output.obstacles = obstacles;
+        return output;
+    }
+}
+
+public struct SceneDataOutput
+{
+    public float robot_radius;
+    public Circle[] obstacles;
+    public Boundary boundary;
+    public Robot[] robots;
 }

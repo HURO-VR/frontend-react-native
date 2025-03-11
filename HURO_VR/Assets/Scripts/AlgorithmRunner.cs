@@ -208,9 +208,19 @@ public class AlgorithmRunner : MonoBehaviour {
             if (!robot.stuck) deadlock = false;
         }
 
-        if (deadlock) SimulationDataCollector.LogFailed("Deadlock - Robots were not moving.");
-        if (timeout) SimulationDataCollector.LogFailed($"Timeout - Robots failed to reach the goals in {simulationTimeout} seconds.");
-        
+        if (deadlock) { 
+            SimulationDataCollector.LogFailed("Deadlock - Robots were not moving.");
+            Debug.LogWarning("Terminating due to deadlock.");
+        }
+        if (timeout) { 
+            SimulationDataCollector.LogFailed($"Timeout - Robots failed to reach the goals in {simulationTimeout} seconds.");
+            Debug.LogWarning($"Terminatiing due to time out. {totalTime} seconds.");
+        }
+        if (reachedGoals)
+        {
+            Debug.LogWarning("Terminating because robots reached goals.");
+        }
+
         return (timeout || reachedGoals || deadlock);
         
     }
@@ -266,8 +276,7 @@ public class AlgorithmRunner : MonoBehaviour {
         {
             if ((runOnServer && hitServerAgain) || !runOnServer)
             {
-                
-                string input = JsonConvert.SerializeObject(sceneData.data);
+                string input = sceneData.GetAlgorithmInput();
                 if (runOnServer && hitServerAgain)
                 {
                     hitServerAgain = false;

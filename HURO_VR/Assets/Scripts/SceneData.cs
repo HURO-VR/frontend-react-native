@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Meta.XR.MRUtilityKit;
+using Newtonsoft.Json;
 using UnityEngine;
 
 public class SceneDataManager : MonoBehaviour
@@ -135,8 +136,15 @@ public class SceneDataManager : MonoBehaviour
         data.robot_radius = data.robots[0].radius;
         Debug.Log("Initalized Robot Radius: " + data.robot_radius);
 
+        data.LoadOutput();
+        
         initalized = true;
 
+    }
+
+    public string GetAlgorithmInput()
+    {
+        return JsonConvert.SerializeObject(data.LoadOutput());
     }
 
 
