@@ -14,7 +14,7 @@ using Meta.XR.MRUtilityKit;
 [RequireComponent(typeof(GoogleCloudServer))]
 
 public class AlgorithmRunner : MonoBehaviour {
-
+    
 
     private ScriptEngine engine;
     private dynamic algorithm;
@@ -281,6 +281,7 @@ public class AlgorithmRunner : MonoBehaviour {
                 {
                     hitServerAgain = false;
                     Debug.Log("Calling Run Algorithim On Server");
+                    SimulationDataCollector.LogServerHit();
                     RunAlgorithmOnServer(input);
                 }
                 else if (!runOnServer) RunAlgorithmLocally(input);

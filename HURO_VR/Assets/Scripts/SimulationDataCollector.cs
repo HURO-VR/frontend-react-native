@@ -54,23 +54,10 @@ public static class SimulationDataCollector
         }
     }
 
-    //public void DetectCollisions()
-    //{
-    //    GameObject[] robots = GameObject.FindGameObjectsWithTag("Robot");
-    //    for (int i = 0; i < robots.Length; i++)
-    //    {
-    //        for (int j = i + 1; j < robots.Length; j++)
-    //        {
-    //            if (Vector3.Distance(robots[i].transform.position, robots[j].transform.position) < 1.0f)
-    //            {
-    //                XYZ collisionPoint = Vector3ToXYZ((robots[i].transform.position + robots[j].transform.position) / 2);
-    //                simulationRun.data.totalCollisions.Add(collisionPoint);
-    //                simulationRun.data.robotData[i].collisions.Add(collisionPoint);
-    //                simulationRun.data.robotData[j].collisions.Add(collisionPoint);
-    //            }
-    //        }
-    //    }
-    //}
+    public static void LogServerHit()
+    {
+        simulationRun.serverHits++;
+    }
 
     public static void LogWarning(string message)
     {

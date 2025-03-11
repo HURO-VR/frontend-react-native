@@ -27,7 +27,7 @@ public class SimulationRunData
     public List<ObstacleData> obstacleData { get; set; }
 }
 
-public class SimulationRun
+public partial class SimulationRun
 {
     public string uid { get; set; }
     public string dateCreated { get; set; }
@@ -37,13 +37,11 @@ public class SimulationRun
     public string runID { get; set; }
     public string name { get; set; }
 
+    public int serverHits = 0;
+
     public string errorMessage { get; set; }
     public SimulationRunData data { get; set; }
 
-    public Dictionary<string, object> ToDictionary()
-    {
-        return SimulationRunConverter.ToDictionary(this);
-    }
 }
 
 public class RunStatus

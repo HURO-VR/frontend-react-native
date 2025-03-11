@@ -1,20 +1,21 @@
 using System.Collections.Generic;
 
-public static class SimulationRunConverter
+public partial class SimulationRun
 {
-    public static Dictionary<string, object> ToDictionary(SimulationRun simRun)
+    public Dictionary<string, object> ToDictionary()
     {
         return new Dictionary<string, object>
         {
-            { "uid", simRun.uid },
-            { "dateCreated", simRun.dateCreated },
-            { "status", simRun.status },
-            { "simID", simRun.simID },
-            { "starred", simRun.starred },
-            { "runID", simRun.runID },
-            { "name", simRun.name },
-            { "data", simRun.data != null ? SimulationRunDataToDictionary(simRun.data) : null },
-            { "errorMessage", simRun.errorMessage}
+            { "uid", this.uid },
+            { "dateCreated", this.dateCreated },
+            { "status", this.status },
+            { "simID", this.simID },
+            { "starred", this.starred },
+            { "runID", this.runID },
+            { "name", this.name },
+            { "data", this.data != null ? SimulationRunDataToDictionary(this.data) : null },
+            { "errorMessage", this.errorMessage },
+            { "serverHits", this.serverHits }
         };
     }
 
