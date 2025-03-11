@@ -19,6 +19,7 @@ public class RobotController : MonoBehaviour
         stuck = false;
         algorithmRunner = FindAnyObjectByType<AlgorithmRunner>();
         body = GetComponent<Rigidbody>();
+        gameObject.tag = "Robot";
     }
     // Start is called before the first frame update
     void Start()

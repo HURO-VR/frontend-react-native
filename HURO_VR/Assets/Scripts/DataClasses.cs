@@ -130,6 +130,7 @@ public class Robot
     public float radius;
     public string name;
 
+    float DEFAULT_GOAL_RADIUS = 0.05f;
     public void SetData(GameObject go)
     {
         Transform robot_transform = go.transform;
@@ -139,7 +140,7 @@ public class Robot
         
 
         Transform goal_transform = robotController.GetGoal().transform;
-        SphereCollider goalCollider = goal_transform.GetComponent<SphereCollider>();
+        Collider goalCollider = goal_transform.GetComponent<Collider>();
 
         Renderer renderer = robot_transform.GetComponent<Renderer>();
         this.name = go.name;
@@ -158,7 +159,7 @@ public class Robot
 
         this.max_velocity = robotController.maxVelocity;
         this.radius = sphereCollider.radius * robot_transform.localScale.x;
-        this.goal_radius = goalCollider.radius * goal_transform.localScale.x;
+        this.goal_radius = DEFAULT_GOAL_RADIUS;
     }
 
     public void DrawGizmo()
@@ -196,12 +197,12 @@ public class Obstacle : Circle
     {
         this.isDynamic = go.name.ToLower().Contains("user");
         Renderer renderer = go.GetComponent<Renderer>();
-        float length = renderer.bounds.size.z;
-        float width = renderer.bounds.size.x;
+        length = renderer.bounds.size.z;
+        width = renderer.bounds.size.x;
         this.radius = Mathf.Max(width, length) / 2f;
+        this.go = go;
         LoadCircleAbstraction();
         if (circleAbstraction != null) Debug.Log(go.name + " generated " + circleAbstraction.Count + " circles.");
-        this.go = go;
     }
     public void LoadCircleAbstraction()
     {

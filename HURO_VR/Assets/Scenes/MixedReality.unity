@@ -326,7 +326,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SpawnOnStart: 0
-  SpawnObject: {fileID: 3327610993944735752, guid: 00eb99e5c6c23f64d9a370f5b39a7ace, type: 3}
+  SpawnObject: {fileID: 800588917131041150, guid: 2a8d4571fa91ea548a7ad3dbcd6a40bb, type: 3}
   SpawnAmount: 1
   MaxIterations: 1000
   SpawnLocations: 3
@@ -607,7 +607,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3613868102660323786, guid: c2e00db6d2dfa42ac8d821db8d493a44, type: 3}
       propertyPath: SceneSettings.RoomIndex
-      value: 10
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3613868102660323786, guid: c2e00db6d2dfa42ac8d821db8d493a44, type: 3}
       propertyPath: SceneSettings.DataSource
@@ -769,11 +769,6 @@ PrefabInstance:
 --- !u!4 &223974227 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4484591312116288, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
-  m_PrefabInstance: {fileID: 1745996862}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &227208186 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 400004, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
   m_PrefabInstance: {fileID: 1745996862}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &230590707
@@ -5486,11 +5481,11 @@ Transform:
   m_GameObject: {fileID: 1736401287}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -1, z: 0}
-  m_LocalScale: {x: 0.7, y: 2, z: 0.7}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.5, y: 1, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 227208186}
+  m_Father: {fileID: 1062092467}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!136 &1736401289
 CapsuleCollider:
@@ -5767,15 +5762,15 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 400004, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
-      insertIndex: 0
-      addedObject: {fileID: 1736401288}
     - targetCorrespondingSourceObject: {fileID: 459718, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2014124502}
     - targetCorrespondingSourceObject: {fileID: 459718, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 543528796}
+    - targetCorrespondingSourceObject: {fileID: 400002, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1736401288}
     - targetCorrespondingSourceObject: {fileID: 482130, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1098713319}
@@ -6807,8 +6802,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c6869f024afe0745bfa4a71f53d7a2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  simulationsMenuParent: {fileID: 7550350046547444334}
-  simulationItem: {fileID: 3384381428083581475, guid: 528c3b4528a13bc4e9a48870a9865405, type: 3}
   simulationDropdown: {fileID: 8456573866371707815}
 --- !u!1 &2052145309
 GameObject:

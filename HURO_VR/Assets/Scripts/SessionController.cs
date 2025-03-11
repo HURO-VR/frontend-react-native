@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Meta.XR.MRUtilityKit;
 using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
@@ -11,9 +12,7 @@ public class SessionController : MonoBehaviour
     string Organization_ID = DemoCredentials.organizationID;
     string userID = DemoCredentials.nikitaID;
     Database_Models.SimulationMetaData selectedSimulation;
-    int numberRuns = 1;
-    [SerializeField] Transform simulationsMenuParent;
-    [SerializeField] GameObject simulationItem;
+    int numberRuns = 1;    
     [SerializeField] TMP_Dropdown simulationDropdown;
     Storage db;
 
@@ -23,7 +22,6 @@ public class SessionController : MonoBehaviour
         db.SetOrganization(Organization_ID);
     }
 
-    int RECT_TRANSFORM_HEIGHT = 20;
     private void Start()
     {
         _ = db.GetAllSimulationBundles((data) =>
@@ -42,15 +40,6 @@ public class SessionController : MonoBehaviour
             Debug.Log($"HURO: Loaded {data?.Length} bundles into menu.");
 
         });
-    }
-
-    void SetItemName(GameObject item, string name)
-    {
-        TextMeshProUGUI text = item.GetComponentInChildren<TextMeshProUGUI>();
-        if (text != null) {
-            Debug.Log($"Set menu name to {name}");
-            text.text = name; 
-        }
     }
 
     public void SetSelectedSimulation(int index = 0)

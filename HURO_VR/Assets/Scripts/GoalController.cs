@@ -4,9 +4,17 @@ public class GoalController : MonoBehaviour
 {
     GameObject robot;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
+        gameObject.tag = "Goal";
+    }
 
+    private void Start()
+    {
+        if (gameObject.name.ToLower().Contains("flag"))
+        {
+            gameObject.transform.eulerAngles = new Vector3(-90, 0, 0);
+        }
     }
 
     // Update is called once per frame
