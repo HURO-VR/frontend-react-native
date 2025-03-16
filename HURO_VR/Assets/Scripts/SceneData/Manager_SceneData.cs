@@ -8,11 +8,19 @@ using UnityEngine;
 public class SceneDataManager : MonoBehaviour
 {
 
+    #region Public Members
+
     public SceneData data;
     public MRUKAnchor.SceneLabels mrukObstacleLabel;
-    
-    bool initalized = false;
-    MRUKRoom mruk;
+
+    #endregion
+
+    #region Private Members
+
+    private bool initalized = false;
+    private MRUKRoom mruk;
+
+    #endregion
 
 
     // Start is called before the first frame update
@@ -155,7 +163,7 @@ public class SceneDataManager : MonoBehaviour
                 obstacle.position = obstacle.go.transform.position;
                 if (obstacle.circleAbstraction != null)
                 {
-                    obstacle.LoadCircleAbstraction();
+                    obstacle.CreateCircleAbstraction();
                 }
             }
         }

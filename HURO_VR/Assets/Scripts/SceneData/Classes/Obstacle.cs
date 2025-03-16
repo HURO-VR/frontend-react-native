@@ -1,15 +1,44 @@
 using UnityEngine;
 using System.Collections.Generic;
+
+/// <summary>
+/// Represents an obstacle in the game world.
+/// </summary>
 public class Obstacle : Circle
 {
-    //static float ABSTRACTION_RADIUS = 0.1f;
-    //static float squareThreshold = 0.1f;
+    // Static constants
+    // static float ABSTRACTION_RADIUS = 0.1f;
+    // static float squareThreshold = 0.1f;
+
+    /// <summary>
+    /// List of circles that approximate the obstacle's shape.
+    /// </summary>
     public List<Circle> circleAbstraction;
+
+    /// <summary>
+    /// Width of the obstacle.
+    /// </summary>
     public float width;
+
+    /// <summary>
+    /// Length of the obstacle.
+    /// </summary>
     public float length;
+
+    /// <summary>
+    /// Whether the obstacle is dynamic (i.e., can move).
+    /// </summary>
     public bool isDynamic;
+
+    /// <summary>
+    /// The GameObject associated with this obstacle.
+    /// </summary>
     public GameObject go;
 
+    /// <summary>
+    /// Initializes a new Obstacle instance.
+    /// </summary>
+    /// <param name="go">The GameObject to associate with this obstacle.</param>
     public Obstacle(GameObject go) : base(new XYZ(go.transform.position.x, go.transform.position.y, go.transform.position.z), 0f)
     {
         this.isDynamic = go.name.ToLower().Contains("user");
@@ -18,30 +47,31 @@ public class Obstacle : Circle
         width = renderer.bounds.size.x;
         this.radius = Mathf.Max(width, length) / 2f;
         this.go = go;
-        LoadCircleAbstraction();
+        CreateCircleAbstraction();
         if (circleAbstraction != null) Debug.Log(go.name + " generated " + circleAbstraction.Count + " circles.");
     }
-    public void LoadCircleAbstraction()
+
+    /// <summary>
+    /// Creates the circle abstraction for this obstacle.
+    /// </summary>
+    public void CreateCircleAbstraction()
     {
         if (!(width < length + .2f && width > length - .2f)) 
             circleAbstraction = DataUtils.GenerateCircles(position, width, length, go.transform.eulerAngles.y);
     }
 
+    /// <summary>
+    /// Converts this obstacle to a Circle instance.
+    /// </summary>
+    /// <returns>A Circle instance representing this obstacle.</returns>
     public Circle ToCircle()
     {
         return new Circle(position, radius);
     }
 
-    public Circle[] ToCircles()
-    {
-        Circle[] ret = new Circle[obstacle.circleAbstraction.Count];
-        for (int i = 0; i < obstacle.circleAbstraction.Count; i++)
-        {
-            ret[i] = obstacle.circleAbstraction[i];
-        }
-        return ret;
-    }
-
+    /// <summary>
+    /// Draws a gizmo for this obstacle in the Unity editor.
+    /// </summary>
     public void DrawGizmo()
     {
         if (radius == 0) return;
@@ -55,6 +85,11 @@ public class Obstacle : Circle
         else DataUtils.DrawCircleGizmo(position, radius, Color.red);
     }
 
+    /// <summary>
+    /// Unpacks the circle abstractions from an array of obstacles.
+    /// </summary>
+    /// <param name="obstacles">The array of obstacles to unpack.</param>
+    /// <returns>An array of Circle instances representing the unpacked abstractions.</returns>
     public static Circle[] UnpackAbstractions(Obstacle[] obstacles)
     {
         List<Circle> list = new List<Circle>();
