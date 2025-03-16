@@ -4,36 +4,35 @@ using System.Collections.Generic;
 /// <summary>
 /// Represents an obstacle in the game world.
 /// </summary>
-public class Obstacle : Circle
+public class Obstacle : Circle, Entity
 {
-    // Static constants
-    // static float ABSTRACTION_RADIUS = 0.1f;
-    // static float squareThreshold = 0.1f;
-
+    #region Public Properties
     /// <summary>
     /// List of circles that approximate the obstacle's shape.
     /// </summary>
-    public List<Circle> circleAbstraction;
+    public List<Circle> circleAbstraction { get; private set; }
 
     /// <summary>
     /// Width of the obstacle.
     /// </summary>
-    public float width;
+    public float width { get; private set; }
 
     /// <summary>
     /// Length of the obstacle.
     /// </summary>
-    public float length;
+    public float length { get; private set; }
 
     /// <summary>
     /// Whether the obstacle is dynamic (i.e., can move).
     /// </summary>
-    public bool isDynamic;
+    public bool isDynamic { get; private set; }
 
     /// <summary>
     /// The GameObject associated with this obstacle.
     /// </summary>
-    public GameObject go;
+    public GameObject go { get; private set; }
+
+    #endregion
 
     /// <summary>
     /// Initializes a new Obstacle instance.
@@ -51,13 +50,14 @@ public class Obstacle : Circle
         if (circleAbstraction != null) Debug.Log(go.name + " generated " + circleAbstraction.Count + " circles.");
     }
 
+    #region Public Methods
     /// <summary>
     /// Creates the circle abstraction for this obstacle.
     /// </summary>
     public void CreateCircleAbstraction()
     {
         if (!(width < length + .2f && width > length - .2f)) 
-            circleAbstraction = DataUtils.GenerateCircles(position, width, length, go.transform.eulerAngles.y);
+            circleAbstraction = SceneDataUtils.GenerateCircles(position, width, length, go.transform.eulerAngles.y);
     }
 
     /// <summary>
@@ -79,10 +79,10 @@ public class Obstacle : Circle
         {
             foreach (var circle in circleAbstraction)
             {
-                DataUtils.DrawCircleGizmo(circle.position, circle.radius, Color.red);
+                SceneDataUtils.DrawCircleGizmo(circle.position, circle.radius, Color.red);
             }
         }
-        else DataUtils.DrawCircleGizmo(position, radius, Color.red);
+        else SceneDataUtils.DrawCircleGizmo(position, radius, Color.red);
     }
 
     /// <summary>
@@ -111,4 +111,10 @@ public class Obstacle : Circle
 
         return list.ToArray();
     }
+
+    #endregion
+
+    #region Private Methods
+
+    #endregion
 }
