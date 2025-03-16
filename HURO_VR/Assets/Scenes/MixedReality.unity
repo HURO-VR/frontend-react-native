@@ -607,7 +607,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3613868102660323786, guid: c2e00db6d2dfa42ac8d821db8d493a44, type: 3}
       propertyPath: SceneSettings.RoomIndex
-      value: 0
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 3613868102660323786, guid: c2e00db6d2dfa42ac8d821db8d493a44, type: 3}
       propertyPath: SceneSettings.DataSource
@@ -615,12 +615,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3613868102660323786, guid: c2e00db6d2dfa42ac8d821db8d493a44, type: 3}
       propertyPath: SceneSettings.RoomPrefabs.Array.size
-      value: 11
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 3613868102660323786, guid: c2e00db6d2dfa42ac8d821db8d493a44, type: 3}
       propertyPath: SceneSettings.RoomPrefabs.Array.data[10]
       value: 
-      objectReference: {fileID: 2601742620458953579, guid: abb7393a87f526245bb2e108a5f70499, type: 3}
+      objectReference: {fileID: 5618556046422172173, guid: c2bd5595e9fe2493a92d4bc0bb264603, type: 3}
     - target: {fileID: 3613868102660323786, guid: c2e00db6d2dfa42ac8d821db8d493a44, type: 3}
       propertyPath: <RoomCreatedEvent>k__BackingField.m_PersistentCalls.m_Calls.Array.size
       value: 0
@@ -5289,9 +5289,13 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 296921910866118287, guid: 4ef9031d650dfd747ab535e661f644ca, type: 3}
+      propertyPath: SpawnAmount
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 296921910866118287, guid: 4ef9031d650dfd747ab535e661f644ca, type: 3}
       propertyPath: SpawnObject
       value: 
-      objectReference: {fileID: 5209262279275128047, guid: fbf9283b1db06a2409a18879013f5ece, type: 3}
+      objectReference: {fileID: 4472856811887381296, guid: 84be1970642370c40b97e34d960790cf, type: 3}
     - target: {fileID: 296921910866118287, guid: 4ef9031d650dfd747ab535e661f644ca, type: 3}
       propertyPath: CheckOverlaps
       value: 1

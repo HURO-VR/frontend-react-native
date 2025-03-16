@@ -116,6 +116,10 @@ const DetailedSimulation = ({metadata, viewStyle, simID, orgID}: Props) => {
               <Text style={styles.dataTitle}>Time to Complete</Text>
               <Text>{selectedRun?.data.timeToComplete/1000} seconds</Text>
             </View>
+            <View style={styles.dataItem}>
+              <Text style={styles.dataTitle}>Number of Server Hits</Text>
+              <Text>{selectedRun?.serverHits} hits</Text>
+            </View>
             </> : <Text>{selectedRun.errorMessage}</Text>}
           </View>
           

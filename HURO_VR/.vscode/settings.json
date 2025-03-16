@@ -56,5 +56,6 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "HURO_VR.sln"
+    "dotnet.defaultSolution": "HURO_VR.sln",
+    "dotnet.preferCSharpExtension": true
 }

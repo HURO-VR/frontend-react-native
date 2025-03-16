@@ -7,7 +7,6 @@ using Firebase.Firestore;
 using UnityEngine;
 using UnityEngine.Networking;
 using System.Threading.Tasks;
-using static Database_Models;
 
 public class FileType
 {
@@ -103,13 +102,13 @@ public class Storage : MonoBehaviour
 
 
 
-    public async Task GetAllSimulationBundles(Action<Database_Models.SimulationMetaData[]> OnComplete)
+    public async Task GetAllSimulationBundles(Action<SimulationMetaData[]> OnComplete)
     {
-        Database_Models.SimulationMetaData[] simulationMetaDatas = new Database_Models.SimulationMetaData[0];
+        SimulationMetaData[] simulationMetaDatas = new SimulationMetaData[0];
         Query simulationQuery = firestore.Collection($"organizations/{org_name}/simulations");
         await simulationQuery.GetSnapshotAsync().ContinueWithOnMainThread( (task) => {
             QuerySnapshot snapshot = task.Result;
-            simulationMetaDatas = new Database_Models.SimulationMetaData[snapshot.Count];
+            simulationMetaDatas = new SimulationMetaData[snapshot.Count];
             Debug.Log($"Num meta data: {simulationMetaDatas.Length} == {snapshot.Count}");
             int count = 0;
             foreach (DocumentSnapshot documentSnapshot in snapshot.Documents)
@@ -159,17 +158,19 @@ public class Storage : MonoBehaviour
     }
 
 
-    public async void UploadMetadata<T>(string path, T data)
+    public async void UploadMetadata<T>(string path, T data, Action<bool> OnComplete)
     {
         DocumentReference docRef = firestore.Document(path);
         try
         {
             await docRef.SetAsync(data);
             Debug.Log("Data uploaded successfully to " + path);
+            OnComplete(true);
         }
         catch (System.Exception e)
         {
             Debug.LogError("Error uploading data: " + e.Message);
+            OnComplete(false);
         }
     }
 
