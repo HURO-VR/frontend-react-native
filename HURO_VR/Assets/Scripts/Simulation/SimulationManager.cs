@@ -14,24 +14,43 @@ using Meta.XR.MRUtilityKit;
 [RequireComponent(typeof(GoogleCloudServer))]
 
 public class SimulationManager : MonoBehaviour {
-    
 
+
+    #region Public Variables
+    [Tooltip("True to display algorithm view of scene (Scene View Only).")]
+    [SerializeField] bool displayGizmos;
+
+    [Tooltip("Text Mesh to add Debug Logs.")]
+    [SerializeField] TextMeshProUGUI debugLogs;
+
+    [Tooltip("Mark true if running on GCP VM.")]
+    [SerializeField] bool runOnServer;
+
+    [Tooltip("Robot and Goal Spawners.")]
+    [SerializeField] List<FindSpawnPositions> spawners;
+
+    [Tooltip("Runs the algorithm every X seconds.")]
+    [SerializeField] float interval = 0.25f; // Run every x seconds
+
+    [Tooltip("Will end simulation after X seconds.")]
+    [SerializeField] float simulationTimeout = 30f;
+    #endregion
+
+    #region Private Variables
     private ScriptEngine engine;
     private dynamic algorithm;
-    bool initAlgorithm = false;
-    SceneDataManager sceneData;
-    bool algorithmRunning = false;
-    [SerializeField] bool displayGizmos;
-    AudioLibrary audioLibrary;
-    [SerializeField] TextMeshProUGUI debugLogs;
-    [SerializeField] bool runOnServer;
-    bool hitServerAgain = true;
-    GoogleCloudServer remoteScriptExecutor;
-    StreamingAssetsManager fileTransfer;
-    SessionManager sessionManager;
-    [SerializeField] List<FindSpawnPositions> spawners;
-    bool restart = false;
-
+    private bool initAlgorithm = false;
+    private bool algorithmRunning = false;
+    private bool hitServerAgain = true;
+    private bool restart = false;
+    private SceneDataManager sceneData;
+    private AudioLibrary audioLibrary;
+    private GoogleCloudServer remoteScriptExecutor;
+    private StreamingAssetsManager fileTransfer;
+    private SessionManager sessionManager;
+    private float timer = 0f;
+    private float totalTime = 0f;
+    #endregion
     private void Awake()
     {
         // Ensure server is enabled at Runtime on Quest.
@@ -168,7 +187,7 @@ public class SimulationManager : MonoBehaviour {
                 }
                 if (go.name == robot.name)
                 {
-                    go.GetComponent<RobotController>().SetVelocity(newVelocities[i][0], newVelocities[i][1]);
+                    go.GetComponent<RobotEntity>().SetVelocity(newVelocities[i][0], newVelocities[i][1]);
                 }
                 i++;
             }
@@ -191,19 +210,13 @@ public class SimulationManager : MonoBehaviour {
         }
     }
 
-    private float timer = 0f;
-    private float totalTime = 0f;
-
-    [Tooltip("Runs the algorithm every X seconds.")]
-    [SerializeField] float interval = 0.25f; // Run every x seconds
-    [SerializeField] float simulationTimeout = 30f;
 
     bool ShouldTerminate()
     {
         bool timeout = totalTime > simulationTimeout;
         bool reachedGoals = RunDataCollector.CheckAllRobotsReachedGoal();
         bool deadlock = true;
-        RobotController[] robots = FindObjectsByType<RobotController>(FindObjectsSortMode.InstanceID);
+        RobotEntity[] robots = FindObjectsByType<RobotEntity>(FindObjectsSortMode.InstanceID);
         foreach (var robot in robots)
         {
             if (!robot.stuck) deadlock = false;
@@ -267,8 +280,9 @@ public class SimulationManager : MonoBehaviour {
     // Update is called once per frame
     void Update () {
         DetectKeyBoardActivation();
-        if (!algorithmRunning || !fileTransfer.IsCopyingComplete()) return;
+        if (!algorithmRunning || (fileTransfer != null && !fileTransfer.IsCopyingComplete())) return;
         else if (!initAlgorithm) InitAlgorithm();
+
         IncrementTime();
         if (ShouldTerminate()) EndSimulation();
         if (ShouldStep())
@@ -277,7 +291,6 @@ public class SimulationManager : MonoBehaviour {
             AlgorithmStep();
         }
         RunDataCollector.UpdateRobotData();
-
     }
 
     void AlgorithmStep()

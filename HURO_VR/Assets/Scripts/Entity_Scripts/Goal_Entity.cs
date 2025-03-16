@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class GoalController : MonoBehaviour
+public class GoalEntity : MonoBehaviour
 {
     GameObject robot;
     // Start is called before the first frame update
@@ -38,7 +38,7 @@ public class GoalController : MonoBehaviour
         Debug.Log(other.gameObject.name + " and " + robot.name);
         if (other.gameObject == this.robot)
         {
-            var controller = this.robot.GetComponent<RobotController>();
+            var controller = this.robot.GetComponent<RobotEntity>();
             controller.GoalReached();
         }
     }

@@ -206,7 +206,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3f80759d38bc04408c22926b8630742, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxVelocity: 0
+  maxVelocity: 2
   deadlockLimit: 5
 --- !u!33 &7876853998810567574
 MeshFilter:

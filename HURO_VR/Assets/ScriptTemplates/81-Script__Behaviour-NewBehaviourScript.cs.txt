@@ -4,7 +4,13 @@ using UnityEngine;
 public class #SCRIPTNAME# : MonoBehaviour
 {
     #NOTRIM#
-    
+
+    #region Serialized Variables
+    // Add any [SerializeField] variables here if needed
+    // Add Headers: [Header("Logging")]
+    // Add Tips: [Tooltip("Runs the algorithm every X seconds.")]
+    #endregion
+
     #region Public Variables
     // Add public variables here
     #endregion

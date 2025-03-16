@@ -6622,7 +6622,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displayGizmos: 1
   debugLogs: {fileID: 0}
-  runOnServer: 1
+  runOnServer: 0
   spawners:
   - {fileID: 143940990}
   - {fileID: 1671958430}
@@ -6640,7 +6640,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92748285343bc084085f22302e12c563, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  username: accou
   enableLogging: 1
 --- !u!114 &1996370587
 MonoBehaviour:

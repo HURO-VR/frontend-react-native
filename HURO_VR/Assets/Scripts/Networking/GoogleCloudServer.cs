@@ -8,15 +8,15 @@ using Debug = UnityEngine.Debug;
 
 public class GoogleCloudServer : MonoBehaviour
 {
-    [Header("SSH Connection Settings")]
+    // HURO VM Compute IP.
     string serverIP = "104.154.36.87";
 
-    [Tooltip("SSH Username")]
-    public string username;
+    // SSH username
+    string username = "accou";
 
     string privateKeyPath = "/gcp-vm-key";
 
-    // Default to RVO Algorithm
+    // Path to python script on VM.
     string remoteScriptPath = "/home/accou/Python_Scripts/Python/main.py"; 
 
     [Header("Logging")]

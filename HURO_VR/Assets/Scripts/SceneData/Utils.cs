@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DataUtils {
+public class SceneDataUtils {
     public static void DrawCircleGizmo(XYZ position, float radius, Color color)
     {
         Gizmos.color = color;

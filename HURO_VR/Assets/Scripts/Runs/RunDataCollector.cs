@@ -40,7 +40,7 @@ public static class RunDataCollector
             {
                 if (go.name == robotData.name)
                 {
-                    RobotController robotController = go.GetComponent<RobotController>();
+                    RobotEntity robotController = go.GetComponent<RobotEntity>();
                     robotData.robotPath.Add(go.transform.position);
 
                     if (robotController.IsGoalReached() && !robotData.goalReached)
@@ -133,7 +133,7 @@ public static class RunDataCollector
 
     static RobotData InitRobotData(GameObject robot_go)
     {
-        RobotController robotController = robot_go.GetComponent<RobotController>();
+        RobotEntity robotController = robot_go.GetComponent<RobotEntity>();
 
         return new RobotData
         {

@@ -1,5 +1,9 @@
 public class SceneData
 {
+
+    // <summary>
+    // SceneData strip down version for output.
+    // </summary>
     public struct SceneDataOutput
     {
         public float robot_radius;
@@ -9,8 +13,7 @@ public class SceneData
     }
 
     public float robot_radius;
-    public Obstacle[] fullObstacles;
-    public Circle[] obstacles;
+    public Obstacle[] obstacles;
     public Boundary boundary;
     public Robot[] robots;
     private SceneDataOutput output;
@@ -20,7 +23,7 @@ public class SceneData
         output.robot_radius = robot_radius;
         output.robots = robots;
         output.boundary = boundary;
-        output.obstacles = obstacles;
+        output.obstacles = Obstacle.UnpackAbstractions(obstacles);
         return output;
     }
 }

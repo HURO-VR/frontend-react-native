@@ -1,27 +1,20 @@
-using UnityEngine;
-
-public class NewBehaviourScript : MonoBehaviour
+public interface Entity
 {
+    public void DrawGizmo();
     
-    
+    #region Serialized Variables
+    // Add any [SerializeField] variables here if needed
+    // Add Headers: [Header("Logging")]
+    // Add Tips: [Tooltip("Runs the algorithm every X seconds.")]
+
+    #endregion
+
     #region Public Variables
     // Add public variables here
     #endregion
 
     #region Private Variables
     // Add private variables here
-    #endregion
-
-    #region Unity Methods
-    private void Start()
-    {
-        // Initialization code
-    }
-
-    private void Update()
-    {
-        // Per-frame logic
-    }
     #endregion
 
     #region Public Methods

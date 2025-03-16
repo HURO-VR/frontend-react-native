@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(SphereCollider))]
-public class RobotController : MonoBehaviour
+public class RobotEntity : MonoBehaviour
 {
 
     GameObject goal;
@@ -65,8 +65,8 @@ public class RobotController : MonoBehaviour
 
     void InitGoal()
     {
-        GoalController[] goals = FindObjectsByType<GoalController>(FindObjectsSortMode.InstanceID);
-        foreach (GoalController goal in goals)
+        GoalEntity[] goals = FindObjectsByType<GoalEntity>(FindObjectsSortMode.InstanceID);
+        foreach (GoalEntity goal in goals)
         {
             if (!goal.HasRobot())
             {

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Robot
+public class Robot : Entity
 {
     public XYZ position;
     public XYZ goal;
@@ -11,11 +11,17 @@ public class Robot
     public string name;
 
     float DEFAULT_GOAL_RADIUS = 0.05f;
+
+    public Robot(GameObject go)
+    {
+        SetData(go);
+    }
+
     public void SetData(GameObject go)
     {
         Transform robot_transform = go.transform;
         Vector3 robot_velocity = go.GetComponent<Rigidbody>().velocity;
-        RobotController robotController = go.GetComponent<RobotController>();
+        RobotEntity robotController = go.GetComponent<RobotEntity>();
         SphereCollider sphereCollider = go.GetComponent<SphereCollider>();
         
 
@@ -45,7 +51,7 @@ public class Robot
     public void DrawGizmo()
     {
         if (radius == 0) return;
-        DataUtils.DrawCircleGizmo(position, radius, Color.red);
-        DataUtils.DrawCircleGizmo(goal, goal_radius, Color.red);
+        SceneDataUtils.DrawCircleGizmo(position, radius, Color.red);
+        SceneDataUtils.DrawCircleGizmo(goal, goal_radius, Color.red);
     }
 }
