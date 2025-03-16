@@ -203,10 +203,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 4472856811887381296}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9c0bf48bbfc7f9e4687a56331fc7a351, type: 3}
+  m_Script: {fileID: 11500000, guid: b3f80759d38bc04408c22926b8630742, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxVelocity: 2
+  maxVelocity: 0
   deadlockLimit: 5
 --- !u!33 &7876853998810567574
 MeshFilter:

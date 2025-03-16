@@ -504,7 +504,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1996370582}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: AlgorithmRunner, Assembly-CSharp
         m_MethodName: RandomizeObjectLocations
         m_Mode: 1
@@ -607,7 +607,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3613868102660323786, guid: c2e00db6d2dfa42ac8d821db8d493a44, type: 3}
       propertyPath: SceneSettings.RoomIndex
-      value: -1
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 3613868102660323786, guid: c2e00db6d2dfa42ac8d821db8d493a44, type: 3}
       propertyPath: SceneSettings.DataSource
@@ -615,12 +615,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3613868102660323786, guid: c2e00db6d2dfa42ac8d821db8d493a44, type: 3}
       propertyPath: SceneSettings.RoomPrefabs.Array.size
-      value: 10
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 3613868102660323786, guid: c2e00db6d2dfa42ac8d821db8d493a44, type: 3}
       propertyPath: SceneSettings.RoomPrefabs.Array.data[10]
       value: 
-      objectReference: {fileID: 5618556046422172173, guid: c2bd5595e9fe2493a92d4bc0bb264603, type: 3}
+      objectReference: {fileID: 2601742620458953579, guid: abb7393a87f526245bb2e108a5f70499, type: 3}
     - target: {fileID: 3613868102660323786, guid: c2e00db6d2dfa42ac8d821db8d493a44, type: 3}
       propertyPath: <RoomCreatedEvent>k__BackingField.m_PersistentCalls.m_Calls.Array.size
       value: 0
@@ -1282,6 +1282,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 746f1679793aa8745a3e0995bd2d659f, type: 3}
+--- !u!1 &388677943 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 71007824391301750, guid: 1d05ad45c9d5ec9488b0d53fc9a503ce, type: 3}
+  m_PrefabInstance: {fileID: 6856648936028982362}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &418248272
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4169,7 +4174,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1836285060781713110, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
       propertyPath: m_Name
-      value: Python_Runner
+      value: SimulationManager
       objectReference: {fileID: 0}
     - target: {fileID: 2008155595104895519, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
       propertyPath: username
@@ -4263,10 +4268,20 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5437653416407172566, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1836285060781713110, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1996370587}
+    - targetCorrespondingSourceObject: {fileID: 1836285060781713110, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1996370586}
+    - targetCorrespondingSourceObject: {fileID: 1836285060781713110, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1996370585}
   m_SourcePrefab: {fileID: 100100000, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
 --- !u!224 &1308914336
 RectTransform:
@@ -5956,6 +5971,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1108407955}
   m_LocalEulerAnglesHint: {x: -40.03, y: 0, z: 0}
+--- !u!1 &1821562599 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1836285060781713110, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
+  m_PrefabInstance: {fileID: 1286023416}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1830131570 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1054112583220142, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
@@ -6210,7 +6230,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1996370582}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: AlgorithmRunner, Assembly-CSharp
         m_MethodName: EndSimulation
         m_Mode: 0
@@ -6312,11 +6332,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1914110792}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 860e8f62a4fdb164488a5ff341e0cf01, type: 3}
+  m_Script: {fileID: 11500000, guid: 72a619c59609659408f2af8739c9da68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   copyOnStart: 1
-  overwriteExistingFiles: 0
+  overwriteExistingFiles: 1
   fileExtensionsToSkip:
   - .meta
 --- !u!4 &1914110794
@@ -6588,17 +6608,53 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1977698846}
   m_CullTransparentMesh: 1
---- !u!114 &1996370582 stripped
+--- !u!114 &1996370585
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5437653416407172566, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
-  m_PrefabInstance: {fileID: 1286023416}
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1821562599}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f5e794a39caf7224699fd5a4cda1795c, type: 3}
+  m_Script: {fileID: 11500000, guid: 5cfc1c1e548d3ed439eeb2abc57e9082, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  displayGizmos: 1
+  debugLogs: {fileID: 0}
+  runOnServer: 1
+  spawners:
+  - {fileID: 143940990}
+  - {fileID: 1671958430}
+  interval: 0.25
+  simulationTimeout: 30
+--- !u!114 &1996370586
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1821562599}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92748285343bc084085f22302e12c563, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  username: accou
+  enableLogging: 1
+--- !u!114 &1996370587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1821562599}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 926ee4a75236bdc4e9176accec9e7a4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mrukObstacleLabel: 7064
 --- !u!222 &2006984560
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -6803,7 +6859,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2019148905}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9c6869f024afe0745bfa4a71f53d7a2a, type: 3}
+  m_Script: {fileID: 11500000, guid: d9fc8a824434c324bb19ba2cbbe16527, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   simulationDropdown: {fileID: 8456573866371707815}
@@ -12850,16 +12906,34 @@ PrefabInstance:
       propertyPath: audioClips.Array.data[4].volume
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7686753078774123595, guid: 1d05ad45c9d5ec9488b0d53fc9a503ce, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 71007824391301750, guid: 1d05ad45c9d5ec9488b0d53fc9a503ce, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6856648936028982364}
   m_SourcePrefab: {fileID: 100100000, guid: 1d05ad45c9d5ec9488b0d53fc9a503ce, type: 3}
 --- !u!4 &6856648936028982363 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1691050571577666721, guid: 1d05ad45c9d5ec9488b0d53fc9a503ce, type: 3}
   m_PrefabInstance: {fileID: 6856648936028982362}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6856648936028982364
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 388677943}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5c9695b222b9fe44af547eea53bdeb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioClips: []
+  audioOnStart: 
 --- !u!1 &6861524367654220468
 GameObject:
   m_ObjectHideFlags: 0
@@ -14857,7 +14931,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1996370582}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: AlgorithmRunner, Assembly-CSharp
         m_MethodName: StartAlgorithm
         m_Mode: 0
