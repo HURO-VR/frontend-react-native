@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1691050571577666721}
-  - component: {fileID: 7686753078774123595}
+  - component: {fileID: -6013010202921944925}
   m_Layer: 0
   m_Name: AudioLibrary
   m_TagString: Untagged
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7686753078774123595
+--- !u!114 &-6013010202921944925
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,7 +41,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 71007824391301750}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 681c12682dbaeaa4f9e062f18f6d60c2, type: 3}
+  m_Script: {fileID: 11500000, guid: e5c9695b222b9fe44af547eea53bdeb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   audioClips:
@@ -49,6 +49,15 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: e942d285d9d94ad44a4b5e785734fce5, type: 3}
     volume: 1
   - type: 1
+    clip: {fileID: 8300000, guid: f51275b0e7bc45141a2ad6940adf2107, type: 3}
+    volume: 1
+  - type: 2
     clip: {fileID: 8300000, guid: 5b3bd902d99452f42921d7e87de3e814, type: 3}
+    volume: 1
+  - type: 3
+    clip: {fileID: 8300000, guid: 96b2d873bab1da543aeb7369b755e5b1, type: 3}
+    volume: 1
+  - type: 4
+    clip: {fileID: 8300000, guid: a0d5c23c740b54c48a866730e9317586, type: 3}
     volume: 1
   audioOnStart: 
