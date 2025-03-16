@@ -13,7 +13,7 @@ using Meta.XR.MRUtilityKit;
 [RequireComponent(typeof(SceneDataManager))]
 [RequireComponent(typeof(GoogleCloudServer))]
 
-public class AlgorithmRunner : MonoBehaviour {
+public class SimulationManager : MonoBehaviour {
     
 
     private ScriptEngine engine;

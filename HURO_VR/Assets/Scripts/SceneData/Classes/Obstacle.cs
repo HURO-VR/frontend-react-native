@@ -34,7 +34,12 @@ public class Obstacle : Circle
 
     public Circle[] ToCircles()
     {
-        return circleAbstraction.ToArray();
+        Circle[] ret = new Circle[obstacle.circleAbstraction.Count];
+        for (int i = 0; i < obstacle.circleAbstraction.Count; i++)
+        {
+            ret[i] = obstacle.circleAbstraction[i];
+        }
+        return ret;
     }
 
     public void DrawGizmo()

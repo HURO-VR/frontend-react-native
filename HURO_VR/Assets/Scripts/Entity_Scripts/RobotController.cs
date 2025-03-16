@@ -11,13 +11,13 @@ public class RobotController : MonoBehaviour
     bool goalReached = false;
     Rigidbody body;
     public bool stuck { get; private set; }
-    AlgorithmRunner algorithmRunner;
+    SimulationManager algorithmRunner;
 
 
     private void Awake()
     {
         stuck = false;
-        algorithmRunner = FindAnyObjectByType<AlgorithmRunner>();
+        algorithmRunner = FindAnyObjectByType<SimulationManager>();
         body = GetComponent<Rigidbody>();
         gameObject.tag = "Robot";
     }
