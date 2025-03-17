@@ -4273,20 +4273,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 5437653416407172566, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 1836285060781713110, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1996370587}
-    - targetCorrespondingSourceObject: {fileID: 1836285060781713110, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1996370586}
-    - targetCorrespondingSourceObject: {fileID: 1836285060781713110, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1996370585}
+      addedObject: {fileID: 1996370591}
   m_SourcePrefab: {fileID: 100100000, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
 --- !u!224 &1308914336
 RectTransform:
@@ -6609,40 +6602,12 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1977698846}
   m_CullTransparentMesh: 1
---- !u!114 &1996370585
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+--- !u!4 &1996370589 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7951770862256308601, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
+  m_PrefabInstance: {fileID: 1286023416}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1821562599}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5cfc1c1e548d3ed439eeb2abc57e9082, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  displayGizmos: 1
-  debugLogs: {fileID: 0}
-  runOnServer: 0
-  spawners:
-  - {fileID: 143940990}
-  - {fileID: 1671958430}
-  interval: 0.25
-  simulationTimeout: 30
---- !u!114 &1996370586
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1821562599}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 92748285343bc084085f22302e12c563, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enableLogging: 1
---- !u!114 &1996370587
+--- !u!114 &1996370591
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -6654,12 +6619,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 926ee4a75236bdc4e9176accec9e7a4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mrukObstacleLabel: 7064
---- !u!4 &1996370589 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7951770862256308601, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
-  m_PrefabInstance: {fileID: 1286023416}
-  m_PrefabAsset: {fileID: 0}
+  mrukObstacleLabel: 8088
 --- !u!222 &2006984560
 CanvasRenderer:
   m_ObjectHideFlags: 0

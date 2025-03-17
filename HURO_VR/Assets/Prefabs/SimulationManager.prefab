@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5437653416407172566}
   - component: {fileID: 6065983829565881042}
   m_Layer: 0
-  m_Name: Python_Runner
+  m_Name: SimulationManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -42,9 +42,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1836285060781713110}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f5e794a39caf7224699fd5a4cda1795c, type: 3}
+  m_Script: {fileID: 11500000, guid: 5cfc1c1e548d3ed439eeb2abc57e9082, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  displayGizmos: 0
+  debugLogs: {fileID: 0}
+  runOnServer: 0
+  spawners: []
+  interval: 0.25
+  simulationTimeout: 30
 --- !u!54 &6065983829565881042
 Rigidbody:
   m_ObjectHideFlags: 0
