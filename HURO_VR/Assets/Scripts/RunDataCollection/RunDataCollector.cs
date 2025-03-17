@@ -155,7 +155,7 @@ public static class RunDataCollector
         }
         runMetadata.data.timeToComplete = (int)((Time.time * 1000) - simulationStartTime);
         runMetadata.data.deadlock = !CheckAllRobotsReachedGoal();
-        Debug.Log("HURO: Simulation Ended. Data: " + JsonConvert.SerializeObject(runMetadata, Formatting.Indented));
+        Debug.Log("HURO: Simulation Ended");
         initalized = false;
     }
 

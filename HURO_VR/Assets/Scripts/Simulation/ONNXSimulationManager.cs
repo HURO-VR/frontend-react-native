@@ -6,24 +6,89 @@ using Unity.Barracuda;
 using Unity.Barracuda.ONNX;
 using System.IO;
 
-
+/// <summary>
+/// Manages the simulation using ONNX models, including model downloading, environment setup, and running the simulation.
+/// </summary>
 public class ONNXSimulationManager : MonoBehaviour
 {
+    #region Private Fields
+
+    /// <summary>
+    /// The agent wrapper controlling the simulation agent.
+    /// </summary>
     private AgentWrapper agent;
-    public GameObject MLenvironment;
+
+    /// <summary>
+    /// The NNModel used for inference during the simulation.
+    /// </summary>
     private NNModel model;
+
+    /// <summary>
+    /// The storage service for downloading simulation data.
+    /// </summary>
+    private Storage storage;
+
+    /// <summary>
+    /// The downloaded model data as a byte array.
+    /// </summary>
+    private byte[] modelData;
+
+    /// <summary>
+    /// The currently selected simulation metadata bundle.
+    /// </summary>
+    private SimulationMetaData selectedSimulation;
+
+    /// <summary>
+    /// Flag indicating whether the model data has been downloaded.
+    /// </summary>
+    private bool downloadedModelData = false;
+
+    /// <summary>
+    /// Flag indicating whether the simulation is currently running metadata.
+    /// </summary>
+    private bool runMetadataning = false;
+
+    /// <summary>
+    /// Flag indicating whether the simulation should run.
+    /// </summary>
+    private bool runSimulation = false;
+
+    #endregion
+
+    #region Public Fields
+
+    /// <summary>
+    /// The Machine Learning environment GameObject.
+    /// </summary>
+    public GameObject MLenvironment;
+
+    /// <summary>
+    /// The number of simulation runs per model.
+    /// </summary>
     public int RunsPerModel = 100;
-    Storage storage;
-    byte[] modelData;
+
+    /// <summary>
+    /// The model template.
+    /// </summary>
     public NNModel model_template;
+
+    /// <summary>
+    /// An array of available simulation metadata bundles.
+    /// </summary>
     public SimulationMetaData[] simMetaDatas = new SimulationMetaData[0];
-    SimulationMetaData selectedSimulation;
-    bool downloadedModelData = false;
-    bool runMetadataning = false;
-    public bool recievedMetaData { private set; get; }
-    bool runSimulation = false;
 
+    /// <summary>
+    /// Gets a value indicating whether simulation metadata has been received.
+    /// </summary>
+    public bool recievedMetaData { get; private set; }
 
+    #endregion
+
+    #region Unity Methods
+
+    /// <summary>
+    /// Called when the script instance is being loaded. Initializes the storage component.
+    /// </summary>
     public void Awake()
     {
         storage = FindAnyObjectByType<Storage>();
@@ -34,13 +99,18 @@ public class ONNXSimulationManager : MonoBehaviour
         recievedMetaData = false;
     }
 
+    /// <summary>
+    /// Called on the frame when the script is enabled. Initializes simulation metadata.
+    /// </summary>
     private void Start()
     {
         Debug.Log("Running ModelTester.");
         InitSimulationMetaData();
-
     }
 
+    /// <summary>
+    /// Called once per frame to update simulation status and handle user input.
+    /// </summary>
     private void Update()
     {
         if (agent && agent.numRuns >= RunsPerModel)
@@ -67,15 +137,16 @@ public class ONNXSimulationManager : MonoBehaviour
             Debug.Log("Loading sim bundle " + simMetaDatas[0].name);
             _RunSimulation();
         }
-
     }
 
-    // PUBLIC FUNCTIONS
+    #endregion
+
+    #region Public Functions
 
     /// <summary>
-    /// Downloads necessary simulation data from metadata bundle.
+    /// Sets the selected simulation bundle and downloads the corresponding model data.
     /// </summary>
-    /// <param name="bundle">Bundle to load.</param>
+    /// <param name="bundle">The simulation metadata bundle to select.</param>
     void SelectSimulation(SimulationMetaData bundle)
     {
         selectedSimulation = bundle;
@@ -87,15 +158,21 @@ public class ONNXSimulationManager : MonoBehaviour
         });
     }
 
+    /// <summary>
+    /// Flags the simulation to run.
+    /// </summary>
     public void RunSimulation()
     {
         runSimulation = true;
     }
 
+    #endregion
 
+    #region Private Functions
 
     /// <summary>
-    /// Runs the selected meta data bundle.
+    /// Runs the selected simulation metadata bundle by converting downloaded model data into an NNModel,
+    /// setting up the ML environment, and initializing the model for the agent.
     /// </summary>
     void _RunSimulation()
     {
@@ -106,12 +183,8 @@ public class ONNXSimulationManager : MonoBehaviour
         downloadedModelData = false;
     }
 
-
-    // PRIVATE FUNCTIONS
-
     /// <summary>
-    /// Gets all simulation metadata and loads it into the global variable "simMetaDatas".4
-    /// Used to display the list of selectable simulations.
+    /// Asynchronously retrieves all available simulation metadata bundles and stores them in the global array.
     /// </summary>
     async void InitSimulationMetaData()
     {
@@ -122,11 +195,11 @@ public class ONNXSimulationManager : MonoBehaviour
             Debug.Log("Returned " + simMetaDatas.Length + " bundles");
             recievedMetaData = true;
         });
-        
     }
 
-
-
+    /// <summary>
+    /// Instantiates the ML environment from the assigned prefab and sets the agent reference.
+    /// </summary>
     void InitalizeEnvironment()
     {
         GameObject env = Instantiate(MLenvironment);
@@ -134,29 +207,46 @@ public class ONNXSimulationManager : MonoBehaviour
         agent = env.GetComponentInChildren<AgentWrapper>();
     }
 
+    /// <summary>
+    /// Initializes the agent for testing by setting its model, behavior type, and maximum run count.
+    /// </summary>
     void InitializeAgent()
     {
         agent.SetModel(selectedSimulation.algorithmFilename, model);
-        print($"Testing model: {selectedSimulation.algorithmFilename}");
+        Debug.Log($"Testing model: {selectedSimulation.algorithmFilename}");
         agent.GetComponent<BehaviorParameters>().BehaviorType = BehaviorType.InferenceOnly;
         agent.maxRuns = RunsPerModel;
         agent.SetTesting(true);
     }
 
-
+    /// <summary>
+    /// Sets up the ML environment based on the given environment name.
+    /// </summary>
+    /// <param name="environmentName">The name of the environment to load.</param>
     void SetMLEnvironment(string environmentName)
     {
+        // Overriding the environment name as per the current configuration.
         environmentName = "Empty_Room";
-        MLenvironment = Resources.Load<GameObject>($"Training_Environments/{environmentName}"); ;
+        MLenvironment = Resources.Load<GameObject>($"Training_Environments/{environmentName}");
         InitalizeEnvironment();
     }
 
+    /// <summary>
+    /// Sets the current NNModel and initializes the agent with the new model.
+    /// </summary>
+    /// <param name="_model">The NNModel to set.</param>
+    /// <param name="name">The name of the algorithm file associated with the model.</param>
     void SetModel(NNModel _model, string name)
     {
         model = _model;
         InitializeAgent();
     }
 
+    /// <summary>
+    /// Converts a Barracuda Model to an NNModel.
+    /// </summary>
+    /// <param name="model">The Barracuda Model to convert.</param>
+    /// <returns>An NNModel containing the converted model data.</returns>
     NNModel ModelToNNModel(Model model)
     {
         NNModelData modelData = ScriptableObject.CreateInstance<NNModelData>();
@@ -174,6 +264,11 @@ public class ONNXSimulationManager : MonoBehaviour
         return nnModel;
     }
 
+    /// <summary>
+    /// Converts ONNX model data into an NNModel.
+    /// </summary>
+    /// <param name="data">The byte array containing the ONNX model data.</param>
+    /// <returns>The NNModel generated from the ONNX data.</returns>
     NNModel OnnxDataToNNModel(byte[] data)
     {
         ONNXModelConverter onnx = new ONNXModelConverter(true, false, true);
@@ -183,36 +278,91 @@ public class ONNXSimulationManager : MonoBehaviour
         return nnModel;
     }
 
+    #endregion
 }
 
+/// <summary>
+/// Wraps an Agent to provide additional functionality for logging and statistics during simulation runs.
+/// </summary>
 public class AgentWrapper : Agent
 {
-    float numFails;
-    float numSuccesses;
+    #region Private Fields
+
+    /// <summary>
+    /// The number of failed runs.
+    /// </summary>
+    private float numFails;
+
+    /// <summary>
+    /// The number of successful runs.
+    /// </summary>
+    private float numSuccesses;
+
+    #endregion
+
+    #region Public Properties
+
+    /// <summary>
+    /// Gets a value indicating whether the agent is in testing mode.
+    /// </summary>
     public bool _testing { get; private set; }
+
+    /// <summary>
+    /// Gets the number of simulation runs that have been executed.
+    /// </summary>
     public float numRuns { get; private set; }
+
+    /// <summary>
+    /// Gets or sets the maximum number of runs for the simulation.
+    /// </summary>
     public int maxRuns { private get; set; }
+
+    #endregion
+
+    #region Unity Methods
+
+    /// <summary>
+    /// Called when the agent is started. Initializes run statistics.
+    /// </summary>
     public void Start()
     {
         numFails = 0;
         numSuccesses = 0;
         numRuns = 0;
     }
+
+    #endregion
+
+    #region Public Functions
+
+    /// <summary>
+    /// Logs a failed simulation run.
+    /// </summary>
     public void LogFail()
     {
         numFails++;
     }
 
+    /// <summary>
+    /// Logs a successful simulation run.
+    /// </summary>
     public void LogSuccess()
     {
         numSuccesses++;
     }
 
+    /// <summary>
+    /// Logs a simulation run.
+    /// </summary>
     public void LogRun()
     {
         numRuns++;
     }
 
+    /// <summary>
+    /// Sets the testing mode for the agent.
+    /// </summary>
+    /// <param name="test">If set to <c>true</c> enables testing mode; otherwise, disables it.</param>
     public void SetTesting(bool test)
     {
         if (numRuns != 0)
@@ -224,6 +374,10 @@ public class AgentWrapper : Agent
         _testing = test;
     }
 
+    /// <summary>
+    /// Retrieves the simulation statistics including success, failure, and deadlock percentages.
+    /// </summary>
+    /// <returns>A SimulationStatistics structure containing the percentages.</returns>
     public SimulationStatistics GetStats()
     {
         SimulationStatistics stats = new SimulationStatistics();
@@ -233,14 +387,20 @@ public class AgentWrapper : Agent
         return stats;
     }
 
+    /// <summary>
+    /// Prints the simulation statistics to the console.
+    /// </summary>
     public void PrintStats()
     {
         SimulationStatistics stats = GetStats();
-        print("Percentage success: " + stats.percentSuccess);
-        print("Percentage failed: " + stats.percentFailure);
-        print("Percentage deadlock: " + stats.percentDeadlock);
+        Debug.Log("Percentage success: " + stats.percentSuccess);
+        Debug.Log("Percentage failed: " + stats.percentFailure);
+        Debug.Log("Percentage deadlock: " + stats.percentDeadlock);
     }
 
+    /// <summary>
+    /// Resets the simulation statistics.
+    /// </summary>
     public void ResetStats()
     {
         numFails = 0;
@@ -248,10 +408,30 @@ public class AgentWrapper : Agent
         numRuns = 0;
     }
 
+    #endregion
+
+    #region Public Structures
+
+    /// <summary>
+    /// Structure holding simulation statistics.
+    /// </summary>
     public struct SimulationStatistics
     {
+        /// <summary>
+        /// The percentage of successful runs.
+        /// </summary>
         public float percentSuccess;
+
+        /// <summary>
+        /// The percentage of failed runs.
+        /// </summary>
         public float percentFailure;
+
+        /// <summary>
+        /// The percentage of runs that resulted in deadlock.
+        /// </summary>
         public float percentDeadlock;
     }
+
+    #endregion
 }

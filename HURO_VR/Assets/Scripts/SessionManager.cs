@@ -60,7 +60,6 @@ public class SessionManager : MonoBehaviour
         if (completed)
         {
             numberRuns++;
-            Debug.Log("Uploaded data collection");
         } else
         {
             Debug.LogWarning("Failed to upload simulation run data");

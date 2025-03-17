@@ -109,7 +109,6 @@ public class Storage : MonoBehaviour
         await simulationQuery.GetSnapshotAsync().ContinueWithOnMainThread( (task) => {
             QuerySnapshot snapshot = task.Result;
             simulationMetaDatas = new SimulationMetaData[snapshot.Count];
-            Debug.Log($"Num meta data: {simulationMetaDatas.Length} == {snapshot.Count}");
             int count = 0;
             foreach (DocumentSnapshot documentSnapshot in snapshot.Documents)
             {
