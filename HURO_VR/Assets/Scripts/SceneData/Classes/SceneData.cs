@@ -15,10 +15,10 @@ public partial class SceneDataManager : MonoBehaviour
         public Robot[] robots;
     }
 
-    public float robot_radius;
-    public Obstacle[] obstacles;
-    public Boundary boundary;
-    public Robot[] robots;
+    public float robot_radius { get; private set; }
+    public Obstacle[] obstacles { get; private set; }
+    public Boundary boundary { get; private set; }
+    public Robot[] robots { get; private set; }
     private SceneDataOutput output;
 
     /// <summary>
