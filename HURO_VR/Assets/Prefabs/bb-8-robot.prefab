@@ -207,6 +207,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxVelocity: 2
+  initialRotation: {x: -90, y: 0, z: 0}
   deadlockLimit: 5
 --- !u!33 &7876853998810567574
 MeshFilter:

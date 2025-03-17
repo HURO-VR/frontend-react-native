@@ -1,12 +1,16 @@
+using UnityEngine;
+
 public interface Entity
 {
+    /// <summary>
+    /// Draws a gizmo representation of the entity in the scene view.
+    /// </summary>
     public void DrawGizmo();
-    
+
     #region Serialized Variables
     // Add any [SerializeField] variables here if needed
     // Add Headers: [Header("Logging")]
     // Add Tips: [Tooltip("Runs the algorithm every X seconds.")]
-
     #endregion
 
     #region Public Variables

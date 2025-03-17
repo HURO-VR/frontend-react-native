@@ -3,6 +3,7 @@ using UnityEngine;
 public class GoalEntity : MonoBehaviour
 {
     GameObject robot;
+    [SerializeField] Vector3 initialRotation;
     // Start is called before the first frame update
     void Awake()
     {
@@ -11,10 +12,8 @@ public class GoalEntity : MonoBehaviour
 
     private void Start()
     {
-        if (gameObject.name.ToLower().Contains("flag"))
-        {
-            gameObject.transform.eulerAngles = new Vector3(-90, 0, 0);
-        }
+        gameObject.transform.eulerAngles = initialRotation;
+        
     }
 
     // Update is called once per frame

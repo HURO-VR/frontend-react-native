@@ -4,12 +4,12 @@ using Newtonsoft.Json;
 
 public static class RunDataCollector
 {
-    public static RunMetadata simulationRun { get; private set; }
+    public static RunMetadata runMetadata { get; private set; }
     private static float simulationStartTime;
     private static bool initalized = false;
-    public static void InitializeSimulation(SceneData sceneData)
+    public static void InitializeSimulation(SceneDataManager.SceneDataOutput sceneData)
     {
-        simulationRun = new RunMetadata
+        runMetadata = new RunMetadata
         {
             dateCreated = System.DateTime.UtcNow.ToString("o"),
             status = RunStatus.success,
@@ -34,7 +34,7 @@ public static class RunDataCollector
     {
         GameObject[] robots = GameObject.FindGameObjectsWithTag("Robot");
 
-        foreach (var robotData in simulationRun.data.robotData)
+        foreach (var robotData in runMetadata.data.robotData)
         {
             foreach (var go in robots)
             {
@@ -56,19 +56,19 @@ public static class RunDataCollector
 
     public static void LogServerHit()
     {
-        simulationRun.serverHits++;
+        runMetadata.serverHits++;
     }
 
     public static void LogWarning(string message)
     {
-        simulationRun.errorMessage = message;
-        simulationRun.status = RunStatus.Warning;
+        runMetadata.errorMessage = message;
+        runMetadata.status = RunStatus.Warning;
     }
 
     public static void LogFailed(string message)
     {
-        simulationRun.errorMessage = message;
-        simulationRun.status = RunStatus.Failed;
+        runMetadata.errorMessage = message;
+        runMetadata.status = RunStatus.Failed;
     }
 
     public static void AddCollision(GameObject robot, Collision collision)
@@ -78,8 +78,8 @@ public static class RunDataCollector
             return;
         }
         XYZ collisionPoint = robot.transform.position;
-        simulationRun.data.totalCollisions.Add(collisionPoint);
-        foreach (var ro in simulationRun.data.robotData)
+        runMetadata.data.totalCollisions.Add(collisionPoint);
+        foreach (var ro in runMetadata.data.robotData)
         {
             if (ro.name == robot.name)
             {
@@ -94,23 +94,23 @@ public static class RunDataCollector
             Debug.LogWarning("unitialized sim data");
             return; 
         }
-        foreach (var ro in simulationRun.data.robotData)
+        foreach (var ro in runMetadata.data.robotData)
         {
             if (!ro.goalReached)
             {
                 ro.robotEnd = ro.robotPath[ro.robotPath.Count - 1];
             }
         }
-        simulationRun.data.timeToComplete = (int)((Time.time * 1000) - simulationStartTime);
-        simulationRun.data.deadlock = !CheckAllRobotsReachedGoal();
-        Debug.Log("HURO: Simulation Ended. Data: " + JsonConvert.SerializeObject(simulationRun, Formatting.Indented));
+        runMetadata.data.timeToComplete = (int)((Time.time * 1000) - simulationStartTime);
+        runMetadata.data.deadlock = !CheckAllRobotsReachedGoal();
+        Debug.Log("HURO: Simulation Ended. Data: " + JsonConvert.SerializeObject(runMetadata, Formatting.Indented));
         initalized = false;
     }
 
     public static bool CheckAllRobotsReachedGoal()
     {
         if (!initalized) return false;
-        foreach (var robot in simulationRun.data.robotData)
+        foreach (var robot in runMetadata.data.robotData)
         {
             if (!robot.goalReached)
             {
@@ -146,7 +146,7 @@ public static class RunDataCollector
         };
     }
 
-    static List<ObstacleData> InitObstacles(SceneData sceneData)
+    static List<ObstacleData> InitObstacles(SceneDataManager.SceneDataOutput sceneData)
     {
 
         List<ObstacleData> obstacles = new List<ObstacleData>();

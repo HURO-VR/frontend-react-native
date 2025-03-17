@@ -5,7 +5,7 @@ using Meta.XR.MRUtilityKit;
 using Newtonsoft.Json;
 using UnityEngine;
 
-public class SceneDataManager : MonoBehaviour
+public partial class SceneDataManager : MonoBehaviour
 {
     #region Serialized Variables
 
@@ -15,7 +15,6 @@ public class SceneDataManager : MonoBehaviour
 
     #region Public Variables
 
-    public SceneData data;
     public MRUKAnchor.SceneLabels mrukObstacleLabel;
 
     #endregion
@@ -29,9 +28,11 @@ public class SceneDataManager : MonoBehaviour
 
     #region Unity Methods
 
+    /// <summary>
+    /// Initializes the SceneDataManager and finds the MRUKRoom instance.
+    /// </summary>
     void Start()
     {
-        data = new SceneData();
         mruk = FindObjectOfType<MRUKRoom>();
     }
 
@@ -39,55 +40,55 @@ public class SceneDataManager : MonoBehaviour
 
     #region Public Methods
 
+    /// <summary>
+    /// Initializes scene data including robots, obstacles, and boundaries.
+    /// Must be called during the initialization phase of the scene.
+    /// </summary>
     public void InitSceneData()
     {
-        data ??= new SceneData();
-        if (!mruk) mruk = FindObjectOfType<MRUKRoom>();
         if (mruk) LabelMRObjects();
 
         if (initalized) return;
-        data.robots = InitRobotData();
-        Debug.Log("Initalized Robots: " + data.robots.Length);
+        robots = InitRobotData();
+        Debug.Log("Initalized Robots: " + robots.Length);
 
-        Robot[] goals = data.robots.Where((robot) => robot.goal.x != 0).ToArray();
+        Robot[] goals = robots.Where((robot) => robot.goal.x != 0).ToArray();
         Debug.Log("Initalized Goals: " + goals.Length + " position: " + goals[0].goal);
 
-        data.obstacles = InitObstacles();
-        Debug.Log("Initalized Obstacles: " + data.obstacles.Length);
+        obstacles = InitObstacles();
+        Debug.Log("Initalized Obstacles: " + obstacles.Length);
 
-        data.boundary = new Boundary(GameObject.FindGameObjectWithTag("Floor"));
-        Debug.Log("Initalized Boundary of size " + data.boundary.length + " by " + data.boundary.width + " and position: " + data.boundary.position);
+        boundary = new Boundary(GameObject.FindGameObjectWithTag("Floor"));
+        Debug.Log("Initalized Boundary of size " + boundary.length + " by " + boundary.width + " and position: " + boundary.position);
 
-        data.robot_radius = data.robots[0].radius;
-        Debug.Log("Initalized Robot Radius: " + data.robot_radius);
-
-        data.LoadOutput();
+        robot_radius = robots[0].radius;
+        Debug.Log("Initalized Robot Radius: " + robot_radius);
 
         initalized = true;
     }
 
-    public string GetAlgorithmInput()
-    {
-        return JsonConvert.SerializeObject(data.LoadOutput());
-    }
-
+    /// <summary>
+    /// Updates the scene data including robots and obstacles.
+    /// </summary>
     public void UpdateSceneData()
     {
         UpdateRobotData();
         UpdateObstacleData();
     }
 
+    /// <summary>
+    /// Draws gizmos for visual representation of obstacles, boundaries, and robots.
+    /// </summary>
     public void DrawGizmos()
     {
-        if (data == null) return;
-        if (data.obstacles != null) 
-            foreach (var obstacle in data.obstacles)
+        if (obstacles != null)
+            foreach (var obstacle in obstacles)
             {
                 obstacle.DrawGizmo();
             }
 
-        if (data.boundary != null) data.boundary.DrawGizmo();
-        if (data.robots != null) foreach (var robot in data.robots)
+        if (boundary != null) boundary.DrawGizmo();
+        if (robots != null) foreach (var robot in robots)
             {
                 robot.DrawGizmo();
             }
@@ -97,6 +98,9 @@ public class SceneDataManager : MonoBehaviour
 
     #region Private Methods
 
+    /// <summary>
+    /// Labels the objects in the MR environment as obstacles or floors.
+    /// </summary>
     private void LabelMRObjects()
     {
         bool floor = false;
@@ -121,6 +125,10 @@ public class SceneDataManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Initializes robot data from GameObjects tagged as "Robot".
+    /// </summary>
+    /// <returns>An array of Robot instances.</returns>
     private Robot[] InitRobotData()
     {
         GameObject[] robot_gos = GameObject.FindGameObjectsWithTag("Robot");
@@ -134,12 +142,15 @@ public class SceneDataManager : MonoBehaviour
         return robots;
     }
 
+    /// <summary>
+    /// Updates the data of existing robots.
+    /// </summary>
     private void UpdateRobotData()
     {
-        GameObject[] robots = GameObject.FindGameObjectsWithTag("Robot");
-        foreach (var robot in data.robots)
+        GameObject[] robots_gos = GameObject.FindGameObjectsWithTag("Robot");
+        foreach (var robot in robots)
         {
-            foreach (var go in robots)
+            foreach (var go in robots_gos)
             {
                 if (go.name == robot.name)
                 {
@@ -149,6 +160,10 @@ public class SceneDataManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Initializes obstacle data from GameObjects tagged as "Obstacle".
+    /// </summary>
+    /// <returns>An array of Obstacle instances.</returns>
     private Obstacle[] InitObstacles()
     {
         GameObject[] gos = GameObject.FindGameObjectsWithTag("Obstacle");
@@ -162,9 +177,12 @@ public class SceneDataManager : MonoBehaviour
         return obstacles;
     }
 
+    /// <summary>
+    /// Updates the data of dynamic obstacles.
+    /// </summary>
     private void UpdateObstacleData()
     {
-        foreach (Obstacle obstacle in data.obstacles)
+        foreach (Obstacle obstacle in obstacles)
         {
             if (obstacle.isDynamic)
             {
@@ -178,6 +196,4 @@ public class SceneDataManager : MonoBehaviour
     }
 
     #endregion
-
-    
 }

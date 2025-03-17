@@ -607,7 +607,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3613868102660323786, guid: c2e00db6d2dfa42ac8d821db8d493a44, type: 3}
       propertyPath: SceneSettings.RoomIndex
-      value: 10
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3613868102660323786, guid: c2e00db6d2dfa42ac8d821db8d493a44, type: 3}
       propertyPath: SceneSettings.DataSource
@@ -615,12 +615,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3613868102660323786, guid: c2e00db6d2dfa42ac8d821db8d493a44, type: 3}
       propertyPath: SceneSettings.RoomPrefabs.Array.size
-      value: 11
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 3613868102660323786, guid: c2e00db6d2dfa42ac8d821db8d493a44, type: 3}
       propertyPath: SceneSettings.RoomPrefabs.Array.data[10]
       value: 
       objectReference: {fileID: 2601742620458953579, guid: abb7393a87f526245bb2e108a5f70499, type: 3}
+    - target: {fileID: 3613868102660323786, guid: c2e00db6d2dfa42ac8d821db8d493a44, type: 3}
+      propertyPath: SceneSettings.RoomPrefabs.Array.data[11]
+      value: 
+      objectReference: {fileID: 5618556046422172173, guid: 83005a9b6faf75d40b1bf5b57602bc3e, type: 3}
     - target: {fileID: 3613868102660323786, guid: c2e00db6d2dfa42ac8d821db8d493a44, type: 3}
       propertyPath: <RoomCreatedEvent>k__BackingField.m_PersistentCalls.m_Calls.Array.size
       value: 0
@@ -804,6 +808,7 @@ Transform:
   - {fileID: 1914110794}
   - {fileID: 2100932005}
   - {fileID: 2019148906}
+  - {fileID: 1996370589}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &248407618
@@ -4170,7 +4175,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 230590708}
     m_Modifications:
     - target: {fileID: 1836285060781713110, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
       propertyPath: m_Name
@@ -4230,15 +4235,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7951770862256308601, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 1.2009027
       objectReference: {fileID: 0}
     - target: {fileID: 7951770862256308601, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0.2888311
       objectReference: {fileID: 0}
     - target: {fileID: 7951770862256308601, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -1.7055066
       objectReference: {fileID: 0}
     - target: {fileID: 7951770862256308601, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
       propertyPath: m_LocalRotation.w
@@ -4246,15 +4251,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7951770862256308601, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 7951770862256308601, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 7951770862256308601, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 7951770862256308601, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -6335,10 +6340,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72a619c59609659408f2af8739c9da68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  copyOnStart: 1
-  overwriteExistingFiles: 1
-  fileExtensionsToSkip:
-  - .meta
 --- !u!4 &1914110794
 Transform:
   m_ObjectHideFlags: 0
@@ -6654,6 +6655,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mrukObstacleLabel: 7064
+--- !u!4 &1996370589 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7951770862256308601, guid: cdd5bce3fdb670d49bffb085780938db, type: 3}
+  m_PrefabInstance: {fileID: 1286023416}
+  m_PrefabAsset: {fileID: 0}
 --- !u!222 &2006984560
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -15638,5 +15644,4 @@ SceneRoots:
   - {fileID: 978764650}
   - {fileID: 143940991}
   - {fileID: 1671958429}
-  - {fileID: 1286023416}
   - {fileID: 230590708}

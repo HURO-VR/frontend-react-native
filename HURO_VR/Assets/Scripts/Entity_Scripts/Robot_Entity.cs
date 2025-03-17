@@ -12,6 +12,7 @@ public class RobotEntity : MonoBehaviour
     Rigidbody body;
     public bool stuck { get; private set; }
     SimulationManager algorithmRunner;
+    [SerializeField] Vector3 initialRotation;
 
 
     private void Awake()
@@ -29,10 +30,7 @@ public class RobotEntity : MonoBehaviour
             InitGoal(); 
         }
         if (maxVelocity == 0) maxVelocity = 2;
-        if (gameObject.name.ToLower().Contains("bb"))
-        {
-            gameObject.transform.eulerAngles = new Vector3(-90, 0, 0);
-        }
+        gameObject.transform.eulerAngles = initialRotation;
     }
 
     public void SetVelocity(float x, float z)
@@ -84,18 +82,18 @@ public class RobotEntity : MonoBehaviour
     }
 
     float timer = 0;
-    [SerializeField] float deadlockLimit = 5f;
+    [SerializeField] float deadlockLimit = 10f;
 
     public void SetDeadlockTimer(float deadlockLimit)
     {
         this.deadlockLimit = deadlockLimit;
     }
 
+    static float deadlockVelocity = 5e-3f;
     bool IsStuck()
     {
         if (!algorithmRunner.IsRunning()) return false;
-        return body.velocity.magnitude < 0.1f;
-
+        return body.velocity.magnitude < deadlockVelocity;
     }
 
     // Update is called once per frame
@@ -105,7 +103,10 @@ public class RobotEntity : MonoBehaviour
         if (IsStuck())
         {
             timer += Time.deltaTime;
-            if (timer > deadlockLimit) stuck = true;
+            if (timer > deadlockLimit) { 
+                stuck = true; 
+                Debug.Log("STUCK: " + body.velocity.magnitude);
+            }
         } else
         {
             stuck = false;

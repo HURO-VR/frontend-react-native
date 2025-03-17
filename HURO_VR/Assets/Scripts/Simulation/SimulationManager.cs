@@ -106,7 +106,7 @@ public class SimulationManager : MonoBehaviour {
 
         if (!sceneData) sceneData = GetComponent<SceneDataManager>();
         sceneData.InitSceneData();
-        RunDataCollector.InitializeSimulation(sceneData.data);
+        RunDataCollector.InitializeSimulation(sceneData.LoadOutput());
 
         initAlgorithm = true;
     }
@@ -153,7 +153,7 @@ public class SimulationManager : MonoBehaviour {
     {
         if (output.Length == 0)
         {
-            Debug.LogWarning("SSH Command did not output any data.");
+            Debug.LogWarning("SSH Command did not output any ");
         } else
         {
             var newVelocities = JsonConvert.DeserializeObject<float[][]>(output);
@@ -178,7 +178,7 @@ public class SimulationManager : MonoBehaviour {
         foreach (var go in robots_go)
         {
             int i = 0;
-            foreach (var robot in sceneData.data.robots)
+            foreach (var robot in sceneData.robots)
             {
                 if (newVelocities[i][0] + newVelocities[i][1] == 0)
                 {
@@ -204,7 +204,7 @@ public class SimulationManager : MonoBehaviour {
         {
             RunDataCollector.EndSimulation();
             PauseAlgorithm();
-            sessionManager?.UploadSimulationRunData(RunDataCollector.simulationRun);
+            sessionManager?.UploadSimulationRunData(RunDataCollector.runMetadata);
             audioLibrary.PlayAudio(AudioLibrary.AudioType.EndSimulation);
             restart = true;
         }

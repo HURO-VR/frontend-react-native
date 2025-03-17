@@ -19,7 +19,7 @@ public class ONNXSimulationManager : MonoBehaviour
     public SimulationMetaData[] simMetaDatas = new SimulationMetaData[0];
     SimulationMetaData selectedSimulation;
     bool downloadedModelData = false;
-    bool simulationRunning = false;
+    bool runMetadataning = false;
     public bool recievedMetaData { private set; get; }
     bool runSimulation = false;
 
@@ -61,9 +61,9 @@ public class ONNXSimulationManager : MonoBehaviour
             runSimulation = true;
         }
 
-        if (selectedSimulation.name != null && downloadedModelData && !simulationRunning && runSimulation)
+        if (selectedSimulation.name != null && downloadedModelData && !runMetadataning && runSimulation)
         {
-            simulationRunning = true;
+            runMetadataning = true;
             Debug.Log("Loading sim bundle " + simMetaDatas[0].name);
             _RunSimulation();
         }

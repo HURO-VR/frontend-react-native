@@ -12,18 +12,25 @@ public class Robot : Entity
 
     float DEFAULT_GOAL_RADIUS = 0.05f;
 
+    /// <summary>
+    /// Initializes a Robot instance using data from the given GameObject.
+    /// </summary>
+    /// <param name="go">The GameObject representing the robot.</param>
     public Robot(GameObject go)
     {
         SetData(go);
     }
 
+    /// <summary>
+    /// Sets the robot's data based on the provided GameObject's transform and components.
+    /// </summary>
+    /// <param name="go">The GameObject representing the robot.</param>
     public void SetData(GameObject go)
     {
         Transform robot_transform = go.transform;
         Vector3 robot_velocity = go.GetComponent<Rigidbody>().velocity;
         RobotEntity robotController = go.GetComponent<RobotEntity>();
         SphereCollider sphereCollider = go.GetComponent<SphereCollider>();
-        
 
         Transform goal_transform = robotController.GetGoal().transform;
         Collider goalCollider = goal_transform.GetComponent<Collider>();
@@ -48,6 +55,9 @@ public class Robot : Entity
         this.goal_radius = DEFAULT_GOAL_RADIUS;
     }
 
+    /// <summary>
+    /// Draws gizmos to visually represent the robot and its goal in the scene.
+    /// </summary>
     public void DrawGizmo()
     {
         if (radius == 0) return;

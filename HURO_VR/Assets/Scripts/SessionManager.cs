@@ -71,8 +71,8 @@ public class SessionManager : MonoBehaviour
     {
         data.uid = userID;
         data.simID = selectedSimulation.ID;
-        data.name = $"Run {numberRuns + 1}";
-        data.runID = data.name + "_" + data.runID;
+        name = $"Run {numberRuns + 1}";
+        data.runID = name + "_" + data.runID;
         db.UploadMetadata($"organizations/{Organization_ID}/simulations/{selectedSimulation.ID}/runs/{data.runID}", data.ToDictionary(), OnCompleteUpload);
     }
 
