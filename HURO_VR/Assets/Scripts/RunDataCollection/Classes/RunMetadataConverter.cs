@@ -2,6 +2,12 @@ using System.Collections.Generic;
 
 public partial class RunMetadata
 {
+    #region Public Functions
+
+    /// <summary>
+    /// Converts the current RunMetadata object to a dictionary.
+    /// </summary>
+    /// <returns>A dictionary representation of the RunMetadata.</returns>
     public Dictionary<string, object> ToDictionary()
     {
         return new Dictionary<string, object>
@@ -19,6 +25,15 @@ public partial class RunMetadata
         };
     }
 
+    #endregion
+
+    #region Private Functions
+
+    /// <summary>
+    /// Converts the simulation run data to a dictionary.
+    /// </summary>
+    /// <param name="data">The simulation run data.</param>
+    /// <returns>A dictionary representation of the RunData.</returns>
     private static Dictionary<string, object> SimulationRunDataToDictionary(RunData data)
     {
         return new Dictionary<string, object>
@@ -31,6 +46,11 @@ public partial class RunMetadata
         };
     }
 
+    /// <summary>
+    /// Converts the robot data to a dictionary.
+    /// </summary>
+    /// <param name="robot">The robot data.</param>
+    /// <returns>A dictionary representation of the RobotData.</returns>
     private static Dictionary<string, object> RobotDataToDictionary(RobotData robot)
     {
         return new Dictionary<string, object>
@@ -46,6 +66,11 @@ public partial class RunMetadata
         };
     }
 
+    /// <summary>
+    /// Converts the obstacle data to a dictionary.
+    /// </summary>
+    /// <param name="obstacle">The obstacle data.</param>
+    /// <returns>A dictionary representation of the ObstacleData.</returns>
     private static Dictionary<string, object> ObstacleDataToDictionary(ObstacleData obstacle)
     {
         return new Dictionary<string, object>
@@ -55,6 +80,11 @@ public partial class RunMetadata
         };
     }
 
+    /// <summary>
+    /// Converts an XYZ object to a dictionary.
+    /// </summary>
+    /// <param name="xyz">The XYZ object.</param>
+    /// <returns>A dictionary with keys "x", "y", and "z" corresponding to the XYZ values.</returns>
     private static Dictionary<string, object> XYZToDictionary(XYZ xyz)
     {
         return new Dictionary<string, object>
@@ -64,4 +94,6 @@ public partial class RunMetadata
             { "z", xyz.z }
         };
     }
+
+    #endregion
 }

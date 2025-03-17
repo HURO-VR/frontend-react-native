@@ -2,17 +2,46 @@ using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
 
+/// <summary>
+/// A static data collector that manages run metadata, robot data, and simulation data for the current session.
+/// </summary>
 public static class RunDataCollector
 {
+    # region Public Members
+    /// <summary>
+    /// Gets the metadata for the current run.
+    /// </summary>
     public static RunMetadata runMetadata { get; private set; }
+    #endregion
+
+    # region Private Members
+    /// <summary>
+    /// The simulation start time in milliseconds.
+    /// </summary>
     private static float simulationStartTime;
+
+    /// <summary>
+    /// Flag indicating whether the simulation data collector has been initialized.
+    /// </summary>
     private static bool initalized = false;
+    #endregion
+
+    # region Serializable Fields
+    // (If there are any [SerializeField] members, add them here.)
+    #endregion
+
+    # region Public Functions
+
+    /// <summary>
+    /// Initializes the simulation by setting up the run metadata and capturing the starting time.
+    /// </summary>
+    /// <param name="sceneData">The scene data output containing obstacles and other scene information.</param>
     public static void InitializeSimulation(SceneDataManager.SceneDataOutput sceneData)
     {
         runMetadata = new RunMetadata
         {
             dateCreated = System.DateTime.UtcNow.ToString("o"),
-            status = RunStatus.success,
+            status = RunStatus.success.ToString(),
             starred = false,
             runID = System.Guid.NewGuid().ToString(),
             name = $"Run ..", // Set in Session Controller
@@ -24,12 +53,15 @@ public static class RunDataCollector
                 deadlock = false
             }
         };
+
         simulationStartTime = Time.time * 1000; // Convert to milliseconds
         initalized = true;
         Debug.Log("HURO: Initalized Data Collector");
     }
 
-
+    /// <summary>
+    /// Updates the robot data by checking for robot positions and marking when a robot reaches its goal.
+    /// </summary>
     public static void UpdateRobotData()
     {
         GameObject[] robots = GameObject.FindGameObjectsWithTag("Robot");
@@ -54,23 +86,39 @@ public static class RunDataCollector
         }
     }
 
+    /// <summary>
+    /// Logs a hit from the server by incrementing the server hit count.
+    /// </summary>
     public static void LogServerHit()
     {
         runMetadata.serverHits++;
     }
 
+    /// <summary>
+    /// Logs a warning by setting the error message and updating the run status to Warning.
+    /// </summary>
+    /// <param name="message">The warning message to log.</param>
     public static void LogWarning(string message)
     {
         runMetadata.errorMessage = message;
-        runMetadata.status = RunStatus.Warning;
+        runMetadata.status = RunStatus.warning.ToString();
     }
 
+    /// <summary>
+    /// Logs a failure by setting the error message and updating the run status to Failed.
+    /// </summary>
+    /// <param name="message">The error message to log.</param>
     public static void LogFailed(string message)
     {
         runMetadata.errorMessage = message;
-        runMetadata.status = RunStatus.Failed;
+        runMetadata.status = RunStatus.failed.ToString();
     }
 
+    /// <summary>
+    /// Adds a collision event by recording the collision point for both the overall run data and the specific robot.
+    /// </summary>
+    /// <param name="robot">The robot GameObject involved in the collision.</param>
+    /// <param name="collision">The collision data (unused, but kept for potential future use).</param>
     public static void AddCollision(GameObject robot, Collision collision)
     {
         if (!initalized)
@@ -88,11 +136,15 @@ public static class RunDataCollector
         }
     }
 
+    /// <summary>
+    /// Ends the simulation by finalizing robot data, calculating the simulation time, and logging the run metadata.
+    /// </summary>
     public static void EndSimulation()
     {
-        if (!initalized) {
+        if (!initalized)
+        {
             Debug.LogWarning("unitialized sim data");
-            return; 
+            return;
         }
         foreach (var ro in runMetadata.data.robotData)
         {
@@ -107,9 +159,17 @@ public static class RunDataCollector
         initalized = false;
     }
 
+    /// <summary>
+    /// Checks if all robots have reached their designated goals.
+    /// </summary>
+    /// <returns>
+    /// True if all robots have reached their goals; otherwise, false.
+    /// </returns>
     public static bool CheckAllRobotsReachedGoal()
     {
-        if (!initalized) return false;
+        if (!initalized)
+            return false;
+
         foreach (var robot in runMetadata.data.robotData)
         {
             if (!robot.goalReached)
@@ -119,6 +179,14 @@ public static class RunDataCollector
         }
         return true;
     }
+    #endregion
+
+    # region Private Functions
+
+    /// <summary>
+    /// Initializes data for all robots currently in the scene.
+    /// </summary>
+    /// <returns>A list of RobotData for each robot found in the scene.</returns>
     static List<RobotData> InitAllRobotData()
     {
         GameObject[] robot_gos = GameObject.FindGameObjectsWithTag("Robot");
@@ -131,6 +199,11 @@ public static class RunDataCollector
         return robots;
     }
 
+    /// <summary>
+    /// Initializes data for a single robot.
+    /// </summary>
+    /// <param name="robot_go">The robot GameObject to initialize data for.</param>
+    /// <returns>A RobotData object with initial values set based on the robot's current state.</returns>
     static RobotData InitRobotData(GameObject robot_go)
     {
         RobotEntity robotController = robot_go.GetComponent<RobotEntity>();
@@ -146,9 +219,13 @@ public static class RunDataCollector
         };
     }
 
+    /// <summary>
+    /// Initializes obstacle data from the scene data.
+    /// </summary>
+    /// <param name="sceneData">The scene data output containing obstacle information.</param>
+    /// <returns>A list of ObstacleData objects representing the obstacles in the scene.</returns>
     static List<ObstacleData> InitObstacles(SceneDataManager.SceneDataOutput sceneData)
     {
-
         List<ObstacleData> obstacles = new List<ObstacleData>();
         foreach (Circle go in sceneData.obstacles)
         {
@@ -161,4 +238,5 @@ public static class RunDataCollector
         return obstacles;
     }
 
+    #endregion
 }
