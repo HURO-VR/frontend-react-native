@@ -75,7 +75,7 @@ const DetailedSimulation = ({metadata, viewStyle, simID, orgID}: Props) => {
                 <View style={styles.runInfo}>
                   <RenderStatusIcon status={run.status} />
                   <Text style={styles.runText}>{run.name}</Text>
-                  {run.errorMessage && <Text style={{marginLeft: 20}}>{run.errorMessage.substring(0, 10)}...</Text>}
+                  {run.errorMessage && <Text style={{marginLeft: 20}}>{run.errorMessage.substring(0, 8)}</Text>}
                 </View>
                 <TouchableOpacity onPress={() => {
                   FBStorage.updateDoc(run.runID, `organizations/${orgID}/simulations/${simID}/runs`, { starred: !run.starred });
@@ -115,6 +115,10 @@ const DetailedSimulation = ({metadata, viewStyle, simID, orgID}: Props) => {
             <View style={styles.dataItem}>
               <Text style={styles.dataTitle}>Time to Complete</Text>
               <Text>{selectedRun?.data.timeToComplete/1000} seconds</Text>
+            </View>
+            <View style={styles.dataItem}>
+              <Text style={styles.dataTitle}>Number of Server Hits</Text>
+              <Text>{selectedRun?.serverHits} hits</Text>
             </View>
             </> : <Text>{selectedRun.errorMessage}</Text>}
           </View>

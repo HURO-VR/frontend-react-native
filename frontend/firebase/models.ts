@@ -63,6 +63,7 @@ export interface SimulationRun {
     runID: string,
     name: string,
     data: SimulationRunData
+    serverHits: number,
     errorMessage: string
 }
 
