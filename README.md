@@ -2,6 +2,9 @@
 
 HURO-VR: Winter 2025 Team 26
 
+## Demo Video
+[Private link](https://youtu.be/oNjqjfujbMM)
+
 ## Wiki
 https://github.com/StanfordCS194/win25-Team26/wiki
 
@@ -20,9 +23,7 @@ karansoin (Karan Soin)
 marcottm (Michael Marcotte)
 
 ---
-### Project statistics (updated: Thu Mar 20 06:52:36 UTC 2025)
 
-| Metric            | Count |
 ### Project statistics (updated: Thu Mar 20 06:57:43 UTC 2025)
 
 | Metric            | Count |
