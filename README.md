@@ -1,51 +1,72 @@
-# HURO
+# HURO Frontend
 
-HURO-VR: Winter 2025 Team 26
+This is an [Expo](https://expo.dev) project with deployment capabilities to mobile and web.
 
-## Demo Video
-[Private link](https://youtu.be/oNjqjfujbMM)
+## Environment Setup:
 
-## Wiki
-https://github.com/StanfordCS194/win25-Team26/wiki
+1. **Install dependencies**
 
-## References
+   ```bash
+   npm install
+   ```
 
-- Models [Spot model (v1)](https://sketchfab.com/3d-models/old-spot-mini-rigged-5dcbee77730640269cef5bd2587e328a)
+2. **Start the app**
 
-## Important Links
-- Team milestones (team assignments): https://github.com/StanfordCS194/win25-Team26/milestones
-- Course Syllabus (accurate assignment deadlines and schedule): https://docs.google.com/spreadsheets/d/1Y5Lcy-f3GsL_aUVHTDTYkmbaJQqK7sEhrNU9xM57UpQ/edit?usp=sharing
+   ```bash
+    npx expo start
+   ```
 
-tashakim (Tasha Kim)
-nikitax1 (Nikita X-One)
-vencentv (Vencent Vang)
-karansoin (Karan Soin)
-marcottm (Michael Marcotte)
+3. **Open web view:**
 
----
+   Press `w`
 
-### Project statistics (updated: Thu Mar 20 06:57:43 UTC 2025)
 
-| Metric            | Count |
-### Project statistics (updated: Thu Mar 20 07:26:30 UTC 2025)
+### Deploy Website
+1. Run `npx expo export -p web` or `npm run deploy`
 
-| Metric            | Count |
-### Project statistics (updated: Fri Mar 21 00:15:45 UTC 2025)
+2. Upload dist folder to Netlify (currently only Nikita can do this because of Netlify free plan.)
 
-| Metric            | Count |
-### Project statistics (updated: Sat Mar 22 00:15:22 UTC 2025)
+3. View deployed website [here](https://hurovr.netlify.app/).
+   
 
-| Metric            | Count |
-### Project statistics (updated: Sun Mar 23 00:17:10 UTC 2025)
+### Testing
+1. Add a test in `__tests__` folder
+2. Run all tests with `npm run test`
 
-| Metric            | Count |
-|-------------------|-------|
-| 1. Open Issues    | **3** |
-| 2. Open PRs      | **3** |
-| 3. Contributors   | **3** |
-| 4. Stars         | **null** |
-| 5. Forks         | **null** |
-| 6. Last Commit   | **null** |
 
-### 📌 CI/CD Status
-![CI](https://img.shields.io/badge/CI-Unknown-lightgrey?style=flat-square)
+### CI/CD Workflow
+This project includes automated workflows using GitHub Actions:
+- **Build & Test:** Runs on every push and pull request.
+- **Security Scans:** Automated vulnerability scanning using CodeQL and Trivy.
+- **Docker Build & Push:** Builds and pushes Docker images to DockerHub.
+- **Automated README Updates:** Fetches project stats and updates `README.md` daily.
+
+### Environment Variables
+Ensure the following environment variables are set in GitHub Secrets (`Settings > Secrets and variables > Actions`):
+
+| Secret Name       | Description |
+|------------------|-------------|
+| `AWS_ACCESS_KEY_ID` | AWS access key for S3 deployments |
+| `AWS_SECRET_ACCESS_KEY` | AWS secret key |
+| `DOCKER_USERNAME` | DockerHub username |
+| `DOCKER_PASSWORD` | DockerHub access token |
+| `GH_TOKEN` | GitHub API token for fetching repository data |
+
+### Local Development & CI/CD Testing
+To test GitHub Actions locally, install `act`:
+```bash
+brew install act  # macOS
+sudo apt install act  # Linux
+choco install act-cli  # Windows
+```
+Run workflows locally:
+```bash
+act -W .github/workflows/ci-cd.yml
+```
+To debug a specific workflow:
+```bash
+act -W .github/workflows/update-readme.yml -v
+```
+
+This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+

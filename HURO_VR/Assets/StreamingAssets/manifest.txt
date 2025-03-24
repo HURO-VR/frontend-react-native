@@ -1,9 +1,0 @@
-gcp-vm-key
-gcp-vm-key.meta
-gcp-vm-key.pub
-gcp-vm-key.pub.meta
-google-services-desktop.json
-google-services-desktop.json.meta
-manifest.txt.meta
-RuntimeActionBindings.json
-RuntimeActionBindings.json.meta
