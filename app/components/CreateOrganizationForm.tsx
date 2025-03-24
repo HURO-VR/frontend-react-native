@@ -53,10 +53,11 @@ export const CreateOrganizationForm = ({ user, onSubmit }: Props) => {
     }
 
     useEffect(() => {
-        FBStorage.getCollection("users").then((data) => {
-            setUsers(data.filter((u) => u.uid != user.uid)) // Remove Self from list
-        })
-        FBStorage.getCollection("organizations").then((orgs) => {
+        // FBStorage.getCollection("users").then((data) => {
+        //     setUsers(data.filter((u) => u.uid != user.uid)) // Remove Self from list
+        // })
+        // TODO: Server side user fetching.
+        FBStorage.getCollection("organizations", {field: "members", operation: "array-contains", value: user.uid}).then((orgs) => {
             setAllOrgs(orgs)
         })
     }, [])

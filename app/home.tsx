@@ -91,8 +91,9 @@ const OrganizationView = () => {
           setSimulations(data)
         }))
         promises.push(FBStorage.getCollection(`users`).then((data) => {
+          // TODO: Sever-side user fethching. This will be more secure.
           setMembers(data.filter((user) => organization.members.find(m => m == user.uid)))
-          setInvitable(data.filter((user) => organization.members.find(m => m == user.uid) == undefined))
+          // setInvitable(data.filter((user) => organization.members.find(m => m == user.uid) == undefined))
         }))
         Promise.all(promises).finally(() => {
           setLoading(false)
