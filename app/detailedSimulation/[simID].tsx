@@ -2,9 +2,7 @@ import React, { useEffect } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, ViewStyle, StyleProp, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { RunStatus, SimulationMetaData, SimulationRun } from '@/firebase/models';
-import { useLocalSearchParams } from 'expo-router';
 import { FBStorage } from '@/firebase/storage';
-import RobotPathMap from '../components/RobotPathMap';
 import SceneVisualization from '../components/SceneVisualization';
 
 interface Props {

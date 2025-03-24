@@ -6,10 +6,8 @@ import TextStyles from "./styles/textStyles";
 import { FBStorage } from "@/firebase/storage";
 import { v4 as uuid } from "uuid";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import CustomDropdown from "./components/dropdown";
 import DropdownMenu from "./components/dropdown";
 import { AcceptedFileTypes, FileUploadType, EnvImages, EnvironmentTypes } from "@/firebase/models";
-import { LocalRouteParamsContext } from "expo-router/build/Route";
 
 export default function SimulationCreation() {
   const [uploadTrigger, setUploadTrigger] = useState(false);
