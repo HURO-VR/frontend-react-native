@@ -1,19 +1,26 @@
 import { StatusBar } from "react-native";
 
 export interface SimulationMetaData {
-    name: string; // User defined name for the simulation
-    ID: string; // Simulation ID. Aka the folder for sim in the storage bucket
-    dateCreated: string; // ISO formatted Date. Ex: 2025-02-02T12:34:56.789Z
-    algorithmFilename: string; // The algorithm used for the simulation
-    environmentName: string; // The environment used for the simulation. Stored in "Resources/Training_Environments" in Unity
-    runs: number; // Number of times the simulation has been run.
-    modelFilename?: string; // Model Filename
+    name: string; // OnCreate: User defined name for the simulation
+    ID: string; // OnCreate: Simulation ID. Aka the folder for sim in the storage bucket
+    dateCreated: string; // OnCreate: ISO formatted Date. Ex: 2025-02-02T12:34:56.789Z
+    algorithmFilename: string; // OnCreate: The algorithm used for the simulation
+    environmentName: string; // OnCreate: The environment used for the simulation. Stored in "Resources/Training_Environments" in Unity
+    runs: number; // OnCreate, OnUpdate: Number of times the simulation has been run.
+    modelFilename?: string; // OnCreate: Model Filename
+}
+
+export interface UserProfile {
+    uid: string // User unique identifier. Equal to auth id
+    name: string
 }
 
 export interface Organization {
     id: string
     simulations: string[] // Array of SimIDs
-    members: string[] // User IDs
+    members: string[] // User IDs for Security rules
+    memberProfiles: UserProfile[] // User Profiles
+    _3DModels: string[] // Global use of 3D models across all simulations.
     admins: string[] // User IDs
     name: string,
     dateCreated: string
@@ -72,6 +79,7 @@ export interface UserMetaData {
     name: string
     email: string
     organizations: string[] // OrgIDs
+    colleagues: string[] // User IDs
 }
 
 export enum EnvironmentTypes {

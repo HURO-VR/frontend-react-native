@@ -118,7 +118,9 @@ export namespace FBStorage {
           dateCreated: new Date().toISOString(),
           members: members,
           admins: [admin],
-          simulations: []
+          simulations: [],
+          memberProfiles: [],
+          _3DModels: []
       }
       await setDoc(doc(db, `organizations`, id), org); // Model: Organization
       return org;

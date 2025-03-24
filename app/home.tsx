@@ -32,9 +32,11 @@ const OrganizationView = () => {
     name: "Create an Organization",
     simulations: [],
     members: [],
+    memberProfiles: [],
     admins: [],
     id: "",
-    dateCreated: ""
+    dateCreated: "",
+    _3DModels: []
   } as Organization)
   const [allOrgs, setAllOrgs] = useState([] as Organization[])
   const [simulations, setSimulations] = useState([] as SimulationMetaData[])
