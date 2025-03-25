@@ -6,6 +6,7 @@ import { FBStorage } from "@/firebase/storage"
 import { FBAuth } from "@/firebase/auth"
 import { Redirect, useRouter } from "expo-router"
 import { styles } from "./styles/styles"
+import { FBFirestore } from "@/firebase/firestore"
 
 
 const CreateOrganization = () => {
@@ -14,7 +15,7 @@ const CreateOrganization = () => {
     const router = useRouter()
     
     useEffect(() => {
-        if (FBAuth.isSignedIn()) FBStorage.getFSDoc(`users/${FBAuth.getUID()}`).then(setUser)
+        if (FBAuth.isSignedIn()) FBFirestore.getFSDoc(`users/${FBAuth.getUID()}`).then(setUser)
         else setRedirect("/login")
     }, [])
 

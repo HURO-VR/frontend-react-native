@@ -8,6 +8,7 @@ import { v4 as uuid } from "uuid";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import DropdownMenu from "./components/dropdown";
 import { AcceptedFileTypes, FileUploadType, EnvImages, EnvironmentTypes } from "@/firebase/models";
+import { FBFirestore } from "@/firebase/firestore";
 
 export default function SimulationCreation() {
   const [uploadTrigger, setUploadTrigger] = useState(false);
@@ -37,7 +38,7 @@ export default function SimulationCreation() {
   }, [environment]);
 
   const uploadMetaData = async () => {
-    let done = await FBStorage.uploadSimulationMetaData(
+    let done = await FBFirestore.uploadSimulationMetaData(
       org_id as string,
       {
         ID: simulationID,

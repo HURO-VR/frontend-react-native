@@ -4,6 +4,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { RunStatus, SimulationMetaData, SimulationRun } from '@/firebase/models';
 import { FBStorage } from '@/firebase/storage';
 import SceneVisualization from '../components/SceneVisualization';
+import { FBFirestore } from '@/firebase/firestore';
 
 interface Props {
   metadata: SimulationMetaData
@@ -17,10 +18,10 @@ const DetailedSimulation = ({metadata, viewStyle, simID, orgID}: Props) => {
   const [selectedRun, setSelectedRun] = React.useState<SimulationRun | null>(null);
 
   const loadSimRuns = () => {
-    FBStorage.getCollection(`organizations/${orgID}/simulations/${simID}/runs`).then((data) => {
+    FBFirestore.getCollection(`organizations/${orgID}/simulations/${simID}/runs`).then((data) => {
       setSimRuns(data);
       if (data.length > 0) setSelectedRun(data[0]);
-      FBStorage.subscribeToCollection(`organizations/${orgID}/simulations/${simID}/runs`, (data) => setSimRuns(data as SimulationRun[]));
+      FBFirestore.subscribeToCollection(`organizations/${orgID}/simulations/${simID}/runs`, (data) => setSimRuns(data as SimulationRun[]));
     });
   }
   useEffect(() => {
@@ -76,7 +77,7 @@ const DetailedSimulation = ({metadata, viewStyle, simID, orgID}: Props) => {
                   {run.errorMessage && <Text style={{marginLeft: 20}}>{run.errorMessage.substring(0, 8)}</Text>}
                 </View>
                 <TouchableOpacity onPress={() => {
-                  FBStorage.updateDoc(run.runID, `organizations/${orgID}/simulations/${simID}/runs`, { starred: !run.starred });
+                  FBFirestore.updateDoc(run.runID, `organizations/${orgID}/simulations/${simID}/runs`, { starred: !run.starred });
                   run.starred = !run.starred;
                   setSimRuns([...simRuns]);
                 }}>

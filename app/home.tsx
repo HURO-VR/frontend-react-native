@@ -21,6 +21,7 @@ import DetailedSimulation from './detailedSimulation/[simID]';
 import DropdownMenu from './components/dropdown';
 import { LocalRouteParamsContext } from 'expo-router/build/Route';
 import TextStyles from './styles/textStyles';
+import { FBFirestore } from '@/firebase/firestore';
 
 
 
@@ -55,7 +56,7 @@ const OrganizationView = () => {
 
   useEffect(() => {
       if (FBAuth.isSignedIn() == null) setRedirect("/login")
-      else FBStorage.getFSDoc(`users/${FBAuth.getUID()}`).then((_user) => {
+      else FBFirestore.getFSDoc(`users/${FBAuth.getUID()}`).then((_user) => {
         setUser(_user)
         FBStorage.subscribeToDoc(_user.uid, "users", (data) => {
           if (data) setUser(data as UserMetaData)
@@ -65,7 +66,7 @@ const OrganizationView = () => {
 
   useEffect(() => {
      if (user && user.organizations.length > 0) {
-        FBStorage.getCollection(`organizations`, {field: "members", operation: "array-contains", value: user.uid}).then((orgs) => {
+      FBFirestore.getCollection(`organizations`, {field: "members", operation: "array-contains", value: user.uid}).then((orgs) => {
           if (orgs.length == 0) setRedirect("/create_organization")
           else {
             let currOrg = orgs[0]
@@ -76,7 +77,7 @@ const OrganizationView = () => {
           }
         })
      } else if (org_id) { 
-        FBStorage.getFSDoc(`organizations/${org_id}`).then((org) => {
+      FBFirestore.getFSDoc(`organizations/${org_id}`).then((org) => {
           setOrganization(org)
           setAllOrgs([org])
      })
@@ -89,10 +90,10 @@ const OrganizationView = () => {
     if (organization.id.length > 0) {
       if (!loading) setLoading(true)
       const promises = []
-       promises.push(FBStorage.getAllSimulationsMetaData(organization.id).then((data) => {
+       promises.push(FBFirestore.getAllSimulationsMetaData(organization.id).then((data) => {
           setSimulations(data)
         }))
-        promises.push(FBStorage.getCollection(`users`).then((data) => {
+        promises.push(FBFirestore.getCollection(`users`).then((data) => {
           // TODO: Sever-side user fethching. This will be more secure.
           setMembers(data.filter((user) => organization.members.find(m => m == user.uid)))
           // setInvitable(data.filter((user) => organization.members.find(m => m == user.uid) == undefined))
@@ -217,7 +218,7 @@ const OrganizationView = () => {
                 onPress={() => {
                   if (invitedUsers.length == 0) setInviteError("Must invite at least one user.")
                   setInviteLoading(true)
-                  FBStorage.addMembersToOrg(organization, invitedUsers.map(u => u.uid)).then(() => {
+                  FBFirestore.addMembersToOrg(organization, invitedUsers.map(u => u.uid)).then(() => {
                     setInvitedUsers([])
                   }).catch(() => {
                     window.alert("Failed to add users")

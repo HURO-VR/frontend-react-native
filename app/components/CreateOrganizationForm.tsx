@@ -16,6 +16,7 @@ import { FBStorage } from '@/firebase/storage';
 import { isLoading } from 'expo-font';
 import ConditionalView from './ConditionalView';
 import TextStyles from '../styles/textStyles';
+import { FBFirestore } from '@/firebase/firestore';
 
 
 interface Props {
@@ -48,7 +49,7 @@ export const CreateOrganizationForm = ({ user, onSubmit }: Props) => {
     const createOrganization = () => {
         setLoading(true)
         if (verifyOrg()) {
-            FBStorage.createOrganization(name, user.uid, [...(selectedUsers.map((u) => u.uid)), user.uid]).then(onSubmit).finally(() => setLoading(false))
+            FBFirestore.createOrganization(name, user.uid, [...(selectedUsers.map((u) => u.uid)), user.uid]).then(onSubmit).finally(() => setLoading(false))
         } else setLoading(false)
     }
 
@@ -57,7 +58,7 @@ export const CreateOrganizationForm = ({ user, onSubmit }: Props) => {
         //     setUsers(data.filter((u) => u.uid != user.uid)) // Remove Self from list
         // })
         // TODO: Server side user fetching.
-        FBStorage.getCollection("organizations", {field: "members", operation: "array-contains", value: user.uid}).then((orgs) => {
+        FBFirestore.getCollection("organizations", {field: "members", operation: "array-contains", value: user.uid}).then((orgs) => {
             setAllOrgs(orgs)
         })
     }, [])
