@@ -39,8 +39,6 @@ export namespace FBStorage {
     });
   }
 
-
-
   // MODELS
 
   export interface FileUpload { 

@@ -13,16 +13,16 @@ import {
   ViewStyle,
 } from 'react-native';
 import { styles } from '../styles/styles';
+import { FBFirestore } from '@/firebase/firestore';
 
 
 interface Props {
-    users: UserMetaData[],
     selectedUsers: UserMetaData[],
     setSelectedUsers: any
     dropdownStyle?: StyleProp<ViewStyle>
 }
 
-const UserSelector = ({users, selectedUsers, setSelectedUsers, dropdownStyle}: Props) => {
+const UserSelector = ({selectedUsers, setSelectedUsers, dropdownStyle}: Props) => {
   const [inputValue, setInputValue] = useState('');
   const [suggestions, setSuggestions] = useState([] as UserMetaData[]);
   const [isFocused, setIsFocused] = useState(false);
@@ -31,13 +31,13 @@ const UserSelector = ({users, selectedUsers, setSelectedUsers, dropdownStyle}: P
 
   useEffect(() => {
     if (inputValue.trim()) {
-      const filteredSuggestions = users.filter(
-        (item) =>
-          (item.email.toLowerCase().includes(inputValue.toLowerCase()) ||
-            item.name.toLowerCase().includes(inputValue.toLowerCase())) &&
-          !selectedUsers.some((recipient) => recipient.uid === item.uid)
-      );
-      setSuggestions(filteredSuggestions);
+      // TODO: Currently case sensitive.
+      FBFirestore.listUsers(inputValue).then((data) => {
+        setSuggestions(data)
+      }).catch((e) => {
+        console.error(e)
+        setSuggestions([]);
+      })
     } else {
       setSuggestions([]);
     }

@@ -1,8 +1,9 @@
 import { initializeApp } from "firebase/app";
-import { collection, doc, DocumentData, getDoc, getDocs, getFirestore, onSnapshot, query, setDoc, SetOptions, where, WhereFilterOp } from "firebase/firestore";
+import { collection, doc, DocumentData, getDoc, getDocs, getFirestore, limit, onSnapshot, orderBy, query, setDoc, SetOptions, where, WhereFilterOp } from "firebase/firestore";
 import { firebaseConfig } from "./config";
-import { Organization, SimulationMetaData } from "./models";
+import { Organization, SimulationMetaData, UserMetaData } from "./models";
 import { v4 } from "uuid";
+import { Use } from "react-native-svg";
 
 export namespace FBFirestore {
     
@@ -123,6 +124,17 @@ export namespace FBFirestore {
           if (list.length > 0) onUpdate(list);
         });
         return unsub;
+      }
+
+      export async function listUsers(searchTerm: string) {
+        let db = getFBFirestore();
+        let users: UserMetaData[] = []
+        const q = query(collection(db, "users"), where("name", ">=", searchTerm), limit(10), orderBy("name"));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+            users.push(doc.data() as UserMetaData);
+        });
+        return users;
       }
             
 

@@ -82,8 +82,8 @@ export const CreateOrganizationForm = ({ user, onSubmit }: Props) => {
 
                 {/* Select Members */}
                 <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Invite Members</Text>
-                    <UserSelector users={users} selectedUsers={selectedUsers} setSelectedUsers={setSelectedUsers}/>
+                    <Text style={styles.label}>Invite Members by Name {"(case sensitive)"}</Text>
+                    <UserSelector selectedUsers={selectedUsers} setSelectedUsers={setSelectedUsers}/>
                     <Text style={styles.errorText}>{membersError}</Text>
                 </View>
             </View>

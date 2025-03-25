@@ -45,7 +45,6 @@ const OrganizationView = () => {
   const [user, setUser] = useState(null as UserMetaData | null)
   const [loading, setLoading] = useState(true)
   const [invitedUsers, setInvitedUsers] = useState([] as UserMetaData[])
-  const [inviteAbleUsers, setInvitable] =  useState([] as UserMetaData[])
   const [inviteLoading, setInviteLoading] = useState(false)
   const [inviteErrorText, setInviteError] = useState("")
   const [isAdmin, setAdmin] = useState(false)
@@ -58,7 +57,7 @@ const OrganizationView = () => {
       if (FBAuth.isSignedIn() == null) setRedirect("/login")
       else FBFirestore.getFSDoc(`users/${FBAuth.getUID()}`).then((_user) => {
         setUser(_user)
-        FBStorage.subscribeToDoc(_user.uid, "users", (data) => {
+        FBFirestore.subscribeToDoc(_user.uid, "users", (data) => {
           if (data) setUser(data as UserMetaData)
         })
   })
@@ -87,17 +86,17 @@ const OrganizationView = () => {
   }, [user])
 
   useEffect(() => {
-    if (organization.id.length > 0) {
+    if (organization.id.length > 0 && user) {
       if (!loading) setLoading(true)
       const promises = []
        promises.push(FBFirestore.getAllSimulationsMetaData(organization.id).then((data) => {
           setSimulations(data)
         }))
-        promises.push(FBFirestore.getCollection(`users`).then((data) => {
-          // TODO: Sever-side user fethching. This will be more secure.
+
+        promises.push(FBFirestore.getCollection(`users`, {field: "uid", operation: "in", value: user.colleagues}).then((data) => {
           setMembers(data.filter((user) => organization.members.find(m => m == user.uid)))
-          // setInvitable(data.filter((user) => organization.members.find(m => m == user.uid) == undefined))
         }))
+
         Promise.all(promises).finally(() => {
           setLoading(false)
         })
@@ -206,8 +205,8 @@ const OrganizationView = () => {
               ))}
               <View style ={{marginTop: 30}}></View>
               {!loading && isAdmin && <View style={{flexDirection: "row", justifyContent:"center", alignItems: "center"}}>
+              <Text style={{...styles.label}}>Invite Members by Name {"(case sensitive)"}</Text>
               <UserSelector 
-                users={inviteAbleUsers} 
                 selectedUsers={invitedUsers} 
                 setSelectedUsers={setInvitedUsers}
                 dropdownStyle={{backgroundColor: styles.container.backgroundColor}}
