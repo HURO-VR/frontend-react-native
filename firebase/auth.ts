@@ -3,6 +3,7 @@ import { firebaseConfig } from "./config";
 import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword  } from "firebase/auth";
 import {UserMetaData} from "./models"
 import { FBStorage } from "./storage";
+import { FBFirestore } from "./firestore";
 
 export class FBAuth {
     static app = initializeApp(firebaseConfig);
@@ -20,11 +21,11 @@ export class FBAuth {
     }
 
     public static GetUserMetaData(uid: string) {
-        return FBStorage.getFSDoc(`users/${uid}`)
+        return FBFirestore.getFSDoc(`users/${uid}`)
     }
 
     static initializeUser(user: UserMetaData) {
-        return FBStorage.firestoreDocUpload(user.uid, `users`, user)
+        return FBFirestore.firestoreDocUpload(user.uid, `users`, user)
     }
 
     public static async createUser(email: string, password: string, name: string) {
@@ -36,7 +37,8 @@ export class FBAuth {
                 uid: user.uid,
                 name: name,
                 email: user.email!,
-                organizations: []
+                organizations: [],
+                colleagues: []
             }
             await this.initializeUser(userMetadata)
             return userMetadata;
@@ -52,7 +54,7 @@ export class FBAuth {
         .then(async (userCredential) => {
             // Signed in 
             const authUser = userCredential.user;
-            const user = await FBStorage.getFSDoc(`users/${authUser.uid}`) as UserMetaData
+            const user = await FBFirestore.getFSDoc(`users/${authUser.uid}`) as UserMetaData
             return user;
         })
         .catch((error) => {
